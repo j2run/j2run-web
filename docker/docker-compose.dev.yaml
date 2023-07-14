@@ -25,6 +25,12 @@ services:
       - "${J2_BE_PORT}:3000"
     volumes:
       - ../apps/server:/data/apps
+      - ../keys:/keys
+    networks:
+      - all
+      - docker-swarm
+    extra_hosts:
+      - "j2.master:${J2_DOCKER_IP}"
     
   j2-redis:
     image: redis:7.0.7-alpine3.17
@@ -36,7 +42,9 @@ services:
     volumes:
       - ../conf/redis.dev.conf:/usr/local/etc/redis/redis.conf
       - ../data/redis:/data
-        
+    networks:
+      - all
+
   j2-mongo:
     image: mongo:6.0.3
     command: mongod --quiet --logpath /dev/null
@@ -48,3 +56,17 @@ services:
       - ../conf/mongod.dev.conf:/etc/mongodb.conf
       - ../data/mongo/log:/var/log/mongodb/
       - ../data/mongo/data:/data/db
+    networks:
+      - all
+
+networks:
+  all:
+  docker-swarm:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "${J2_DOCKER_INTERFACE}"
+    ipam:
+      config:
+        - subnet: 172.16.10.0/24
+          gateway: 172.16.10.1
+          ip_range: 172.16.10.110/28

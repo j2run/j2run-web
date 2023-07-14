@@ -20,6 +20,9 @@ RUN apk --no-cache add sudo && \
 RUN mkdir -p /data/apps && \
     chown -R ${gUser}:${gUser} /data/apps
 
+RUN mkdir -p /keys && \
+    chown -R ${gUser}:${gUser} /keys
+
 RUN apk --no-cache add bash
 
 USER ${gUser}
