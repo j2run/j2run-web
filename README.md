@@ -18,7 +18,18 @@ docker swarm join --token SWMTKN-1-0vf8dgmp7iwwit57sk8pclhv7xlc15gf4f4edhoh26lyh
 nano /usr/lib/systemd/system/docker.service
 -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock
 systemctl daemon-reload
-
 systemctl restart docker
 
 /usr/lib/systemd/system/
+
+https://www.thegeekdiary.com/how-to-remove-virbr0-and-lxcbr0-interfaces-on-centos-rhel-5-and-rhel-7/
+sudo ip link set virbr1 down
+sudo brctl delbr virbr1
+sudo ip link set virbr2 down
+sudo brctl delbr virbr2
+
+sudo service libvirtd stop
+sudo service libvirtd start
+
+ssh root@172.16.10.100
+ssh root@172.16.10.101
