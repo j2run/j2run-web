@@ -10,6 +10,10 @@ import {
 export class DockerLabelService {
   constructor(
     @InjectModel(DockerLabel.name)
-    private DockerLabelModel: Model<DockerLabelDocument>,
-  ) {}
+    private dockerLabelModel: Model<DockerLabelDocument>,
+  ) {
+    // this.dockerLabelModel.create({
+    //   name: 'NSO Plus',
+    // });
+  }
 }

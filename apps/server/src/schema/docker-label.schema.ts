@@ -10,7 +10,7 @@ export type DockerLabelDocument = HydratedDocument<DockerLabel>;
 })
 export class DockerLabel extends SchemaDto {
   @ApiProperty()
-  @Prop()
+  @Prop({ unique: true })
   name: string;
 }
 

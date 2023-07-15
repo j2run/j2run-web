@@ -7,6 +7,13 @@ import { Game, GameDocument } from 'src/schema/game.schema';
 export class GameService {
   constructor(
     @InjectModel(Game.name)
-    private GameModel: Model<GameDocument>,
-  ) {}
+    private gameModel: Model<GameDocument>,
+  ) {
+    // this.gameModel.create({
+    //   name: 'Nso Plus',
+    //   dockerLabelIds: [new Types.ObjectId('64b2b8d5c5643969901cc8bc')],
+    //   image: 'wawahuy/j2_microemulator:lasted',
+    //   diskPath: '/data/game/nso-plus.jar',
+    // });
+  }
 }

@@ -22,8 +22,8 @@ export class DockerNode extends SchemaDto {
   port: number;
 
   @ApiProperty()
-  @Prop()
-  tags: string[];
+  @Prop({ index: true })
+  dockerLabelIds: Types.ObjectId[];
 
   @ApiProperty()
   @Prop()

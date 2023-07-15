@@ -36,6 +36,10 @@ export class DockerContainer extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  forwardIp: string;
+
+  @ApiProperty()
+  @Prop()
   forwardPort: number;
 
   @ApiProperty()
@@ -49,6 +53,10 @@ export class DockerContainer extends SchemaDto {
   @ApiProperty()
   @Prop()
   created: number;
+
+  @ApiProperty()
+  @Prop()
+  deleteAt: Date;
 }
 
 export const DockerContainerSchema =

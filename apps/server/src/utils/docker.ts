@@ -42,6 +42,45 @@ export class J2Docker {
     });
   }
 
+  existsImage(image: string) {
+    return new Promise<boolean>((resolve, reject) => {
+      this.docker.listImages(
+        { filters: JSON.stringify({ reference: [image] }) },
+        (err, images) => {
+          if (err) {
+            reject(err);
+          }
+          const isImageExists = images && images.length > 0;
+          resolve(isImageExists);
+        },
+      );
+    });
+  }
+
+  pullImage(image: string) {
+    return new Promise<any[]>((resolve, reject) => {
+      this.docker.pull(
+        image,
+        {},
+        (err, result) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          this.docker.modem.followProgress(result, (err, output) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            this.logger.warn('Image pulled successfully. ' + image);
+            resolve(output);
+          });
+        },
+        {},
+      );
+    });
+  }
+
   containers() {
     return new Promise<Docker.ContainerInfo[]>((resolve, reject) => {
       this.docker.listContainers((err, result) => {
@@ -52,6 +91,10 @@ export class J2Docker {
         resolve(result);
       });
     });
+  }
+
+  createContainer(options: Docker.ContainerCreateOptions) {
+    return this.docker.createContainer(options);
   }
 
   nodes() {

@@ -10,9 +10,6 @@ x-shared_environment: &shared_environment
   J2_BULL_USER: ${J2_BULL_USER}
   J2_BULL_PWD: ${J2_BULL_PWD}
   J2_DOCKER_INTERFACE: ${J2_DOCKER_INTERFACE}
-  J2_DOCKER_IP: ${J2_DOCKER_IP}
-  J2_DOCKER_PORT: ${J2_DOCKER_PORT}
-  J2_DOCKER_DOMAIN: ${J2_DOCKER_DOMAIN}
   J2_DOCKER_CA: ${J2_DOCKER_CA}
   J2_DOCKER_CLIENT_CERT: ${J2_DOCKER_CLIENT_CERT}
   J2_DOCKER_CLIENT_KEY: ${J2_DOCKER_CLIENT_KEY}
@@ -36,8 +33,6 @@ services:
     networks:
       - all
       - docker-swarm
-    extra_hosts:
-      - "${J2_DOCKER_DOMAIN}:${J2_DOCKER_IP}"
     
   j2-redis:
     image: redis:7.0.7-alpine3.17
