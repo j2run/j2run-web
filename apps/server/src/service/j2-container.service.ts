@@ -27,15 +27,7 @@ export class J2ContainerService {
     private gameModel: Model<GameDocument>,
     @InjectModel(Plan.name)
     private planModel: Model<PlanDocument>,
-  ) {
-    // (async () => {
-    //   await this.newContainer(
-    //     { userId: new Types.ObjectId() } as any,
-    //     await this.gameModel.findOne({}),
-    //     await this.planModel.findOne({}),
-    //   );
-    // })();
-  }
+  ) {}
 
   private async sync() {
     await this.syncNodes();
@@ -153,10 +145,12 @@ export class J2ContainerService {
     user: UserDocument,
     game: GameDocument,
     plan: PlanDocument,
+    progress: (val: number) => void,
   ) {
     // sync
     await this.syncNodes();
     await this.syncContainers();
+    progress(10);
 
     const bmr = benchmarkRuntime('newContainer');
 
@@ -210,6 +204,7 @@ export class J2ContainerService {
     }
 
     // create node
+    progress(30);
     this.logger.warn('use docker: ' + nodeCurrent.ip);
     const docker = new J2Docker(nodeCurrent.ip, nodeCurrent.port);
     if (!(await docker.existsImage(plan.image))) {
@@ -224,19 +219,23 @@ export class J2ContainerService {
       },
     });
 
-    await this.dockerContainerModel.create({
+    progress(70);
+    const result = await this.dockerContainerModel.create({
       dockerNodeId: new Types.ObjectId(nodeCurrent._id),
       containerRawId: dockerContainer.id,
       userId: new Types.ObjectId(user._id),
       planId: new Types.ObjectId(plan._id),
     });
 
+    progress(90);
     await dockerContainer.start();
     bmr();
 
     // sync
     await this.syncNodes();
     await this.syncContainers();
-    return true;
+    progress(100);
+
+    return result;
   }
 }

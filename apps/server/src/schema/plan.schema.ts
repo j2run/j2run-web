@@ -19,6 +19,10 @@ export class Plan extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  money: number;
+
+  @ApiProperty()
+  @Prop()
   cpu: number;
 
   @ApiProperty()

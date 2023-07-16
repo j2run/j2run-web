@@ -70,3 +70,5 @@ DockerContainerSchema.index(
   { dockerNodeId: 1, containerRawId: 1 },
   { unique: true },
 );
+
+DockerContainerSchema.index({ userId: 1, deleteAt: 1 });

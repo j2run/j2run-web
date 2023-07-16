@@ -10,6 +10,7 @@ import {
 import { DockerLabel, DockerLabelSchema } from './docker-label.schema';
 import { Game, GameSchema } from './game.schema';
 import { Plan, PlanSchema } from './plan.schema';
+import { InvoiceCloud, InvoiceCloudSchema } from './invoice-cloud.schema';
 
 export const features: ModelDefinition[] = [
   {
@@ -35,6 +36,10 @@ export const features: ModelDefinition[] = [
   {
     name: Plan.name,
     schema: PlanSchema,
+  },
+  {
+    name: InvoiceCloud.name,
+    schema: InvoiceCloudSchema,
   },
 ];
 

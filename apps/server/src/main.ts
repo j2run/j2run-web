@@ -11,6 +11,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { AppModule } from './app.module';
 import { cors } from './configs/cors.config';
 import { ConfigService } from '@nestjs/config';
+import { JOB_NAME_DOCKER } from './constants/job.constant';
 
 let timeSuperLoginError = new Date().getTime();
 
@@ -78,9 +79,7 @@ async function bootstrap() {
   const bullAdapter = new ExpressAdapter();
   bullAdapter.setBasePath('/mana/bull');
   createBullBoard({
-    queues: [
-      // new BullAdapter(app.get<Queue>('BullQueue_' + 'test'))
-    ],
+    queues: [new BullAdapter(app.get<Queue>('BullQueue_' + JOB_NAME_DOCKER))],
     serverAdapter: bullAdapter,
   });
   app.use('/mana/bull', bullAdapter.getRouter());
