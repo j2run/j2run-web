@@ -28,6 +28,10 @@ export class DockerContainer extends SchemaDto {
 
   @ApiProperty()
   @Prop({ index: true })
+  planId: Types.ObjectId;
+
+  @ApiProperty()
+  @Prop({ index: true })
   containerRawId: string;
 
   @ApiProperty()

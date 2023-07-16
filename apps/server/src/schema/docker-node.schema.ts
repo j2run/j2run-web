@@ -27,6 +27,14 @@ export class DockerNode extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  computeCurrentCpu: number;
+
+  @ApiProperty()
+  @Prop()
+  overCpu: number;
+
+  @ApiProperty()
+  @Prop()
   maxContainers: number;
 
   @ApiProperty()

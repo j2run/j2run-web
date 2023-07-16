@@ -6,6 +6,7 @@ import { DockerContainerService } from './docker-container.service';
 import { GameService } from './game.service';
 import { UserService } from './user.service';
 import { DockerLabelService } from './docker-label.service';
+import { PlanService } from './plan.service';
 
 const services = [
   J2ContainerService,
@@ -14,6 +15,7 @@ const services = [
   GameService,
   UserService,
   DockerLabelService,
+  PlanService,
 ];
 
 @Module({

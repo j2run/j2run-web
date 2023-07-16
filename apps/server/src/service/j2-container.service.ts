@@ -12,6 +12,7 @@ import { benchmarkRuntime } from 'src/utils/time';
 import * as Dockerode from 'dockerode';
 import { UserDocument } from 'src/schema/user.schema';
 import { Game, GameDocument } from 'src/schema/game.schema';
+import { Plan, PlanDocument } from 'src/schema/plan.schema';
 
 @Injectable()
 export class J2ContainerService {
@@ -23,12 +24,15 @@ export class J2ContainerService {
     @InjectModel(DockerContainer.name)
     private dockerContainerModel: Model<DockerContainerDocument>,
     @InjectModel(Game.name)
-    private GameModel: Model<GameDocument>,
+    private gameModel: Model<GameDocument>,
+    @InjectModel(Plan.name)
+    private planModel: Model<PlanDocument>,
   ) {
     // (async () => {
     //   await this.newContainer(
     //     { userId: new Types.ObjectId() } as any,
-    //     await this.GameModel.findOne({}),
+    //     await this.gameModel.findOne({}),
+    //     await this.planModel.findOne({}),
     //   );
     // })();
   }
@@ -65,9 +69,20 @@ export class J2ContainerService {
 
   private async syncContainers() {
     const bmr = benchmarkRuntime('syncContainer');
+
+    // get plan to hashmap
+    const plans = await this.planModel.find({});
+    const hashmapPlans = plans.reduce((val, item) => {
+      val[item._id.toString()] = item;
+      return val;
+    }, {} as { [key: string]: PlanDocument });
+
+    // sync containers
     const nodes = await this.dockerNodeModel.find({});
     for (const nodeIndex in nodes) {
       const node = nodes[nodeIndex];
+      node.computeCurrentCpu = 0;
+
       const docker = new J2Docker(node.ip, node.port);
       const containers: Dockerode.ContainerInfo[] | null = await docker
         .containers()
@@ -118,6 +133,8 @@ export class J2ContainerService {
         }
         delete containerRow.deleteAt;
         delete hashmapRowContainers[k];
+        node.computeCurrentCpu +=
+          hashmapPlans[containerRow.planId.toString()].cpu || 0;
       }
 
       // remove
@@ -127,21 +144,38 @@ export class J2ContainerService {
       }
 
       this.dockerContainerModel.bulkSave(containerRows);
+      this.dockerNodeModel.bulkSave(nodes);
     }
     bmr();
   }
 
-  async newContainer(user: UserDocument, game: GameDocument) {
+  async newContainer(
+    user: UserDocument,
+    game: GameDocument,
+    plan: PlanDocument,
+  ) {
     // sync
     await this.syncNodes();
+    await this.syncContainers();
+
     const bmr = benchmarkRuntime('newContainer');
 
-    // match node with labels
-    const nodes = await this.dockerNodeModel.find({
+    // match node with game labels
+    let nodes = await this.dockerNodeModel.find({
       dockerLabelIds: {
         $in: game.dockerLabelIds.map((id) => new Types.ObjectId(id)),
       },
     });
+
+    // match node with plan labels
+    const hashmapPlanLabels = plan.dockerLabelIds.reduce((val, item) => {
+      val[item.toString()] = true;
+      return val;
+    }, {} as { [key: string]: boolean });
+    nodes = nodes.filter((node) =>
+      node.dockerLabelIds.some((label) => hashmapPlanLabels[label.toString()]),
+    );
+
     if (nodes.length === 0) {
       return Promise.reject('No resource');
     }
@@ -158,12 +192,17 @@ export class J2ContainerService {
       if (!nodeCurrent) {
         nodeCurrent = node;
       } else {
-        const percentNew = node.ncpu - node.containersRunning * 0.3;
-        const percentOld =
-          nodeCurrent.ncpu - nodeCurrent.containersRunning * 0.3;
+        const percentNew = node.ncpu - node.computeCurrentCpu;
+        const percentOld = nodeCurrent.ncpu - nodeCurrent.computeCurrentCpu;
         if (percentNew > percentOld) {
           nodeCurrent = node;
         }
+      }
+      if (
+        nodeCurrent.computeCurrentCpu >
+        nodeCurrent.ncpu * (1 + (nodeCurrent.overCpu || 0))
+      ) {
+        nodeCurrent = null;
       }
     }
     if (!nodeCurrent) {
@@ -173,12 +212,12 @@ export class J2ContainerService {
     // create node
     this.logger.warn('use docker: ' + nodeCurrent.ip);
     const docker = new J2Docker(nodeCurrent.ip, nodeCurrent.port);
-    if (!(await docker.existsImage(game.image))) {
-      this.logger.warn('pull: ' + game.image);
-      await docker.pullImage(game.image);
+    if (!(await docker.existsImage(plan.image))) {
+      this.logger.warn('pull: ' + plan.image);
+      await docker.pullImage(plan.image);
     }
     const dockerContainer = await docker.createContainer({
-      Image: game.image,
+      Image: plan.image,
       HostConfig: {
         Binds: [`${game.diskPath}:/data/game.jar`],
         PublishAllPorts: true,
@@ -189,6 +228,7 @@ export class J2ContainerService {
       dockerNodeId: new Types.ObjectId(nodeCurrent._id),
       containerRawId: dockerContainer.id,
       userId: new Types.ObjectId(user._id),
+      planId: new Types.ObjectId(plan._id),
     });
 
     await dockerContainer.start();

@@ -9,6 +9,7 @@ import {
 } from './docker-container.schema';
 import { DockerLabel, DockerLabelSchema } from './docker-label.schema';
 import { Game, GameSchema } from './game.schema';
+import { Plan, PlanSchema } from './plan.schema';
 
 export const features: ModelDefinition[] = [
   {
@@ -30,6 +31,10 @@ export const features: ModelDefinition[] = [
   {
     name: DockerLabel.name,
     schema: DockerLabelSchema,
+  },
+  {
+    name: Plan.name,
+    schema: PlanSchema,
   },
 ];
 

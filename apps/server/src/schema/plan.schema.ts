@@ -3,23 +3,31 @@ import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { SchemaDto } from '../dtos/schema.dto';
 
-export type GameDocument = HydratedDocument<Game>;
+export type PlanDocument = HydratedDocument<Plan>;
 
 @Schema({
   timestamps: true,
 })
-export class Game extends SchemaDto {
+export class Plan extends SchemaDto {
   @ApiProperty()
-  @Prop()
+  @Prop({ unique: true })
   name: string;
 
   @ApiProperty()
   @Prop()
-  dockerLabelIds: Types.ObjectId[];
+  image: string;
 
   @ApiProperty()
   @Prop()
-  diskPath: string;
+  cpu: number;
+
+  @ApiProperty()
+  @Prop()
+  ram: number;
+
+  @ApiProperty()
+  @Prop()
+  dockerLabelIds: Types.ObjectId[];
 }
 
-export const GameSchema = SchemaFactory.createForClass(Game);
+export const PlanSchema = SchemaFactory.createForClass(Plan);
