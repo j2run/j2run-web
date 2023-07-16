@@ -27,6 +27,14 @@ export class Plan extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  fps: string;
+
+  @ApiProperty()
+  @Prop()
+  description: string;
+
+  @ApiProperty()
+  @Prop()
   dockerLabelIds: Types.ObjectId[];
 }
 

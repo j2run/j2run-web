@@ -16,4 +16,8 @@ export class GameService {
     //   diskPath: '/data/game/nso-plus.jar',
     // });
   }
+
+  getAllView() {
+    return this.gameModel.find({}).select('_id name updatedAt').exec();
+  }
 }

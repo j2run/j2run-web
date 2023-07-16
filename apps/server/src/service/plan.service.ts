@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Plan, PlanDocument } from 'src/schema/plan.schema';
 
 @Injectable()
@@ -19,5 +19,12 @@ export class PlanService {
     //   cpu: 0.3,
     //   ram: 200,
     // });
+  }
+
+  getAllView() {
+    return this.planModel
+      .find({})
+      .select('_id name cpu ram fps description updatedAt')
+      .exec();
   }
 }
