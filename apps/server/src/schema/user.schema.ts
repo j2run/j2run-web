@@ -16,6 +16,10 @@ export class User extends SchemaDto {
   @ApiProperty()
   @Prop()
   password: string;
+
+  @ApiProperty({ default: 0 })
+  @Prop()
+  balance: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

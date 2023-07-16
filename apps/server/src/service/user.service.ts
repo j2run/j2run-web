@@ -15,4 +15,14 @@ export class UserService {
       _id: new Types.ObjectId(id),
     });
   }
+
+  findByEmail(email: string) {
+    return this.userModel.findOne({
+      email,
+    });
+  }
+
+  insert(user: UserDocument) {
+    return this.userModel.create(user);
+  }
 }
