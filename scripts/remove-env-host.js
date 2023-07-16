@@ -3,7 +3,7 @@ const fp = './env/.env.dev';
 const file = fs.readFileSync(fp).toString('utf-8');
 const isRN = file.includes('\r\n');
 const lines = file.split(isRN ? '\r\n' : '\n').reduce((val, line) => {
-  if (!line.includes('IY_H_ID=') && !line.includes('IY_H_NAME=')) {
+  if (!line.includes('J2_H_ID=') && !line.includes('J2_H_ID=')) {
     val.push(line);
   }
   return val;

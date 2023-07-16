@@ -7,6 +7,9 @@ import { GameService } from './game.service';
 import { UserService } from './user.service';
 import { DockerLabelService } from './docker-label.service';
 import { PlanService } from './plan.service';
+import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfig } from 'src/configs/jwt.config';
 
 const services = [
   J2ContainerService,
@@ -16,10 +19,11 @@ const services = [
   UserService,
   DockerLabelService,
   PlanService,
+  AuthService,
 ];
 
 @Module({
-  imports: [SchemaModule],
+  imports: [SchemaModule, JwtModule.registerAsync({ useClass: JwtConfig })],
   providers: [...services],
   exports: services,
 })
