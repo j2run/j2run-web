@@ -5,11 +5,14 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { Queue } from 'bull';
 import * as expressBasicAuth from 'express-basic-auth';
 import * as bcrypt from 'bcrypt';
+import * as express from 'express';
+import { ExpressAdapter } from '@bull-board/express';
 
 import { AppModule } from './app.module';
 import { cors } from './configs/cors.config';
 import { ConfigService } from '@nestjs/config';
-import { ExpressAdapter } from '@bull-board/express';
+
+let timeSuperLoginError = new Date().getTime();
 
 function factorySuperAuthorizer(configService: ConfigService) {
   return (username: string, password: string) => {
@@ -21,7 +24,13 @@ function factorySuperAuthorizer(configService: ConfigService) {
       password,
       configService.get('J2_SUPER_PWD'),
     );
-    return userMatches && passwordMatches;
+    const isMatches = userMatches && passwordMatches;
+    if (!isMatches) {
+      timeSuperLoginError = new Date().getTime();
+    } else {
+      timeSuperLoginError = 0;
+    }
+    return isMatches;
   };
 }
 
@@ -35,6 +44,17 @@ async function bootstrap() {
 
   app.use(
     '/mana',
+    (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      if (new Date().getTime() - timeSuperLoginError < 5000) {
+        res.status(403).send();
+      } else {
+        next();
+      }
+    },
     expressBasicAuth({
       authorizer: superAuthorizer,
       challenge: true,
