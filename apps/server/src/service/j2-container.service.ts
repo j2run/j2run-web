@@ -10,9 +10,17 @@ import {
 } from 'src/schema/docker-container.schema';
 import { benchmarkRuntime } from 'src/utils/time';
 import * as Dockerode from 'dockerode';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Pack, pack } from 'tar-stream';
+
+import { spawn } from 'child_process';
 import { UserDocument } from 'src/schema/user.schema';
 import { Game, GameDocument } from 'src/schema/game.schema';
 import { Plan, PlanDocument } from 'src/schema/plan.schema';
+import { generatePassword } from 'src/utils/password';
+import { CONTAINER_DATA_PATH, CONTAINER_GAME_FILE, CONTAINER_PASSWORD_FILE } from 'src/constants/docker-node.constant';
 
 @Injectable()
 export class J2ContainerService {
@@ -125,8 +133,10 @@ export class J2ContainerService {
         }
         delete containerRow.deleteAt;
         delete hashmapRowContainers[k];
-        node.computeCurrentCpu +=
-          hashmapPlans[containerRow.planId.toString()].cpu || 0;
+        if (containerRow.planId) {
+          node.computeCurrentCpu +=
+            hashmapPlans[containerRow.planId.toString()].cpu || 0;
+        }
       }
 
       // remove
@@ -219,6 +229,31 @@ export class J2ContainerService {
       },
     });
 
+    // create password
+    progress(50);
+    const password = generatePassword();
+    const passwordFile = await this.createPasswordFile(password);
+    const tarStream = pack();
+    tarStream.entry(
+      { name: CONTAINER_PASSWORD_FILE },
+      fs.readFileSync(passwordFile),
+    );
+    tarStream.entry(
+      { name: CONTAINER_GAME_FILE },
+      fs.readFileSync(passwordFile),
+    );
+    tarStream.finalize();
+    await this.copyFileToContainer(
+      dockerContainer,
+      tarStream,
+      CONTAINER_DATA_PATH,
+    );
+
+    // start
+    progress(60);
+    await dockerContainer.start();
+
+    // save
     progress(70);
     const result = await this.dockerContainerModel.create({
       dockerNodeId: new Types.ObjectId(nodeCurrent._id),
@@ -227,15 +262,53 @@ export class J2ContainerService {
       planId: new Types.ObjectId(plan._id),
     });
 
-    progress(90);
-    await dockerContainer.start();
     bmr();
-
     // sync
     await this.syncNodes();
     await this.syncContainers();
     progress(100);
 
     return result;
+  }
+
+  private async createPasswordFile(password: string) {
+    const tmpDir = os.tmpdir();
+    const tmpFile = path.join(tmpDir, new Types.ObjectId().toString());
+    const proc = spawn('storepasswd', [password, tmpFile]);
+    return new Promise<string>((resolve, reject) => {
+      proc.once('error', (error) => {
+        this.logger.error(error);
+        reject(error);
+      });
+      proc.once('close', () => {
+        resolve(tmpFile);
+      });
+    });
+  }
+
+  private async copyFileToContainer(
+    container: Dockerode.Container,
+    stream: Pack,
+    pathHost: string,
+  ) {
+    this.logger.warn('moving... ' + pathHost);
+    return new Promise<void>((resolve, reject) => {
+      container.putArchive(
+        stream,
+        {
+          path: pathHost,
+          noOverwriteDirNonDir: 'false',
+        },
+        (err) => {
+          if (err) {
+            this.logger.error(err);
+            reject(err);
+          } else {
+            this.logger.warn('moved: ' + pathHost);
+            resolve();
+          }
+        },
+      );
+    });
   }
 }

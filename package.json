@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:gen": "sh scripts/gen-id.sh",
-    "dev:up": "npm run dev:gen && docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml up --abort-on-container-exit --remove-orphans",
+    "dev:up": "npm run dev:gen && docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml up --abort-on-container-exit --remove-orphans --build --force-recreate",
     "dev:halt": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml down",
     "dev:destroy": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml rm -f",
     "dev:log": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml logs -f",
