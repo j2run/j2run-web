@@ -14,7 +14,9 @@ RUN adduser -D -u ${gId} ${gUser}
 
 # fix exec bin
 RUN apk update
-COPY ./bin/alpine/libvncserver.so.0.9.14 /usr/lib/libvncserver.so.1
+COPY ./bin/alpine/libvncserver.so.0.9.14 /usr/lib/libvncserver.so.0.9.14
+COPY ./bin/alpine/libvncserver.so.1 /usr/lib/libvncserver.so.1
+COPY ./bin/alpine/libvncserver.so /usr/lib/libvncserver.so
 COPY ./bin/alpine/storepasswd /usr/bin/storepasswd
 RUN chown -R ${gUser}:${gUser} /usr/bin/storepasswd
 RUN chmod u+x /usr/bin/storepasswd
