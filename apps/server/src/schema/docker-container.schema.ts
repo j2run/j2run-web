@@ -56,6 +56,10 @@ export class DockerContainer extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  password: string;
+
+  @ApiProperty()
+  @Prop()
   created: number;
 
   @ApiProperty()

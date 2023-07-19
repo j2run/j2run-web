@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import * as Docker from 'dockerode';
+import * as fs from 'fs';
 import { DockerInfo, DockerNodeInfo } from 'src/dtos/docker.dto';
 
 export class J2Docker {
@@ -79,6 +80,11 @@ export class J2Docker {
         {},
       );
     });
+  }
+
+  async loadImage(image: string, path: string) {
+    const stream = fs.createReadStream(path);
+    await this.docker.loadImage(stream);
   }
 
   containers() {

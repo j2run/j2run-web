@@ -19,6 +19,10 @@ export class Plan extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  imagePath: string;
+
+  @ApiProperty()
+  @Prop()
   money: number;
 
   @ApiProperty()

@@ -9,6 +9,7 @@ x-shared_environment: &shared_environment
   J2_REDIS_PORT: 6379
   J2_SUPER_USER: ${J2_SUPER_USER}
   J2_SUPER_PWD: ${J2_SUPER_PWD}
+  J2_FOLDER_IMG: ${J2_FOLDER_IMG}
   J2_DOCKER_INTERFACE: ${J2_DOCKER_INTERFACE}
   J2_DOCKER_CA: ${J2_DOCKER_CA}
   J2_DOCKER_CLIENT_CERT: ${J2_DOCKER_CLIENT_CERT}
@@ -33,6 +34,7 @@ services:
       - "${J2_BE_PORT}:3000"
     volumes:
       - ../apps/server:/data/apps
+      - ../data-img:/data/image
       - ../keys:/keys
     networks:
       - all
