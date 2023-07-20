@@ -188,7 +188,7 @@ export class J2ContainerService {
     );
 
     if (nodes.length === 0) {
-      return Promise.reject('No resource');
+      return Promise.reject(new Error('No resource'));
     }
 
     // find best node
@@ -203,8 +203,11 @@ export class J2ContainerService {
       if (!nodeCurrent) {
         nodeCurrent = node;
       } else {
-        const percentNew = node.ncpu - node.computeCurrentCpu;
-        const percentOld = nodeCurrent.ncpu - nodeCurrent.computeCurrentCpu;
+        const percentNew =
+          node.ncpu * (node.overCpu || 1) - node.computeCurrentCpu;
+        const percentOld =
+          nodeCurrent.ncpu * (nodeCurrent.overCpu || 1) -
+          nodeCurrent.computeCurrentCpu;
         if (percentNew > percentOld) {
           nodeCurrent = node;
         }
@@ -217,7 +220,7 @@ export class J2ContainerService {
       }
     }
     if (!nodeCurrent) {
-      return Promise.reject('No resource');
+      return Promise.reject(new Error('No resource'));
     }
 
     // create node
@@ -292,6 +295,83 @@ export class J2ContainerService {
     return await this.dockerContainerModel.findById(result._id);
   }
 
+  async startContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    progress(10);
+    const container = await this.queryContainer(containerRow);
+
+    progress(50);
+    await container.start();
+
+    progress(70);
+
+    await this.syncNodes();
+    await this.syncContainers();
+    progress(100);
+  }
+
+  async stopContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    progress(10);
+    const container = await this.queryContainer(containerRow);
+
+    progress(50);
+    await container.stop();
+
+    progress(70);
+
+    await this.syncNodes();
+    await this.syncContainers();
+    progress(100);
+  }
+
+  async restartContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    progress(10);
+    const container = await this.queryContainer(containerRow);
+
+    progress(50);
+    await container.restart();
+
+    progress(70);
+
+    await this.syncNodes();
+    await this.syncContainers();
+    progress(100);
+  }
+
+  async removeContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    progress(10);
+    const container = await this.queryContainer(containerRow);
+
+    progress(50);
+    await container.remove();
+
+    progress(70);
+
+    await this.syncNodes();
+    await this.syncContainers();
+    progress(100);
+  }
+
+  private async queryContainer(containerRow: DockerContainerDocument) {
+    const node = await this.dockerNodeModel.findById(containerRow.dockerNodeId);
+    if (!node) {
+      return Promise.reject(new Error('not exists node'));
+    }
+    const docker = new J2Docker(node.ip, node.port);
+    return docker.getContainer(containerRow.containerRawId);
+  }
+
   private async createPasswordFile(password: string) {
     const tmpDir = os.tmpdir();
     const tmpFile = path.join(tmpDir, new Types.ObjectId().toString());
@@ -333,7 +413,7 @@ export class J2ContainerService {
     });
   }
 
-  command(container: Dockerode.Container, cmd: string[]) {
+  private command(container: Dockerode.Container, cmd: string[]) {
     return new Promise<void>((res, rej) => {
       container.exec(
         {

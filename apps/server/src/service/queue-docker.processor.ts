@@ -16,7 +16,20 @@ import {
 } from 'src/schema/invoice-cloud.schema';
 import { Plan, PlanDocument } from 'src/schema/plan.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
-import { JobCreateContainer } from 'src/dtos/job.dto';
+import {
+  JobActionContainer,
+  JobCreateContainer,
+  JobDocker,
+  JobDockerType,
+} from 'src/dtos/job.dto';
+import { DockerContainer } from 'src/schema/docker-container.schema';
+
+type J2ContainerServiceMethods = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  [K in keyof J2ContainerService]: J2ContainerService[K] extends Function
+    ? K
+    : never;
+}[keyof J2ContainerService];
 
 @Processor(JOB_NAME_DOCKER)
 export class QueueDockerProcessor {
@@ -30,31 +43,75 @@ export class QueueDockerProcessor {
     private readonly planModel: Model<PlanDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(DockerContainer.name)
+    private readonly dockerContainerModel: Model<DockerContainer>,
   ) {}
 
   @Process()
-  async transcode(job: Job<JobCreateContainer>) {
+  async transcode(job: Job<JobDocker<any>>) {
     const data = job.data;
+    switch (data.type) {
+      case JobDockerType.CreateContainer:
+        return await this.createContainerProcess(job);
+      case JobDockerType.Start:
+        return await this.actionContainerProcess(job, 'startContainer');
+      case JobDockerType.Stop:
+        return await this.actionContainerProcess(job, 'stopContainer');
+      case JobDockerType.Restart:
+        return await this.actionContainerProcess(job, 'restartContainer');
+      case JobDockerType.Remove:
+        return await this.actionContainerProcess(job, 'removeContainer');
+      default:
+        return Promise.reject(new Error('JobDockerType not exists'));
+    }
+  }
+
+  @OnQueueCompleted()
+  async handleComplete(job: Job<JobDocker<any>>) {
+    const data = job.data;
+    switch (data.type) {
+      case JobDockerType.CreateContainer:
+        return await this.createContainerComplete(job);
+      default:
+        return Promise.reject(new Error('JobDockerType not exists'));
+    }
+  }
+
+  @OnQueueFailed()
+  async handleFailed(job: Job<JobDocker<any>>) {
+    const data = job.data;
+    switch (data.type) {
+      case JobDockerType.CreateContainer:
+        return await this.createContainerFailed(job);
+      default:
+        return Promise.reject(new Error('JobDockerType not exists'));
+    }
+  }
+
+  private async createContainerProcess(
+    job: Job<JobDocker<JobCreateContainer>>,
+  ) {
+    const data = job.data.data;
     const plan = await this.planModel.findById(data.planId);
     if (!plan) {
-      throw 'plan not found';
+      return Promise.reject(new Error('plan not found'));
     }
 
     const game = await this.gameModel.findById(data.gameId);
     if (!game) {
-      throw 'game not found';
+      return Promise.reject(new Error('game not found'));
     }
 
     const user = await this.userModel.findById(data.userId);
     if (!user) {
-      throw 'user not found';
+      return Promise.reject(new Error('user not found'));
     }
 
     const invoiceCloud = await this.invoiceCloudModel.findById(
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      throw 'invoice not found';
+      return Promise.reject(new Error('invoice not found'));
     }
 
     invoiceCloud.status = 'creating';
@@ -65,28 +122,28 @@ export class QueueDockerProcessor {
     );
   }
 
-  @OnQueueCompleted()
-  async handleComplete(job: Job<JobCreateContainer>) {
-    const data = job.data;
+  private async createContainerComplete(
+    job: Job<JobDocker<JobCreateContainer>>,
+  ) {
+    const data = job.data.data;
     const invoiceCloud = await this.invoiceCloudModel.findById(
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      throw 'invoice not found';
+      return Promise.reject(new Error('invoice not found'));
     }
 
     invoiceCloud.status = 'created';
     await this.invoiceCloudModel.bulkSave([invoiceCloud]);
   }
 
-  @OnQueueFailed()
-  async handleFailed(job: Job<JobCreateContainer>) {
-    const data = job.data;
+  private async createContainerFailed(job: Job<JobDocker<JobCreateContainer>>) {
+    const data = job.data.data;
     const invoiceCloud = await this.invoiceCloudModel.findById(
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      throw 'invoice not found';
+      return Promise.reject(new Error('invoice not found'));
     }
 
     invoiceCloud.status = 'error';
@@ -94,9 +151,26 @@ export class QueueDockerProcessor {
 
     const user = await this.userModel.findById(data.userId);
     if (!user) {
-      throw 'user not found';
+      return Promise.reject(new Error('user not found'));
     }
     user.balance = (user.balance || 0) + (invoiceCloud.money || 0);
     await this.userModel.bulkSave([user]);
+  }
+
+  private async actionContainerProcess(
+    job: Job<JobDocker<JobActionContainer>>,
+    action: J2ContainerServiceMethods,
+  ) {
+    const data = job.data.data;
+    const dockerContainer = await this.dockerContainerModel.findById(
+      data.dockerContainerId,
+    );
+    if (!dockerContainer) {
+      return Promise.reject(new Error('dockerContainer not found'));
+    }
+    return await (this.j2ContainerService[action] as any)(
+      dockerContainer,
+      (val: number) => job.progress(val),
+    );
   }
 }

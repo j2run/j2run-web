@@ -103,6 +103,10 @@ export class J2Docker {
     return this.docker.createContainer(options);
   }
 
+  getContainer(id: string) {
+    return this.docker.getContainer(id);
+  }
+
   nodes() {
     return new Promise<DockerNodeInfo[]>((resolve, reject) => {
       this.docker.listNodes((err, result) => {
