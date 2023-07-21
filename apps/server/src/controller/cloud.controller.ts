@@ -2,7 +2,8 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
-import { CloudCreateRequest } from 'src/dtos/cloud.dto';
+import { CloudActionRequest, CloudCreateRequest } from 'src/dtos/cloud.dto';
+import { JobDockerType } from 'src/dtos/job.dto';
 import { UserDocument } from 'src/schema/user.schema';
 import { CloudService } from 'src/service/cloud.service';
 
@@ -26,22 +27,26 @@ export class CloudController {
   }
 
   @Post('remove')
-  remove() {
-    return 1;
+  remove(@Req() request: express.Request, @Body() dto: CloudActionRequest) {
+    const user = request.user as UserDocument;
+    return this.cloudService.action(JobDockerType.Remove, dto, user);
   }
 
   @Post('stop')
-  stop() {
-    return 1;
+  stop(@Req() request: express.Request, @Body() dto: CloudActionRequest) {
+    const user = request.user as UserDocument;
+    return this.cloudService.action(JobDockerType.Stop, dto, user);
   }
 
   @Post('start')
-  start() {
-    return 1;
+  start(@Req() request: express.Request, @Body() dto: CloudActionRequest) {
+    const user = request.user as UserDocument;
+    return this.cloudService.action(JobDockerType.Start, dto, user);
   }
 
   @Post('restart')
-  restart() {
-    return 1;
+  restart(@Req() request: express.Request, @Body() dto: CloudActionRequest) {
+    const user = request.user as UserDocument;
+    return this.cloudService.action(JobDockerType.Restart, dto, user);
   }
 }

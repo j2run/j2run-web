@@ -61,8 +61,6 @@ export class QueueDockerProcessor {
         return await this.actionContainerProcess(job, 'restartContainer');
       case JobDockerType.Remove:
         return await this.actionContainerProcess(job, 'removeContainer');
-      default:
-        return Promise.reject(new Error('JobDockerType not exists'));
     }
   }
 
@@ -72,8 +70,6 @@ export class QueueDockerProcessor {
     switch (data.type) {
       case JobDockerType.CreateContainer:
         return await this.createContainerComplete(job);
-      default:
-        return Promise.reject(new Error('JobDockerType not exists'));
     }
   }
 
@@ -83,8 +79,6 @@ export class QueueDockerProcessor {
     switch (data.type) {
       case JobDockerType.CreateContainer:
         return await this.createContainerFailed(job);
-      default:
-        return Promise.reject(new Error('JobDockerType not exists'));
     }
   }
 

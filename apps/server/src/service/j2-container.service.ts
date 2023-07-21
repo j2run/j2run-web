@@ -6,7 +6,7 @@ import { DockerNode, DockerNodeDocument } from 'src/schema/docker-node.schema';
 import {
   DockerContainer,
   DockerContainerDocument,
-  DockerContainerState,
+  DockerContainerStage,
 } from 'src/schema/docker-container.schema';
 import { benchmarkRuntime } from 'src/utils/time';
 import * as Dockerode from 'dockerode';
@@ -26,6 +26,8 @@ import {
   CONTAINER_GAME_FILE_TMP,
   CONTAINER_PASSWORD_FILE,
 } from 'src/constants/docker-node.constant';
+import { PlanService } from './plan.service';
+import { PlanHashmap } from 'src/dtos/plan.dto';
 
 @Injectable()
 export class J2ContainerService {
@@ -33,15 +35,16 @@ export class J2ContainerService {
 
   constructor(
     @InjectModel(DockerNode.name)
-    private dockerNodeModel: Model<DockerNodeDocument>,
+    private readonly dockerNodeModel: Model<DockerNodeDocument>,
     @InjectModel(DockerContainer.name)
-    private dockerContainerModel: Model<DockerContainerDocument>,
+    private readonly dockerContainerModel: Model<DockerContainerDocument>,
     @InjectModel(Game.name)
-    private gameModel: Model<GameDocument>,
+    private readonly gameModel: Model<GameDocument>,
     @InjectModel(Plan.name)
-    private planModel: Model<PlanDocument>,
+    private readonly planModel: Model<PlanDocument>,
+    private readonly planService: PlanService,
   ) {
-    this.sync();
+    this.syncContainers();
   }
 
   private async sync() {
@@ -53,109 +56,133 @@ export class J2ContainerService {
     const bmr = benchmarkRuntime('syncNodes');
     const nodes = await this.dockerNodeModel.find({});
     for (const node of nodes) {
-      const docker = new J2Docker(node.ip, node.port);
-      const info = await docker.info().catch((err) => {
-        this.logger.error(err);
-        return Promise.resolve(null);
-      });
-      if (!info) {
-        continue;
-      }
-      node.dockerRawId = info.ID;
-      node.ncpu = info.NCPU;
-      node.memTotal = info.MemTotal;
-      node.containersRunning = info.ContainersRunning;
-      node.containersPaused = info.ContainersPaused;
-      node.containersStopped = info.ContainersStopped;
-      node.images = info.Images;
-      node.operatingSystem = info.OperatingSystem;
+      await this.syncNode(node);
     }
     this.dockerNodeModel.bulkSave(nodes);
     bmr();
   }
 
+  private async syncNode(node: DockerNodeDocument, isSave?: boolean) {
+    const docker = new J2Docker(node.ip, node.port);
+    const info = await docker.info().catch((err) => {
+      this.logger.error(err);
+      return Promise.resolve(null);
+    });
+    if (!info) {
+      return false;
+    }
+    node.dockerRawId = info.ID;
+    node.ncpu = info.NCPU;
+    node.memTotal = info.MemTotal;
+    node.containersRunning = info.ContainersRunning;
+    node.containersPaused = info.ContainersPaused;
+    node.containersStopped = info.ContainersStopped;
+    node.images = info.Images;
+    node.operatingSystem = info.OperatingSystem;
+    if (isSave) {
+      await this.dockerNodeModel.bulkSave([node]);
+    }
+    return node;
+  }
+
   private async syncContainers() {
     const bmr = benchmarkRuntime('syncContainer');
-
-    // get plan to hashmap
-    const plans = await this.planModel.find({});
-    const hashmapPlans = plans.reduce((val, item) => {
-      val[item._id.toString()] = item;
-      return val;
-    }, {} as { [key: string]: PlanDocument });
-
+    const hashmapPlans = await this.planService.allHashmap();
     // sync containers
     const nodes = await this.dockerNodeModel.find({});
-    for (const nodeIndex in nodes) {
-      const node = nodes[nodeIndex];
-      node.computeCurrentCpu = 0;
-
-      const docker = new J2Docker(node.ip, node.port);
-      const containers: Dockerode.ContainerInfo[] | null = await docker
-        .containers()
-        .catch((err) => {
-          this.logger.error(err);
-          return Promise.resolve(null);
-        });
-      if (!containers) {
-        continue;
-      }
-
-      // get containers to hashmap
-      const hashmapRowContainers: { [key: string]: DockerContainerDocument } =
-        {};
-      const containerRows = await this.dockerContainerModel.find({
-        dockerNodeId: new Types.ObjectId(node._id),
-        deleteAt: {
-          $exists: false,
-        },
-      });
-      for (const containerRow of containerRows) {
-        const k = nodeIndex + node._id + containerRow.containerRawId;
-        hashmapRowContainers[k] = containerRow;
-      }
-
-      // update
-      for (const container of containers) {
-        const k = nodeIndex + node._id + container.Id;
-        let containerRow = hashmapRowContainers[k];
-        if (!containerRow) {
-          containerRow = await this.dockerContainerModel.create({
-            dockerNodeId: new Types.ObjectId(node._id),
-            containerRawId: container.Id,
-          });
-          containerRows.push(containerRow);
-        }
-        containerRow.stage = container.State as DockerContainerState;
-        containerRow.status = container.Status;
-        containerRow.created = container.Created;
-        for (const port of container.Ports) {
-          if (
-            (port.IP === '0.0.0.0' || port.IP === '::') &&
-            port.PrivatePort === 5900
-          ) {
-            containerRow.forwardIp = node.ip;
-            containerRow.forwardPort = port.PublicPort;
-          }
-        }
-        delete containerRow.deleteAt;
-        delete hashmapRowContainers[k];
-        if (containerRow.planId) {
-          node.computeCurrentCpu +=
-            hashmapPlans[containerRow.planId.toString()].cpu || 0;
-        }
-      }
-
-      // remove
-      for (const containerRowKey in hashmapRowContainers) {
-        const containerRow = hashmapRowContainers[containerRowKey];
-        containerRow.deleteAt = new Date();
-      }
-
-      this.dockerContainerModel.bulkSave(containerRows);
-      this.dockerNodeModel.bulkSave(nodes);
+    for (const node of nodes) {
+      await this.syncContainer(node, false, hashmapPlans);
     }
+    await this.dockerNodeModel.bulkSave(nodes);
+
     bmr();
+  }
+
+  private async syncContainer(
+    node: DockerNodeDocument,
+    isNodeSave?: boolean,
+    hashmapPlans?: PlanHashmap,
+  ) {
+    if (!hashmapPlans) {
+      hashmapPlans = await this.planService.allHashmap();
+    }
+
+    node.computeCurrentCpu = 0;
+
+    const docker = new J2Docker(node.ip, node.port);
+    const containers: Dockerode.ContainerInfo[] | null = await docker
+      .containers()
+      .catch((err) => {
+        this.logger.error(err);
+        return Promise.resolve(null);
+      });
+    if (!containers) {
+      return false;
+    }
+
+    // get containers to hashmap
+    const hashmapRowContainers: { [key: string]: DockerContainerDocument } = {};
+    const containerRows = await this.dockerContainerModel.find({
+      dockerNodeId: new Types.ObjectId(node._id),
+      $or: [
+        {
+          deleteAt: {
+            $exists: false,
+          },
+        },
+        {
+          containerRawId: {
+            $in: containers.map((container) => container.Id),
+          },
+        },
+      ],
+    });
+    for (const containerRow of containerRows) {
+      const k = node._id + containerRow.containerRawId;
+      hashmapRowContainers[k] = containerRow;
+    }
+
+    // update
+    for (const container of containers) {
+      const k = node._id + container.Id;
+      let containerRow = hashmapRowContainers[k];
+      if (!containerRow) {
+        containerRow = await this.dockerContainerModel.create({
+          dockerNodeId: new Types.ObjectId(node._id),
+          containerRawId: container.Id,
+        });
+        containerRows.push(containerRow);
+      }
+      containerRow.stage = container.State as DockerContainerStage;
+      containerRow.status = container.Status;
+      containerRow.created = container.Created;
+      for (const port of container.Ports) {
+        if (
+          (port.IP === '0.0.0.0' || port.IP === '::') &&
+          port.PrivatePort === 5900
+        ) {
+          containerRow.forwardIp = node.ip;
+          containerRow.forwardPort = port.PublicPort;
+        }
+      }
+      containerRow.deleteAt = null;
+      delete hashmapRowContainers[k];
+      if (containerRow.planId) {
+        node.computeCurrentCpu +=
+          hashmapPlans[containerRow.planId.toString()].cpu || 0;
+      }
+    }
+
+    // remove
+    for (const containerRowKey in hashmapRowContainers) {
+      const containerRow = hashmapRowContainers[containerRowKey];
+      containerRow.deleteAt = new Date();
+    }
+
+    await this.dockerContainerModel.bulkSave(containerRows);
+    if (isNodeSave) {
+      await this.dockerNodeModel.bulkSave([node]);
+    }
   }
 
   async newContainer(
@@ -239,7 +266,6 @@ export class J2ContainerService {
     const dockerContainer = await docker.createContainer({
       Image: plan.image,
       HostConfig: {
-        // Binds: [`${game.diskPath}:/data/game.jar`],
         PublishAllPorts: true,
       },
     });
@@ -288,88 +314,70 @@ export class J2ContainerService {
 
     bmr();
     // sync
-    await this.syncNodes();
-    await this.syncContainers();
+    await this.syncNode(nodeCurrent, true);
+    await this.syncContainer(nodeCurrent, true);
     progress(100);
 
     return await this.dockerContainerModel.findById(result._id);
   }
 
-  async startContainer(
+  startContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,
   ) {
-    progress(10);
-    const container = await this.queryContainer(containerRow);
-
-    progress(50);
-    await container.start();
-
-    progress(70);
-
-    await this.syncNodes();
-    await this.syncContainers();
-    progress(100);
+    return this.queryContainer(containerRow, progress, (container) =>
+      container.start(),
+    );
   }
 
-  async stopContainer(
+  stopContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,
   ) {
-    progress(10);
-    const container = await this.queryContainer(containerRow);
-
-    progress(50);
-    await container.stop();
-
-    progress(70);
-
-    await this.syncNodes();
-    await this.syncContainers();
-    progress(100);
+    return this.queryContainer(containerRow, progress, (container) =>
+      container.stop(),
+    );
   }
 
-  async restartContainer(
+  restartContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,
   ) {
-    progress(10);
-    const container = await this.queryContainer(containerRow);
-
-    progress(50);
-    await container.restart();
-
-    progress(70);
-
-    await this.syncNodes();
-    await this.syncContainers();
-    progress(100);
+    return this.queryContainer(containerRow, progress, (container) =>
+      container.restart(),
+    );
   }
 
-  async removeContainer(
+  removeContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,
   ) {
-    progress(10);
-    const container = await this.queryContainer(containerRow);
-
-    progress(50);
-    await container.remove();
-
-    progress(70);
-
-    await this.syncNodes();
-    await this.syncContainers();
-    progress(100);
+    return this.queryContainer(containerRow, progress, (container) =>
+      container.remove({ force: true }),
+    );
   }
 
-  private async queryContainer(containerRow: DockerContainerDocument) {
+  private async queryContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+    callback: (container: Dockerode.Container) => Promise<void>,
+  ) {
+    progress(10);
     const node = await this.dockerNodeModel.findById(containerRow.dockerNodeId);
     if (!node) {
       return Promise.reject(new Error('not exists node'));
     }
+
+    progress(40);
     const docker = new J2Docker(node.ip, node.port);
-    return docker.getContainer(containerRow.containerRawId);
+
+    progress(50);
+    await callback(docker.getContainer(containerRow.containerRawId));
+
+    progress(70);
+    await this.syncNode(node);
+    await this.syncContainer(node);
+    progress(100);
   }
 
   private async createPasswordFile(password: string) {

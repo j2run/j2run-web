@@ -7,6 +7,7 @@ export class JobCreateContainer {
 
 export class JobActionContainer {
   dockerContainerId: string;
+  userId: string;
 }
 
 export enum JobDockerType {

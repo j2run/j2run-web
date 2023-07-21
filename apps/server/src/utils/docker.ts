@@ -89,7 +89,7 @@ export class J2Docker {
 
   containers() {
     return new Promise<Docker.ContainerInfo[]>((resolve, reject) => {
-      this.docker.listContainers((err, result) => {
+      this.docker.listContainers({ all: true }, (err, result) => {
         if (err) {
           reject(err);
           return;

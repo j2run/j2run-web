@@ -10,3 +10,9 @@ export class CloudCreateRequest {
   @IsObjectId()
   planId: string;
 }
+
+export class CloudActionRequest {
+  @ApiProperty()
+  @IsObjectId()
+  dockerContainerId: string;
+}

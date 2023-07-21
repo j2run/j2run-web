@@ -1,11 +1,13 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CloudCreateRequest } from 'src/dtos/cloud.dto';
+import { CloudActionRequest, CloudCreateRequest } from 'src/dtos/cloud.dto';
 import {
   DockerContainer,
   DockerContainerDocument,
@@ -18,6 +20,7 @@ import {
 import { Plan, PlanDocument } from 'src/schema/plan.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { QueueDockerService } from './queue-docker.service';
+import { JobDockerType } from 'src/dtos/job.dto';
 
 @Injectable()
 export class CloudService {
@@ -80,5 +83,34 @@ export class CloudService {
     await this.queueDockerService.createContainer(plan, game, invoice, user);
 
     return true;
+  }
+
+  async action(
+    action: JobDockerType,
+    dto: CloudActionRequest,
+    user: UserDocument,
+  ) {
+    const container = await this.dockerContainerModel.findById({
+      _id: new Types.ObjectId(dto.dockerContainerId),
+    });
+    if (!container) {
+      throw new NotFoundException('container not exists');
+    }
+    if (container.userId.toString() != user._id.toString()) {
+      throw new ForbiddenException();
+    }
+    if (container.deleteAt) {
+      throw new ForbiddenException('container removed');
+    }
+
+    if (container.stage === 'removing') {
+      throw new ConflictException();
+    }
+
+    return await this.queueDockerService.actionContainer(
+      action,
+      dto.dockerContainerId,
+      user._id,
+    );
   }
 }

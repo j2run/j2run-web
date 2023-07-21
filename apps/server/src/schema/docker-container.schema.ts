@@ -5,7 +5,7 @@ import { SchemaDto } from '../dtos/schema.dto';
 
 export type DockerContainerDocument = HydratedDocument<DockerContainer>;
 
-export type DockerContainerState =
+export type DockerContainerStage =
   | 'created'
   | 'restarting'
   | 'running'
@@ -48,7 +48,7 @@ export class DockerContainer extends SchemaDto {
 
   @ApiProperty()
   @Prop()
-  stage: DockerContainerState;
+  stage: DockerContainerStage;
 
   @ApiProperty()
   @Prop()
