@@ -267,6 +267,8 @@ export class J2ContainerService {
       Image: plan.image,
       HostConfig: {
         PublishAllPorts: true,
+        Memory: plan.ram * 1024 * 1024,
+        NanoCpus: !plan.cpu || plan.cpu < 0 ? undefined : plan.cpu * 10 ** 9,
       },
     });
 
