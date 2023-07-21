@@ -69,6 +69,10 @@ export class J2ContainerService {
       return Promise.resolve(null);
     });
     if (!info) {
+      node.isActive = false;
+      if (isSave) {
+        await this.dockerNodeModel.bulkSave([node]);
+      }
       return false;
     }
     node.dockerRawId = info.ID;
@@ -79,6 +83,7 @@ export class J2ContainerService {
     node.containersStopped = info.ContainersStopped;
     node.images = info.Images;
     node.operatingSystem = info.OperatingSystem;
+    node.isActive = true;
     if (isSave) {
       await this.dockerNodeModel.bulkSave([node]);
     }
@@ -221,6 +226,9 @@ export class J2ContainerService {
     // find best node
     let nodeCurrent: DockerNodeDocument | undefined;
     for (const node of nodes) {
+      if (!node.isActive) {
+        continue;
+      }
       if (
         node.maxContainers > 0 &&
         node.containersRunning >= node.maxContainers
