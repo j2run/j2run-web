@@ -47,7 +47,7 @@ export class J2ContainerService {
     this.syncContainers();
   }
 
-  private async sync() {
+  async sync() {
     await this.syncNodes();
     await this.syncContainers();
   }

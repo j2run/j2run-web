@@ -8,7 +8,7 @@ import {
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Model } from 'mongoose';
-import { JOB_NAME_DOCKER } from 'src/constants/job.constant';
+import { JOB_NAME_DOCKER, JOB_NAME_DOCKER_SYNC } from 'src/constants/job.constant';
 import { Game, GameDocument } from 'src/schema/game.schema';
 import {
   InvoiceCloud,
@@ -46,6 +46,11 @@ export class QueueDockerProcessor {
     @InjectModel(DockerContainer.name)
     private readonly dockerContainerModel: Model<DockerContainer>,
   ) {}
+
+  @Process(JOB_NAME_DOCKER_SYNC)
+  async transcodeSync() {
+    await this.j2ContainerService.sync();
+  }
 
   @Process()
   async transcode(job: Job<JobDocker<any>>) {

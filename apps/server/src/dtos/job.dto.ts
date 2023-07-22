@@ -16,6 +16,7 @@ export enum JobDockerType {
   Stop,
   Restart,
   Remove,
+  CronSync,
 }
 
 export class JobDocker<T> {

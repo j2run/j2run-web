@@ -1,7 +1,10 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
-import { JOB_NAME_DOCKER } from 'src/constants/job.constant';
+import {
+  JOB_NAME_DOCKER,
+  JOB_NAME_DOCKER_SYNC,
+} from 'src/constants/job.constant';
 import {
   JobActionContainer,
   JobCreateContainer,
@@ -20,7 +23,21 @@ export class QueueDockerService {
     private readonly dockerQueue: Queue<
       JobDocker<JobCreateContainer | JobActionContainer>
     >,
-  ) {}
+  ) {
+    this.addSyncJobIfNotExists();
+  }
+
+  async addSyncJobIfNotExists() {
+    const cron = '*/30 * * * * *';
+    await this.dockerQueue.removeRepeatable(JOB_NAME_DOCKER_SYNC, {
+      cron,
+    });
+
+    return await this.dockerQueue.add(JOB_NAME_DOCKER_SYNC, null, {
+      repeat: { cron },
+      removeOnComplete: true,
+    });
+  }
 
   createContainer(
     plan: PlanDocument,
