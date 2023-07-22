@@ -60,6 +60,22 @@ export class DockerContainer extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  expirationHandleTime: Date;
+
+  @ApiProperty()
+  @Prop()
+  expirationJobId: string;
+
+  @ApiProperty()
+  @Prop()
+  expirationDate: Date;
+
+  @ApiProperty({ default: true })
+  @Prop()
+  isAutoRenew: boolean;
+
+  @ApiProperty()
+  @Prop()
   created: number;
 
   @ApiProperty()

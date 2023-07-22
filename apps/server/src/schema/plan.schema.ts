@@ -25,6 +25,10 @@ export class Plan extends SchemaDto {
   @Prop()
   money: number;
 
+  @ApiProperty({ default: 30 * 24 * 60 * 60 })
+  @Prop()
+  usageSecond: number;
+
   @ApiProperty()
   @Prop()
   cpu: number;

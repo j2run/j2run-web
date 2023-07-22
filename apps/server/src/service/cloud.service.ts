@@ -42,9 +42,18 @@ export class CloudService {
     return this.dockerContainerModel
       .find({
         userId: new Types.ObjectId(user._id),
-        deleteAt: {
-          $exists: false,
-        },
+        $or: [
+          {
+            deleteAt: {
+              $exists: false,
+            },
+          },
+          {
+            deleteAt: {
+              $eq: null,
+            },
+          },
+        ],
       })
       .select(
         '_id planId gameId forwardIp forwardPort status stage createdAt deleteAt',
@@ -73,7 +82,7 @@ export class CloudService {
 
     // add invoice
     const invoice = await this.invoiceCloudModel.create({
-      planId: new Types.ObjectId(dto.gameId),
+      planId: new Types.ObjectId(dto.planId),
       gameId: new Types.ObjectId(dto.gameId),
       money: plan.money,
       status: 'waiting',

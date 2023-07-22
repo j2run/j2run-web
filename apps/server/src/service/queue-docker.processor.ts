@@ -47,13 +47,21 @@ export class QueueDockerProcessor {
     private readonly dockerContainerModel: Model<DockerContainer>,
   ) {}
 
-  @Process(JOB_NAME_DOCKER_SYNC)
+  @Process({ name: '*', concurrency: 1 })
+  async transcode(job: Job<any>) {
+    switch (job.name) {
+      case JOB_NAME_DOCKER_SYNC:
+        return await this.transcodeSync();
+      default:
+        return this.transcodeDefault(job);
+    }
+  }
+
   async transcodeSync() {
     await this.j2ContainerService.sync();
   }
 
-  @Process()
-  async transcode(job: Job<JobDocker<any>>) {
+  async transcodeDefault(job: Job<JobDocker<any>>) {
     const data = job.data;
     switch (data.type) {
       case JobDockerType.CreateContainer:

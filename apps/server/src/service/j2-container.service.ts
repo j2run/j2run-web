@@ -13,6 +13,7 @@ import * as Dockerode from 'dockerode';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as moment from 'moment';
 import { Pack, pack } from 'tar-stream';
 
 import { spawn } from 'child_process';
@@ -28,6 +29,7 @@ import {
 } from 'src/constants/docker-node.constant';
 import { PlanService } from './plan.service';
 import { PlanHashmap } from 'src/dtos/plan.dto';
+import { QueueSubscriptionService } from './queue-subscription.service';
 
 @Injectable()
 export class J2ContainerService {
@@ -43,6 +45,7 @@ export class J2ContainerService {
     @InjectModel(Plan.name)
     private readonly planModel: Model<PlanDocument>,
     private readonly planService: PlanService,
+    private readonly queueSubscriptionService: QueueSubscriptionService,
   ) {
     this.syncContainers();
   }
@@ -130,6 +133,11 @@ export class J2ContainerService {
     const containerRows = await this.dockerContainerModel.find({
       dockerNodeId: new Types.ObjectId(node._id),
       $or: [
+        {
+          deleteAt: {
+            $eq: null,
+          },
+        },
         {
           deleteAt: {
             $exists: false,
@@ -314,13 +322,34 @@ export class J2ContainerService {
 
     // save
     progress(70);
+    const usageSecond = plan.usageSecond;
+    const expirationDate = moment().add(usageSecond, 'second').toDate();
     const result = await this.dockerContainerModel.create({
       dockerNodeId: new Types.ObjectId(nodeCurrent._id),
       containerRawId: dockerContainer.id,
       userId: new Types.ObjectId(user._id),
       planId: new Types.ObjectId(plan._id),
+      gameId: new Types.ObjectId(game._id),
+      isAutoRenew: true,
       password,
+      expirationDate,
     });
+
+    // create subscription
+    progress(80);
+    const subscriptionJob = await this.queueSubscriptionService.addSubscription(
+      {
+        dockerContainerId: result._id,
+        userId: user._id,
+        usageSecond,
+        expirationDate,
+      },
+    );
+
+    // update subscription id
+    progress(85);
+    result.expirationJobId = subscriptionJob.id.toString();
+    await this.dockerContainerModel.bulkSave([result]);
 
     bmr();
     // sync

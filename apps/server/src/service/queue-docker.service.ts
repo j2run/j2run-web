@@ -24,10 +24,10 @@ export class QueueDockerService {
       JobDocker<JobCreateContainer | JobActionContainer>
     >,
   ) {
-    this.addSyncJobIfNotExists();
+    this.addSyncJob();
   }
 
-  async addSyncJobIfNotExists() {
+  async addSyncJob() {
     const cron = '*/30 * * * * *';
     await this.dockerQueue.removeRepeatable(JOB_NAME_DOCKER_SYNC, {
       cron,
