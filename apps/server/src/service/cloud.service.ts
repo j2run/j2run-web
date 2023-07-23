@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,10 +21,16 @@ import {
 import { Plan, PlanDocument } from 'src/schema/plan.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { QueueDockerService } from './queue-docker.service';
-import { JobDockerType } from 'src/dtos/job.dto';
+import { JobDockerStatus, JobDockerType } from 'src/dtos/job.dto';
+import {
+  DockerAction,
+  DockerActionDocument,
+} from 'src/schema/docker-action.schema';
 
 @Injectable()
 export class CloudService {
+  logger = new Logger('CloudService');
+
   constructor(
     @InjectModel(DockerContainer.name)
     private readonly dockerContainerModel: Model<DockerContainerDocument>,
@@ -35,6 +42,8 @@ export class CloudService {
     private readonly planModel: Model<PlanDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(DockerAction.name)
+    private readonly dockerActionModel: Model<DockerActionDocument>,
     private readonly queueDockerService: QueueDockerService,
   ) {}
 
@@ -56,7 +65,7 @@ export class CloudService {
         ],
       })
       .select(
-        '_id planId gameId forwardIp forwardPort status stage createdAt deleteAt',
+        '_id planId gameId forwardIp forwardPort status stage expirationDate password isAutoRenew createdAt deleteAt',
       )
       .exec();
   }
@@ -99,8 +108,11 @@ export class CloudService {
     dto: CloudActionRequest,
     user: UserDocument,
   ) {
+    const userId_ = new Types.ObjectId(user._id);
+    const dockerContainerId_ = new Types.ObjectId(dto.dockerContainerId);
+
     const container = await this.dockerContainerModel.findById({
-      _id: new Types.ObjectId(dto.dockerContainerId),
+      _id: dockerContainerId_,
     });
     if (!container) {
       throw new NotFoundException('container not exists');
@@ -112,8 +124,24 @@ export class CloudService {
       throw new ForbiddenException('container removed');
     }
 
+    const actionCurrent = await this.dockerActionModel.findOne({
+      userId: userId_,
+      dockerContainerId: dockerContainerId_,
+      $or: [
+        {
+          jobDockerStatus: JobDockerStatus.Waitting,
+        },
+        {
+          jobDockerStatus: JobDockerStatus.Active,
+        },
+      ],
+    });
+    if (actionCurrent) {
+      throw new ConflictException('action exists');
+    }
+
     if (container.stage === 'removing') {
-      throw new ConflictException();
+      throw new ConflictException('container removing');
     }
 
     return await this.queueDockerService.actionContainer(

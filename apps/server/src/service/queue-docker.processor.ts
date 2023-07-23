@@ -7,8 +7,11 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
-import { Model } from 'mongoose';
-import { JOB_NAME_DOCKER, JOB_NAME_DOCKER_SYNC } from 'src/constants/job.constant';
+import { Model, Types } from 'mongoose';
+import {
+  JOB_NAME_DOCKER,
+  JOB_NAME_DOCKER_SYNC,
+} from 'src/constants/job.constant';
 import { Game, GameDocument } from 'src/schema/game.schema';
 import {
   InvoiceCloud,
@@ -20,9 +23,11 @@ import {
   JobActionContainer,
   JobCreateContainer,
   JobDocker,
+  JobDockerStatus,
   JobDockerType,
 } from 'src/dtos/job.dto';
 import { DockerContainer } from 'src/schema/docker-container.schema';
+import { DockerAction, DockerActionDocument } from 'src/schema/docker-action.schema';
 
 type J2ContainerServiceMethods = {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -45,6 +50,8 @@ export class QueueDockerProcessor {
     private readonly userModel: Model<UserDocument>,
     @InjectModel(DockerContainer.name)
     private readonly dockerContainerModel: Model<DockerContainer>,
+    @InjectModel(DockerAction.name)
+    private readonly dockerActionModel: Model<DockerActionDocument>,
   ) {}
 
   @Process({ name: '*', concurrency: 1 })
@@ -83,6 +90,12 @@ export class QueueDockerProcessor {
     switch (data.type) {
       case JobDockerType.CreateContainer:
         return await this.createContainerComplete(job);
+
+      case JobDockerType.Start:
+      case JobDockerType.Stop:
+      case JobDockerType.Restart:
+      case JobDockerType.Remove:
+        return await this.actionContainerEnd(job, JobDockerStatus.Completed);
     }
   }
 
@@ -92,6 +105,12 @@ export class QueueDockerProcessor {
     switch (data.type) {
       case JobDockerType.CreateContainer:
         return await this.createContainerFailed(job);
+
+      case JobDockerType.Start:
+      case JobDockerType.Stop:
+      case JobDockerType.Restart:
+      case JobDockerType.Remove:
+        return await this.actionContainerEnd(job, JobDockerStatus.Failed);
     }
   }
 
@@ -175,9 +194,28 @@ export class QueueDockerProcessor {
     if (!dockerContainer) {
       return Promise.reject(new Error('dockerContainer not found'));
     }
+    job.progress(1);
+    await this.actionContainerEnd(job, JobDockerStatus.Active);
     return await (this.j2ContainerService[action] as any)(
       dockerContainer,
       (val: number) => job.progress(val),
+    );
+  }
+
+  private async actionContainerEnd(
+    job: Job<JobDocker<JobActionContainer>>,
+    status: JobDockerStatus,
+  ) {
+    const data = job.data.data;
+    await this.dockerActionModel.updateOne(
+      {
+        _id: new Types.ObjectId(data.dockerActionId),
+      },
+      {
+        $set: {
+          jobDockerStatus: status,
+        },
+      },
     );
   }
 }

@@ -11,6 +11,7 @@ import { DockerLabel, DockerLabelSchema } from './docker-label.schema';
 import { Game, GameSchema } from './game.schema';
 import { Plan, PlanSchema } from './plan.schema';
 import { InvoiceCloud, InvoiceCloudSchema } from './invoice-cloud.schema';
+import { DockerAction, DockerActionSchema } from './docker-action.schema';
 
 export const features: ModelDefinition[] = [
   {
@@ -40,6 +41,10 @@ export const features: ModelDefinition[] = [
   {
     name: InvoiceCloud.name,
     schema: InvoiceCloudSchema,
+  },
+  {
+    name: DockerAction.name,
+    schema: DockerActionSchema,
   },
 ];
 

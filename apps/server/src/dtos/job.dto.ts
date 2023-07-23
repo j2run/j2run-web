@@ -7,6 +7,7 @@ export class JobCreateContainer {
 
 export class JobActionContainer {
   dockerContainerId: string;
+  dockerActionId: string;
   userId: string;
 }
 
@@ -17,6 +18,13 @@ export enum JobDockerType {
   Restart,
   Remove,
   CronSync,
+}
+
+export enum JobDockerStatus {
+  Waitting,
+  Active,
+  Completed,
+  Failed,
 }
 
 export class JobDocker<T> {

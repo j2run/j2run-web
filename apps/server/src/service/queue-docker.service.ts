@@ -1,6 +1,8 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Queue } from 'bull';
+import { Model, Types } from 'mongoose';
 import {
   JOB_NAME_DOCKER,
   JOB_NAME_DOCKER_SYNC,
@@ -9,8 +11,13 @@ import {
   JobActionContainer,
   JobCreateContainer,
   JobDocker,
+  JobDockerStatus,
   JobDockerType,
 } from 'src/dtos/job.dto';
+import {
+  DockerAction,
+  DockerActionDocument,
+} from 'src/schema/docker-action.schema';
 import { GameDocument } from 'src/schema/game.schema';
 import { InvoiceCloudDocument } from 'src/schema/invoice-cloud.schema';
 import { PlanDocument } from 'src/schema/plan.schema';
@@ -18,11 +25,15 @@ import { UserDocument } from 'src/schema/user.schema';
 
 @Injectable()
 export class QueueDockerService {
+  logger = new Logger('QueueDockerService');
+
   constructor(
     @InjectQueue(JOB_NAME_DOCKER)
     private readonly dockerQueue: Queue<
       JobDocker<JobCreateContainer | JobActionContainer>
     >,
+    @InjectModel(DockerAction.name)
+    private readonly dockerActionModel: Model<DockerActionDocument>,
   ) {
     this.addSyncJob();
   }
@@ -56,17 +67,33 @@ export class QueueDockerService {
     });
   }
 
-  actionContainer(
+  async actionContainer(
     action: JobDockerType,
     dockerContainerId: string,
     userId: string,
   ) {
-    return this.dockerQueue.add({
-      type: action,
-      data: {
-        dockerContainerId,
-        userId,
-      } as JobActionContainer,
+    const resultAction = await this.dockerActionModel.create({
+      userId: new Types.ObjectId(userId),
+      dockerContainerId: new Types.ObjectId(dockerContainerId),
+      jobDockerStatus: JobDockerStatus.Waitting,
+      jobDockerType: action,
     });
+    const result = await this.dockerQueue
+      .add({
+        type: action,
+        data: {
+          dockerActionId: resultAction._id,
+          dockerContainerId,
+          userId,
+        } as JobActionContainer,
+      })
+      .catch((e) => {
+        this.logger.error(e);
+        return Promise.resolve(null);
+      });
+    if (!result) {
+      await this.dockerActionModel.deleteMany([resultAction]);
+    }
+    return result;
   }
 }
