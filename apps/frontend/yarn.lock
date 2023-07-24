@@ -117,10 +117,20 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.18.16.tgz#5be58d31d0120c68af8e38b702e6937ce764cd68"
   integrity sha512-sCIVrrtcWN5Ua7jYXNG1xD199IalrbfV2+0k/2Zf2OyV2FtnQnMgdzgpRAbi4AWlKJj1jkX+M+fEGPQj6BQB4w==
 
+"@fortawesome/fontawesome-free@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.4.0.tgz#1ee0c174e472c84b23cb46c995154dc383e3b4fe"
+  integrity sha512-0NyytTlPJwB/BF5LtRV8rrABDbe3TdTXqNB3PdZ+UUUZAEIrdOJdmABqKjt4AXwIoJNaRVVZEXxpNrqvE1GAYQ==
+
 "@jridgewell/sourcemap-codec@^1.4.15":
   version "1.4.15"
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.15.tgz#d7c6e6755c78567a951e04ab52ef0fd26de59f32"
   integrity sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==
+
+"@mdi/font@^7.2.96":
+  version "7.2.96"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-7.2.96.tgz#af800d9fe3b424f85ad45e9baa755bd003ab4986"
+  integrity sha512-e//lmkmpFUMZKhmCY9zdjRe4zNXfbOIJnn6xveHbaV2kSw5aJ5dLXUxcRt1Gxfi7ZYpFLUWlkG2MGSFAiqAu7w==
 
 "@novnc/novnc@^1.4.0":
   version "1.4.0"
