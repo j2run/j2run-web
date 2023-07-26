@@ -36,9 +36,8 @@
 import RFB from '@novnc/novnc/core/rfb.js';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
-const ip = '172.16.10.101';
-const port = 32768;
-const password = 'f002Wg$^';
+const props = defineProps(['ip', 'port', 'password']);
+const { ip, port, password } = props;
 
 const novncContainer = ref<HTMLDivElement>();
 const state = reactive({

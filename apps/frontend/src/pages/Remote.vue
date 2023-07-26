@@ -28,9 +28,10 @@
         <v-list density="compact" nav v-for="window of state.allWindows">
           <v-list-item
             prepend-icon="mdi-remote-desktop"
-            :disabled="isDisableMap[window.id]"
-            :title="window.name"
-            :value="window.id"
+            :active="isDisableMap[window._id] || false"
+            :disabled="isDisableMap[window._id]"
+            :title="window.name || window._id"
+            :value="window._id"
             @click="onAdd(window)"
             ></v-list-item>
         </v-list> 
@@ -42,7 +43,7 @@
           <vue-draggable-resizable 
             v-for="window of state.windows"
             :resizable="false"
-            :key="window.id"
+            :key="window._id"
             :x="400"
             @mousedown="onMoveTop(window)"
           >
@@ -66,7 +67,7 @@
                   >Close</v-tooltip>
                 </v-btn>
               </div>
-              <Novnc />
+              <Novnc :ip="window.forwardIp" :port="window.forwardPort" :password="window.password" />
             </div>
           </vue-draggable-resizable>
         </div>
@@ -138,6 +139,7 @@ import { computed } from 'vue';
 import { shallowRef } from 'vue';
 import { defineAsyncComponent } from 'vue';
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
+import { CloudDto } from '../dtos/cloud';
 
 const VueDraggableResizable = shallowRef(defineAsyncComponent(() => import('vue3-draggable-resizable')));
 const Novnc = shallowRef(defineAsyncComponent(() => import('../components/Novnc.vue')));
@@ -146,23 +148,28 @@ const state = reactive({
   hasDrag: false,
   drawer: true,
   rail: true,
-  windows: [] as any[],
+  windows: [] as CloudDto[],
   allWindows: [
     {
+      _id: 'abc',
       name: 'Test 1',
-      id: 1
+      forwardIp: '172.16.10.101',
+      forwardPort: 32769,
+      password: '#X9Mro8Z'
     },
     {
-      name: 'Test 2',
-      id: 2
+      _id: '64be77da2f4302242e82ec31',
+      forwardIp: '172.16.10.101',
+      forwardPort: 32769,
+      password: '#X9Mro8Z'
     },
-  ]
+  ] as CloudDto[],
 })
 
 const isDisableMap = computed(() => state.windows.reduce((val, item) => {
-  val[item.id] = true;
+  val[item._id] = true;
   return val;
-}, {}))
+}, {} as { [key: string]: boolean }))
 
 const onHoverDrag = () => {
   state.hasDrag = true;
@@ -172,19 +179,19 @@ const onBlurDrag = () => {
   state.hasDrag = false;
 }
 
-const onAdd = (window: any) => {
+const onAdd = (window: CloudDto) => {
   state.windows.push(window);
 }
 
-const onRestart = (window: any) => {
+const onRestart = (window: CloudDto) => {
   console.log(window);
 }
 
-const onRemove = (window: any) => {
+const onRemove = (window: CloudDto) => {
   state.windows = state.windows.filter(w => w != window);
 }
 
-const onMoveTop = (window: any) => {
+const onMoveTop = (window: CloudDto) => {
   state.windows = [
     ...state.windows.filter(w => w != window),
     window,
