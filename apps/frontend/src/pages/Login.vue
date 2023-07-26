@@ -1,5 +1,88 @@
 <template>
   <div>
+    <v-img
+      class="mx-auto my-6"
+      max-width="125"
+      :src="j2runLogo"
+    ></v-img>
+
+    <v-card
+      class="mx-auto mt-4 border pa-12 pb-8"
+      max-width="400px"
+      elevation="2"
+      rounded="lg"
+    >
+      <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
+      <v-text-field
+        v-model="state.email"
+        :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
+        :counter="10"
+        density="compact"
+        placeholder="Địa chỉ email"
+        prepend-inner-icon="mdi-email-outline"
+        variant="outlined"
+        required
+        @input="v$.email.$touch"
+        @blur="v$.email.$touch"
+      ></v-text-field>
+
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Mật khẩu
+
+        <a
+          class="text-caption text-decoration-none text-blue"
+          href="#"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Quên mật khẩu?</a>
+      </div>
+      <v-text-field
+        v-model="state.password"
+        :error-messages="v$.password.$errors.map(e => e.$message as unknown as string)"
+        :append-inner-icon="state.visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="state.visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Nhập mật khẩu"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        required
+        @click:append-inner="state.visible = !state.visible"
+        @input="v$.password.$touch"
+        @blur="v$.password.$touch"
+      ></v-text-field>
+
+      <v-card
+          class="mb-12"
+          color="surface-variant"
+          variant="tonal"
+        >
+          <v-card-text class="text-medium-emphasis text-caption">
+            Cảnh báo: Sau 3 lần thất bại liên tiếp trong việc đăng nhập, tài khoản của bạn sẽ bị tạm khóa trong ba giờ. Nếu bạn cần đăng nhập ngay bây giờ, bạn cũng có thể nhấp vào "Quên mật khẩu?" phía dưới để đặt lại mật khẩu đăng nhập.
+          </v-card-text>
+        </v-card>
+
+        <v-btn
+          block
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+        >
+          Đăng nhập
+        </v-btn>
+
+        <v-card-text class="text-center">
+          <a
+            class="text-blue text-decoration-none"
+            href="#"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
+          </a>
+        </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -17,5 +100,26 @@
 }
 </style>
 
-<script lang="ts" setup>
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { email, required } from '@vuelidate/validators'
+import j2runLogo from '../assets/j2run-logo.png'
+
+const initialState = {
+  password: '',
+  email: '',
+  visible: false
+}
+
+const state = reactive({
+  ...initialState,
+})
+
+const rules = {
+  password: { required },
+  email: { required, email },
+}
+
+const v$ = useVuelidate(rules, state)
 </script>
