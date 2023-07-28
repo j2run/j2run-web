@@ -34,10 +34,13 @@
 
     <div class="pa-4 d-flex align-center">
       <v-icon
-        color="disabled"
-        icon="mdi-broadcast"
+        color="green"
+        icon="mdi-adjust"
         start
       ></v-icon>
+      <span class="text-overline">
+        Hoạt động
+      </span>
 
       <v-spacer></v-spacer>
 
@@ -50,34 +53,27 @@
         Điều khiển
       </v-btn>
 
-      <v-btn
-        border
-        prepend-icon="mdi-restart"
-        variant="text"
-        class="mr-1"
-        color="orange"
-      >
-        Khởi động lại
-      </v-btn>
-
-      <v-btn
-        border
-        prepend-icon="mdi-power"
-        variant="text"
-        class="mr-1"
-        color="orange"
-      >
-        Tắt
-      </v-btn>
-
-      <v-btn
-        border
-        prepend-icon="mdi-delete"
-        variant="text"
-        color="red"
-      >
-        Xóa
-      </v-btn>
+      <CloudConfirmButton
+        icon="mdi-restart"
+        label="Khởi động lại"
+        message="Bạn có muốn khởi động lại không?"
+      />
+      <CloudConfirmButton
+        icon="mdi-power"
+        label="Tắt"
+        message="Bạn có muốn tắt không?"
+      />
+      <CloudDeleteButton />
     </div>
   </v-card>
 </template>
+
+<script lang="ts" setup>
+import { shallowRef, defineAsyncComponent } from 'vue';
+
+
+const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
+const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
+
+
+</script>

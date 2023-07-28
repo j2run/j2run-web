@@ -28,6 +28,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
   },
   { 
     path: '/remote-dock',
+    meta: { auth: true },
     component: import('./pages/Remote.vue'),
   },
 ]
