@@ -27,6 +27,7 @@
         <div class="font-weight-light text-medium-emphasis">
           Join the Vuetify team for a live Question and Answer session.
         </div>
+        <CloudJob />
       </div>
     </v-card-item>
 
@@ -74,6 +75,7 @@ import { shallowRef, defineAsyncComponent } from 'vue';
 
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
+const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue')));
 
 
 </script>

@@ -1,0 +1,19 @@
+<template>
+  <v-alert
+    class="mt-3"
+    type="info"
+    variant="tonal"
+    border="start"
+  >
+    <span>
+      Đang khởi động lại hệ thống
+    </span>
+    <v-progress-linear
+      class="mt-3"
+      model-value="20"
+      color="info"
+      buffer-value="0"
+      stream
+    ></v-progress-linear>
+  </v-alert>
+</template>

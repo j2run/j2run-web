@@ -1,3 +1,3 @@
 <template>
-  <div class="ma-5">Invoice</div>
+  <div class="ma-5">Đang phát triễn</div>
 </template>
