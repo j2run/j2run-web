@@ -9,6 +9,7 @@
             min-width="92"
             rounded
             variant="outlined"
+            to="/manage/create"
           >
             Tạo máy ảo
           </v-btn>
@@ -19,6 +20,7 @@
             min-width="92"
             rounded
             variant="outlined"
+            to="/remote-dock"
           >
             Cửa sổ điều khiển
           </v-btn>

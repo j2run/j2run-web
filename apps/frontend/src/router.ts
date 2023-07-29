@@ -25,6 +25,10 @@ const routes: Readonly<RouteRecordRaw[]> = [
         path: 'create',
         component: import('./pages/CreateCloud.vue'),
       },
+      {
+        path: 'invoice',
+        component: import('./pages/Invoice.vue'),
+      },
     ]
   },
   { 
@@ -36,10 +40,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/remote-dock',
     meta: { auth: true },
     component: import('./pages/Remote.vue'),
-  },
-  { 
-    path: '/plan',
-    component: import('./pages/Plan.vue'),
   },
 ]
 

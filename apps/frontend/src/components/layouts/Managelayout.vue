@@ -28,6 +28,8 @@
           v-for="(item, i) in state.items"
           :key="i"
           :value="item"
+          :to="item.to"
+          :exact="true"
           color="primary"
         >
           <template v-slot:prepend>
@@ -58,9 +60,10 @@ import { ref } from 'vue'
 
 const state = reactive({
   items: [
-    { text: 'Máy ảo', icon: 'mdi-cloud' },
-    { text: 'Hóa đơn', icon: 'mdi-receipt-text' },
-    { text: 'Đăng xuất', icon: 'mdi-logout' },
+    { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
+    { text: 'Hóa đơn', icon: 'mdi-receipt-text', to: '/manage/invoice' },
+    { text: 'Cửa sổ', icon: 'mdi-remote-desktop', to: '/remote-dock' },
+    { text: 'Đăng xuất', icon: 'mdi-logout', to: '/manage/logout' },
   ],
 });
 

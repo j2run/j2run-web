@@ -7,7 +7,7 @@
         indeterminate
       ></v-progress-circular>
     </div>
-    <div 
+    <div
       class="window"
       v-bind:class="{ 'is-hidden': state.isLoading }"
       ref="novncContainer"

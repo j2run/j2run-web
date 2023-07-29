@@ -25,15 +25,18 @@
 
         <v-divider></v-divider>
 
-        <v-list density="compact" nav v-for="window of state.allWindows">
+        <v-list density="compact" nav>
           <v-list-item
+            v-for="window of state.allWindows"
             prepend-icon="mdi-remote-desktop"
             :active="isDisableMap[window._id] || false"
             :disabled="isDisableMap[window._id]"
             :title="window.name || window._id"
             :value="window._id"
             @click="onAdd(window)"
-            ></v-list-item>
+          ></v-list-item>
+
+          <RemoteExitButton />
         </v-list> 
       </v-navigation-drawer>
 
@@ -143,6 +146,7 @@ import { CloudDto } from '../dtos/cloud';
 
 const VueDraggableResizable = shallowRef(defineAsyncComponent(() => import('vue3-draggable-resizable')));
 const Novnc = shallowRef(defineAsyncComponent(() => import('../components/Novnc.vue')));
+const RemoteExitButton = shallowRef(defineAsyncComponent(() => import('../components/RemoteExitButton.vue')));
 
 const state = reactive({
   hasDrag: false,
