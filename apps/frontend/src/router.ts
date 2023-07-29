@@ -2,11 +2,20 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
 
 const routes: Readonly<RouteRecordRaw[]> = [
-  { path: '/', component: import('./pages/Home.vue') },
-  { path: '/login', component: import('./pages/Login.vue') },
+  {
+    path: '/',
+    component: import('./pages/Home.vue'),
+    meta: { noAuth: true },
+  },
+  {
+    path: '/login',
+    component: import('./pages/Login.vue'),
+    meta: { noAuth: true },
+  },
   { 
     path: '/manage',
     meta: { auth: true },
+    component: import('./components/layouts/Managelayout.vue'),
     children: [
       {
         path: '',
@@ -14,22 +23,23 @@ const routes: Readonly<RouteRecordRaw[]> = [
       },
       {
         path: 'create',
-        component: import('./pages/Cloud.vue'),
-      },
-      {
-        path: 'detail/:id',
-        component: import('./pages/Cloud.vue'),
+        component: import('./pages/CreateCloud.vue'),
       },
     ]
   },
   { 
     path: '/remote/:id',
+    meta: { auth: true },
     component: import('./pages/Remote.vue'),
   },
   { 
     path: '/remote-dock',
     meta: { auth: true },
     component: import('./pages/Remote.vue'),
+  },
+  { 
+    path: '/plan',
+    component: import('./pages/Plan.vue'),
   },
 ]
 
@@ -43,7 +53,7 @@ router.beforeEach(async (to, _, next) => {
   if (to.meta.auth && !auth.user) {
     auth.returnUrl = to.fullPath;
     next('/login');
-  } else if (auth.user && !to.meta.auth) {
+  } else if (auth.user && to.meta.noAuth) {
     next('/manage');
   } else {
     next();
