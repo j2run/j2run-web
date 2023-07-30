@@ -14,7 +14,7 @@ export class PlanService {
   getAllView() {
     return this.planModel
       .find({})
-      .select('_id name cpu ram fps description updatedAt')
+      .select('_id name cpu ram fps money usageSecond description updatedAt')
       .exec();
   }
 

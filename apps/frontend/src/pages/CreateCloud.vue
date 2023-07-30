@@ -9,27 +9,25 @@
         <v-card-title class="mt-2">Tạo mới cloud</v-card-title>
 
         <v-card-item>
-          <v-row>
-            <v-col>
-              <div class="text-subtitle-1 text-medium-emphasis mb-1">Plan Cloud</div>
-              <v-select
-                variant="outlined"
-                density="compact"
-                style="max-width: 500px;"
-                prepend-inner-icon="mdi-package-variant"
-              ></v-select>
-            </v-col>
+          <v-alert
+            v-if="!!state.errorMessage"
+            type="error"
+            class="mb-3"
+            :text="state.errorMessage"
+          ></v-alert>
 
-            <v-col>
-              <div class="text-subtitle-1 text-medium-emphasis mb-1">Thời gian</div>
-              <v-select
-                variant="outlined"
-                density="compact"
-                style="max-width: 300px;"
-                prepend-inner-icon="mdi-clock-star-four-points-outline"
-              ></v-select>
-            </v-col>
-          </v-row>
+          <div class="text-subtitle-1 text-medium-emphasis mb-1">Plan Cloud</div>
+          <v-select
+            v-model="state.plan"
+            variant="outlined"
+            density="compact"
+            style="max-width: 700px;"
+            prepend-inner-icon="mdi-package-variant"
+            :items="state.masterData.plan"
+            :error-messages="(v$.plan.$errors.map(e => e.$message) as unknown as string)"
+            @input="v$.plan.$touch"
+            @blur="v$.plan.$touch"
+          ></v-select>
 
           <v-card
             class="mb-6"
@@ -47,14 +45,23 @@
             density="compact"
             style="max-width: 500px;"
             prepend-inner-icon="mdi-rename-box"
+            v-model="state.name"
+            :error-messages="(v$.name.$errors.map(e => e.$message) as unknown as string)"
+            @input="v$.name.$touch"
+            @blur="v$.name.$touch"
           ></v-text-field>
 
           <div class="text-subtitle-1 text-medium-emphasis mb-1">Game</div>
           <v-select
+            v-model="state.game"
             variant="outlined"
             density="compact"
             style="max-width: 500px;"
             prepend-inner-icon="mdi-gamepad-variant-outline"
+            :items="state.masterData.game"
+            :error-messages="(v$.game.$errors.map(e => e.$message) as unknown as string)"
+            @input="v$.game.$touch"
+            @blur="v$.game.$touch"
           ></v-select>
         </v-card-item>
 
@@ -68,24 +75,26 @@
       >
         <v-card-title class="mt-2">Hóa đơn</v-card-title>
 
-        <v-card-text>
-          <div class="mt-2">
-            <span class="text-subtitle-2">Dịch vụ:</span>
-            <span class="ml-2 font-weight-bold">Gói 1</span>
-          </div>
-          <div class="mt-2 mb-3">
-            <span class="text-subtitle-2">Giá:</span>
-            <span class="ml-2 font-weight-bold">20.000 vnđ</span>
-          </div>
-          <div class="mt-2 mb-3">
-            <span class="text-subtitle-2">Thời gian:</span>
-            <span class="ml-2 font-weight-bold">3 tháng</span>
-          </div>
-          <v-divider></v-divider>
-          <div class="mt-2 text-h5 text-right">
-            60.000 vnđ
-          </div>
-        </v-card-text>
+        <template v-if="planSelected">
+          <v-card-text>
+            <div class="mt-2">
+              <span class="text-subtitle-2">Dịch vụ:</span>
+              <span class="ml-2 font-weight-bold">{{ planSelected.name }}</span>
+            </div>
+            <div class="mt-2 mb-3">
+              <span class="text-subtitle-2">Giá:</span>
+              <span class="ml-2 font-weight-bold">{{ formatVnd(planSelected.money) }}</span>
+            </div>
+            <div class="mt-2 mb-3">
+              <span class="text-subtitle-2">Thời gian:</span>
+              <span class="ml-2 font-weight-bold">{{ formatSecondsToTime(planSelected.usageSecond) }}</span>
+            </div>
+            <v-divider></v-divider>
+            <div class="mt-2 text-h5 text-right">
+              {{ formatVnd(planSelected.money) }}
+            </div>
+          </v-card-text>
+        </template>
 
         <v-card-actions class="ma-3 mt-0">
           <v-spacer></v-spacer>
@@ -93,6 +102,9 @@
           <v-btn
             color="primary"
             variant="outlined"
+            :disabled="isDisable"
+            :loading="state.isLoading"
+            @click="onCreate"
           >
             Tạo mới
           </v-btn>
@@ -101,3 +113,91 @@
     </v-col>
   </v-row>
 </template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { onMounted } from 'vue';
+import { planService } from '../apis/plan';
+import { gameService } from '../apis/game';
+import { formatCpu, formatSecondsToTime, formatVnd } from '../utils/common';
+import { PlanDto } from '../dtos/plan';
+import useVuelidate from '@vuelidate/core';
+import { maxLength, required } from '@vuelidate/validators';
+import { computed } from 'vue';
+import { GameDto } from '../dtos/game';
+import { cloudService } from '../apis/cloud';
+import { router } from '../router';
+
+const state = reactive({
+  masterData:{
+    plan: [] as any[],
+    game: [] as any[],
+  },
+  plan: '' as string | null,
+  game: '' as string | null,
+  name: '' as string | null,
+  fullMasterData: {
+    plan: [] as PlanDto[],
+    game: [] as GameDto[],
+  },
+  isLoading: false,
+  errorMessage: ''
+})
+
+const rules = {
+  plan: {
+    required,
+  },
+  game: { required },
+  name: { 
+    required,
+    maxLength: maxLength(50)
+  }
+}
+
+const planSelected = computed(() => {
+  return state.fullMasterData.plan.find((plan) => plan._id === state.plan)
+})
+
+const isDisable = computed(() => {
+  return v$.value.$invalid;
+})
+
+const v$ = useVuelidate(rules, state)
+
+onMounted(() => {
+  planService.getAll()
+    .then((rs) => {
+      state.fullMasterData.plan = rs;
+      state.masterData.plan = rs.map((plan) => ({
+        value: plan._id,
+        title: `${plan.name} (${formatSecondsToTime(plan.usageSecond)}) - ${formatVnd(plan.money)} - ${formatCpu(plan.cpu)} - FPS: ${plan.fps || 'Unlimited'}`
+      }))
+    })
+
+  gameService.getAll()
+    .then((rs) => {
+      state.fullMasterData.game = rs;
+      state.masterData.game = rs.map((game) => ({
+        value: game._id,
+        title: game.name,
+      }));
+    })
+});
+
+const onCreate = () => {
+  state.isLoading = true;
+  cloudService.create({
+    gameId: state.game as string,
+    planId: state.plan as string,
+    name: state.name as string
+  }).then(() => {
+    router.push('/manage');
+  }).catch((e) => {
+    state.errorMessage = e.response?.data?.message || 'Unknown'
+  }).finally(() => {
+    state.isLoading = false;
+  })
+}
+
+</script>

@@ -50,7 +50,6 @@ export const router = createRouter({
 
 router.beforeEach(async (to, _, next) => {
   const auth = useAuthStore();
-  console.log(JSON.stringify(auth.user));
   if (to.meta.auth && !auth.user) {
     next('/login');
   } else if (auth.user && to.meta.noAuth) {

@@ -22,7 +22,6 @@
       <v-text-field
         v-model="state.email"
         :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
-        :counter="10"
         density="compact"
         placeholder="Địa chỉ email"
         prepend-inner-icon="mdi-email-outline"
