@@ -23,7 +23,7 @@
             density="compact"
             style="max-width: 700px;"
             prepend-inner-icon="mdi-package-variant"
-            :items="state.masterData.plan"
+            :items="plans"
             :error-messages="(v$.plan.$errors.map(e => e.$message) as unknown as string)"
             @input="v$.plan.$touch"
             @blur="v$.plan.$touch"
@@ -58,7 +58,7 @@
             density="compact"
             style="max-width: 500px;"
             prepend-inner-icon="mdi-gamepad-variant-outline"
-            :items="state.masterData.game"
+            :items="games"
             :error-messages="(v$.game.$errors.map(e => e.$message) as unknown as string)"
             @input="v$.game.$touch"
             @blur="v$.game.$touch"
@@ -117,29 +117,23 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { onMounted } from 'vue';
-import { planService } from '../apis/plan';
-import { gameService } from '../apis/game';
 import { formatCpu, formatSecondsToTime, formatVnd } from '../utils/common';
-import { PlanDto } from '../dtos/plan';
 import useVuelidate from '@vuelidate/core';
 import { maxLength, required } from '@vuelidate/validators';
 import { computed } from 'vue';
-import { GameDto } from '../dtos/game';
 import { cloudService } from '../apis/cloud';
 import { router } from '../router';
+import { nextTick } from 'vue';
+import { useGameStore } from '../stores/game.store';
+import { usePlanStore } from '../stores/plan.store';
+
+const gameStore = useGameStore();
+const planStore = usePlanStore();
 
 const state = reactive({
-  masterData:{
-    plan: [] as any[],
-    game: [] as any[],
-  },
   plan: '' as string | null,
   game: '' as string | null,
   name: '' as string | null,
-  fullMasterData: {
-    plan: [] as PlanDto[],
-    game: [] as GameDto[],
-  },
   isLoading: false,
   errorMessage: ''
 })
@@ -155,34 +149,33 @@ const rules = {
   }
 }
 
+const plans = computed(() => {
+  return planStore.master.map((plan) => ({
+    value: plan._id,
+    title: `${plan.name} (${formatSecondsToTime(plan.usageSecond)}) - ${formatVnd(plan.money)} - ${formatCpu(plan.cpu)} - FPS: ${plan.fps || 'Unlimited'}`
+  }))
+});
+
+const games = computed(() => {
+  return gameStore.master.map((game) => ({
+    value: game._id,
+    title: game.name,
+  }));
+});
+
 const planSelected = computed(() => {
-  return state.fullMasterData.plan.find((plan) => plan._id === state.plan)
+  return planStore.master.find((plan) => plan._id === state.plan);
 })
 
 const isDisable = computed(() => {
   return v$.value.$invalid;
-})
+});
 
-const v$ = useVuelidate(rules, state)
+const v$ = useVuelidate(rules, state);
 
 onMounted(() => {
-  planService.getAll()
-    .then((rs) => {
-      state.fullMasterData.plan = rs;
-      state.masterData.plan = rs.map((plan) => ({
-        value: plan._id,
-        title: `${plan.name} (${formatSecondsToTime(plan.usageSecond)}) - ${formatVnd(plan.money)} - ${formatCpu(plan.cpu)} - FPS: ${plan.fps || 'Unlimited'}`
-      }))
-    })
-
-  gameService.getAll()
-    .then((rs) => {
-      state.fullMasterData.game = rs;
-      state.masterData.game = rs.map((game) => ({
-        value: game._id,
-        title: game.name,
-      }));
-    })
+  planStore.loadAll();
+  gameStore.loadAll();
 });
 
 const onCreate = () => {
@@ -192,7 +185,9 @@ const onCreate = () => {
     planId: state.plan as string,
     name: state.name as string
   }).then(() => {
-    router.push('/manage');
+    nextTick(() => {
+      router.push('/manage');
+    })
   }).catch((e) => {
     state.errorMessage = e.response?.data?.message || 'Unknown'
   }).finally(() => {

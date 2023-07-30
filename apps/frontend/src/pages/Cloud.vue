@@ -27,11 +27,10 @@
       </v-card-item>
     </v-card>
 
-    <CloudItem />
-    <CloudItem />
-    <CloudItem />
-    <CloudItem />
-    <CloudItem />
+    <CloudItem
+      v-for="cloud of cloudStore.list"
+      :cloud="cloud"
+      />
   </div>
 </template>
 
@@ -39,6 +38,20 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent, shallowRef } from 'vue';
+import { useGameStore } from '../stores/game.store';
+import { useCloudStore } from '../stores/cloud.store';
+import { onMounted } from 'vue';
+import { usePlanStore } from '../stores/plan.store';
 
 const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
+
+const gameStore = useGameStore();
+const cloudStore = useCloudStore();
+const planStore = usePlanStore();
+
+onMounted(() => {
+  gameStore.loadAll();
+  planStore.loadAll();
+  cloudStore.loadAll();
+})
 </script>

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsAlphanumeric, MaxLength, MinLength } from 'class-validator';
 import { IsObjectId } from 'src/validators/is-object-id.validate';
 
 export class CloudCreateRequest {
@@ -12,7 +12,7 @@ export class CloudCreateRequest {
   planId: string;
 
   @ApiProperty()
-  @IsString()
+  @IsAlphanumeric()
   @MaxLength(50)
   @MinLength(1)
   name: string;

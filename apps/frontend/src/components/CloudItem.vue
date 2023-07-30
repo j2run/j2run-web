@@ -14,18 +14,20 @@
           start
         ></v-icon>
 
-        <span class="text-medium-emphasis font-weight-bold">Cloud 1</span>
+        <span class="text-medium-emphasis font-weight-bold">
+          {{ planCurrent?.name || props.cloud.planId }}
+        </span>
 
         <v-spacer></v-spacer>
 
-        <span class="text-medium-emphasis font-weight-bold">23/08/2023 - 9:00 PM</span>
+        <span class="text-medium-emphasis font-weight-bold">{{ expirationDate }}</span>
       </v-card-title>
 
       <div class="py-2">
-        <div class="text-h6">Live Q&A</div>
+        <div class="text-h6">{{ props.cloud.name || props.cloud._id }}</div>
 
         <div class="font-weight-light text-medium-emphasis">
-          Join the Vuetify team for a live Question and Answer session.
+          {{ gameCurrent.name || props.cloud.gameId }}
         </div>
         <CloudJob />
       </div>
@@ -35,12 +37,12 @@
 
     <div class="pa-4 d-flex align-center">
       <v-icon
-        color="green"
+        :color="colorStage"
         icon="mdi-adjust"
         start
       ></v-icon>
       <span class="text-overline">
-        Hoạt động
+        {{ props.cloud.status }}
       </span>
 
       <v-spacer></v-spacer>
@@ -72,13 +74,49 @@
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, defineAsyncComponent } from 'vue';
+import { shallowRef, defineAsyncComponent, PropType, computed } from 'vue';
+import { CloudDto } from '../dtos/cloud';
+import { useGameStore } from '../stores/game.store';
+import { usePlanStore } from '../stores/plan.store';
+import moment from 'moment';
 
 
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
 const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue')));
 const CloudGameButton = shallowRef(defineAsyncComponent(() => import('./CloudGameButton.vue')));
+
+const gameStore = useGameStore();
+const planStore = usePlanStore();
+
+const props = defineProps({
+  cloud: {
+    type: Object as PropType<CloudDto>,
+    required: true,
+  }
+});
+
+const planCurrent = computed(() => {
+  return planStore.masterMap[props.cloud.planId];
+});
+
+const gameCurrent = computed(() => {
+  return gameStore.masterMap[props.cloud.gameId];
+});
+
+const expirationDate = computed(() => {
+  return moment(props.cloud.expirationDate).format('DD/MM/YYYY H:mm:ss');
+})
+
+const colorStage = computed(() => {
+  if (props.cloud.stage === 'running') {
+    return 'green';
+  }
+  if (props.cloud.stage === 'restarting' || props.cloud.stage === 'removing') {
+    return 'orange';
+  }
+  return 'red';
+})
 
 
 </script>
