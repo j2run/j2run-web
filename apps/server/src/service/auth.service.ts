@@ -38,6 +38,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    delete user.password;
     const response: LoginResponse = {
       user,
       accessToken: await this.signAccess(user._id),

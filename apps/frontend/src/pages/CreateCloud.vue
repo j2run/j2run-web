@@ -37,7 +37,7 @@
             variant="tonal"
           >
             <v-card-text class="text-medium-emphasis text-caption">
-              Cảnh báo: Hiện tại bạn sẽ không thể thay đổi game sau khi nhấn 'tạo mới'
+              Cảnh báo: Hiện tại, chúng tôi cung cấp một số trò chơi phổ biến. Nếu trò chơi mà bạn muốn không có trong danh sách của chúng tôi, hãy yêu cầu qua Zalo. Chúng tôi sẽ xem xét và xử lý yêu cầu của bạn trong khoảng thời gian từ 15 phút đến 24 giờ. Rất mong được hỗ trợ bạn!
             </v-card-text>
           </v-card>
 

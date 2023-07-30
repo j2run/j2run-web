@@ -12,6 +12,12 @@
       elevation="2"
       rounded="lg"
     >
+      <v-alert
+        v-if="!!state.errorMessage"
+        type="error"
+        class="mb-3"
+        :text="state.errorMessage"
+      ></v-alert>
       <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
       <v-text-field
         v-model="state.email"
@@ -68,6 +74,8 @@
           color="blue"
           size="large"
           variant="tonal"
+          :loading="state.isLoading"
+          @click="onLogin"
         >
           Đăng nhập
         </v-btn>
@@ -103,8 +111,9 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { email, required } from '@vuelidate/validators'
+import { email, maxLength, minLength, required } from '@vuelidate/validators'
 import j2runLogo from '../assets/j2run-logo.png'
+import { useAuthStore } from '../stores/auth.store';
 
 const initialState = {
   password: '',
@@ -114,12 +123,31 @@ const initialState = {
 
 const state = reactive({
   ...initialState,
+  isLoading: false,
+  errorMessage: ''
 })
 
 const rules = {
-  password: { required },
+  password: {
+    required,
+    minLength: minLength(6),
+    maxLength: maxLength(32),
+  },
   email: { required, email },
 }
 
 const v$ = useVuelidate(rules, state)
+const authStore = useAuthStore();
+
+const onLogin = async () => {
+  if (v$.value.$invalid) {
+    return;
+  }
+  state.isLoading = true;
+  await authStore.login(state.email, state.password)
+    .finally(() => state.isLoading = false)
+    .catch((e) => {
+      state.errorMessage = e.response?.data?.message || 'Unknown'
+    });
+}
 </script>

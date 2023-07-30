@@ -38,6 +38,7 @@
 
           <v-list-item-title v-text="item.text"></v-list-item-title>
         </v-list-item>
+        <Logout />
       </v-list>
     </v-navigation-drawer>
 
@@ -55,15 +56,16 @@
 <style scoped lang="scss"></style>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { defineAsyncComponent, reactive, shallowRef } from 'vue';
 import { ref } from 'vue'
+
+const Logout = shallowRef(defineAsyncComponent(() => import('../Logout.vue')));
 
 const state = reactive({
   items: [
     { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
     { text: 'Hóa đơn', icon: 'mdi-receipt-text', to: '/manage/invoice' },
     { text: 'Cửa sổ', icon: 'mdi-remote-desktop', to: '/remote-dock' },
-    { text: 'Đăng xuất', icon: 'mdi-logout', to: '/manage/logout' },
   ],
 });
 

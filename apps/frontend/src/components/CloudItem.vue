@@ -3,6 +3,7 @@
     class="ma-4"
     rounded="lg"
     variant="flat"
+    color="#fefefe"
     border
   >
     <v-card-item>
@@ -12,7 +13,6 @@
           icon="mdi-laptop"
           start
         ></v-icon>
-
 
         <span class="text-medium-emphasis font-weight-bold">Cloud 1</span>
 
@@ -54,6 +54,8 @@
         Điều khiển
       </v-btn>
 
+      <CloudGameButton />
+
       <CloudConfirmButton
         icon="mdi-restart"
         label="Khởi động lại"
@@ -76,6 +78,7 @@ import { shallowRef, defineAsyncComponent } from 'vue';
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
 const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue')));
+const CloudGameButton = shallowRef(defineAsyncComponent(() => import('./CloudGameButton.vue')));
 
 
 </script>

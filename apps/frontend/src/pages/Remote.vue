@@ -47,7 +47,8 @@
             v-for="window of state.windows"
             :resizable="false"
             :key="window._id"
-            :x="400"
+            :x="state.initialX[window._id]"
+            :y="state.initialY[window._id]"
             @mousedown="onMoveTop(window)"
           >
             <div class="window">
@@ -152,6 +153,8 @@ const state = reactive({
   hasDrag: false,
   drawer: true,
   rail: true,
+  initialX: {} as { [key: string]: number },
+  initialY: {} as { [key: string]: number },
   windows: [] as CloudDto[],
   allWindows: [
     {
@@ -184,6 +187,8 @@ const onBlurDrag = () => {
 }
 
 const onAdd = (window: CloudDto) => {
+  state.initialX[window._id] = Math.round(Math.random() * 300 + 200);
+  state.initialY[window._id] = Math.round(Math.random() * 300);
   state.windows.push(window);
 }
 
