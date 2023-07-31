@@ -29,7 +29,7 @@
         <div class="font-weight-light text-medium-emphasis">
           {{ gameCurrent.name || props.cloud.gameId }}
         </div>
-        <CloudJob />
+        <!-- <CloudJob /> -->
       </div>
     </v-card-item>
 
