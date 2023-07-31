@@ -11,7 +11,11 @@ import { ExpressAdapter } from '@bull-board/express';
 import { AppModule } from './app.module';
 import { cors } from './configs/cors.config';
 import { ConfigService } from '@nestjs/config';
-import { JOB_NAME_DOCKER, JOB_NAME_SUBSCRIPTION } from './constants/job.constant';
+import {
+  JOB_NAME_DOCKER,
+  JOB_NAME_SUBSCRIPTION,
+} from './constants/job.constant';
+import { ValidationPipe } from '@nestjs/common';
 
 let timeSuperLoginError = new Date().getTime();
 
@@ -37,6 +41,12 @@ function factorySuperAuthorizer(configService: ConfigService) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
   const configService = app.get(ConfigService);
   const superAuthorizer = factorySuperAuthorizer(configService);
   app.enableCors({

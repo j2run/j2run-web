@@ -4,6 +4,7 @@ import { ServicesModule } from 'src/service/services.module';
 import { PlanController } from './plan.controller';
 import { GameController } from './game.controller';
 import { CloudController } from './cloud.controller';
+import { InvoiceCloudController } from './invoice-cloud.controller';
 
 @Module({
   controllers: [
@@ -11,6 +12,7 @@ import { CloudController } from './cloud.controller';
     PlanController,
     GameController,
     CloudController,
+    InvoiceCloudController,
   ],
   imports: [ServicesModule],
 })

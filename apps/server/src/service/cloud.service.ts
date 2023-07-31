@@ -67,6 +67,9 @@ export class CloudService {
       .select(
         '_id planId gameId name forwardIp forwardPort status stage expirationDate password isAutoRenew createdAt deleteAt',
       )
+      .sort({
+        createdAt: 'desc',
+      })
       .exec();
   }
 
@@ -93,6 +96,7 @@ export class CloudService {
     const invoice = await this.invoiceCloudModel.create({
       planId: new Types.ObjectId(dto.planId),
       gameId: new Types.ObjectId(dto.gameId),
+      userId: new Types.ObjectId(user._id),
       money: plan.money,
       status: 'waiting',
     });

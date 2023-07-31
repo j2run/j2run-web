@@ -6,7 +6,11 @@ import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 import { ControllerModule } from './controller/controller.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), ServicesModule, ControllerModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ServicesModule,
+    ControllerModule,
+  ],
   controllers: [],
   providers: [JwtAccessStrategy, JwtRefreshStrategy],
 })

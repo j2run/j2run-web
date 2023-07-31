@@ -28,3 +28,10 @@ export function formatSecondsToTime(seconds: number) {
 
   return `${seconds} giây`;
 }
+
+export function list2map<T>(objs: T[], key: keyof T) {
+  return objs.reduce<SMap<T>>((val, item) => {
+    val[item[key] as string] = item;
+    return val;
+  }, {});
+}

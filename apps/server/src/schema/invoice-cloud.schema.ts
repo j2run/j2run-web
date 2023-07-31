@@ -21,11 +21,30 @@ export class InvoiceCloud extends SchemaDto {
 
   @ApiProperty()
   @Prop()
+  userId: Types.ObjectId;
+
+  @ApiProperty()
+  @Prop()
   money: number;
 
   @ApiProperty()
   @Prop()
   status: InvoiceCloudStatus;
+
+  @ApiProperty()
+  @Prop()
+  isViewed: boolean;
 }
 
 export const InvoiceCloudSchema = SchemaFactory.createForClass(InvoiceCloud);
+
+InvoiceCloudSchema.index({
+  status: 1,
+  userId: 1,
+});
+
+InvoiceCloudSchema.index({
+  status: 1,
+  userId: 1,
+  isViewed: 1,
+});

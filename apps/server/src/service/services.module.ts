@@ -18,6 +18,7 @@ import { QueueDockerService } from './queue-docker.service';
 import { QueueDockerProcessor } from './queue-docker.processor';
 import { QueueSubscriptionService } from './queue-subscription.service';
 import { QueueSubscriptionProcessor } from './queue-subscription.processor';
+import { InvoiceCloudService } from './invoice-cloud.service';
 
 const services = [
   J2ContainerService,
@@ -33,6 +34,7 @@ const services = [
   QueueDockerProcessor,
   QueueSubscriptionService,
   QueueSubscriptionProcessor,
+  InvoiceCloudService,
 ];
 
 @Module({

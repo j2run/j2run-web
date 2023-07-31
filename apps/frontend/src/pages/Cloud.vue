@@ -27,6 +27,9 @@
       </v-card-item>
     </v-card>
 
+    <div v-for="ic of invoiceCloudStore.error">{{ ic._id }}</div>
+    <div v-for="ic of invoiceCloudStore.doing">{{ ic._id }}</div>
+
     <CloudItem
       v-for="cloud of cloudStore.list"
       :cloud="cloud"
@@ -42,16 +45,19 @@ import { useGameStore } from '../stores/game.store';
 import { useCloudStore } from '../stores/cloud.store';
 import { onMounted } from 'vue';
 import { usePlanStore } from '../stores/plan.store';
+import { useInvoiceCloudStore } from '../stores/invoice-cloud.store';
 
 const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
 
 const gameStore = useGameStore();
 const cloudStore = useCloudStore();
 const planStore = usePlanStore();
+const invoiceCloudStore = useInvoiceCloudStore();
 
 onMounted(() => {
   gameStore.loadAll();
   planStore.loadAll();
   cloudStore.loadAll();
+  invoiceCloudStore.loadAll();
 })
 </script>
