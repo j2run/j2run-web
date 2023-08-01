@@ -27,13 +27,13 @@
 
         <v-list density="compact" nav>
           <v-list-item
-            v-for="window of state.allWindows"
+            v-for="window of listWindows"
             prepend-icon="mdi-remote-desktop"
             :active="isDisableMap[window._id] || false"
             :disabled="isDisableMap[window._id]"
             :title="window.name || window._id"
             :value="window._id"
-            @click="onAdd(window)"
+            @click="cloudStore.addSelected(window)"
           ></v-list-item>
 
           <RemoteExitButton />
@@ -44,18 +44,26 @@
       <v-main style="height: 100vh;">
         <div class="main" v-bind:class="{ 'has-drag': state.hasDrag }">
           <vue-draggable-resizable 
-            v-for="window of state.windows"
+            v-for="window of windows"
             :resizable="false"
             :key="window._id"
-            :x="state.initialX[window._id]"
-            :y="state.initialY[window._id]"
-            @mousedown="onMoveTop(window)"
+            :x="cloudStore.initialX[window._id]"
+            :y="cloudStore.initialY[window._id]"
+            @mousedown="cloudStore.moveTopSelected(window)"
           >
             <div class="window">
               <div class="header-window" @mouseenter="onHoverDrag" @mouseleave="onBlurDrag">
-                <div>
-                  {{ window.name }}
-                  <v-btn size="auto" variant="text" density="compact" @click="onRestart(window)">
+                <div style="display: flex;">
+                  <span class="title-window">
+                    {{ window.name || window._id }}
+                  </span>
+                  <v-btn
+                    :loading="isLoadingRestartMap[window._id]"
+                    size="auto"
+                    variant="text"
+                    density="compact"
+                    @click="onRestart(window)"
+                  >
                     <v-icon>mdi-restart</v-icon>
                     <v-tooltip
                       activator="parent"
@@ -63,7 +71,7 @@
                     >Restart</v-tooltip>
                   </v-btn>
                 </div>
-                <v-btn size="auto" variant="text" density="compact"  @click="onRemove(window)">
+                <v-btn size="auto" variant="text" density="compact"  @click="cloudStore.removeSelected(window)">
                   <v-icon>mdi-window-close</v-icon>
                   <v-tooltip
                     activator="parent"
@@ -135,48 +143,88 @@
     }
   }
 }
+
+.title-window {
+  display: inline-block;
+  white-space: nowrap; 
+  max-width: 150px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { computed } from 'vue';
 import { shallowRef } from 'vue';
 import { defineAsyncComponent } from 'vue';
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
 import { CloudDto } from '../dtos/cloud';
+import { useCloudStore } from '../stores/cloud.store';
+import { onMounted } from 'vue';
+import { useCloudActionStore } from '../stores/cloud-action.store';
+import { cloudService } from '../apis/cloud';
+import { CloudActionType } from '../dtos/cloud-action';
 
 const VueDraggableResizable = shallowRef(defineAsyncComponent(() => import('vue3-draggable-resizable')));
 const Novnc = shallowRef(defineAsyncComponent(() => import('../components/Novnc.vue')));
 const RemoteExitButton = shallowRef(defineAsyncComponent(() => import('../components/RemoteExitButton.vue')));
 
+const cloudStore = useCloudStore();
+const cloudActionStore = useCloudActionStore();
+const reloadActionCloudRef = ref<any>();
+
 const state = reactive({
   hasDrag: false,
   drawer: true,
   rail: true,
-  initialX: {} as { [key: string]: number },
-  initialY: {} as { [key: string]: number },
-  windows: [] as CloudDto[],
-  allWindows: [
-    {
-      _id: 'abc',
-      name: 'Test 1',
-      forwardIp: '172.16.10.101',
-      forwardPort: 32769,
-      password: '#X9Mro8Z'
-    },
-    {
-      _id: '64be77da2f4302242e82ec31',
-      forwardIp: '172.16.10.101',
-      forwardPort: 32769,
-      password: '#X9Mro8Z'
-    },
-  ] as CloudDto[],
-})
+});
 
-const isDisableMap = computed(() => state.windows.reduce((val, item) => {
+const listWindows = computed(() => {
+  return cloudStore.list.filter((cloud) => cloud.stage === 'running');
+});
+
+const windows = computed(() => {
+  return cloudStore.cloudSelected.map((id) => cloudStore.listMap[id])
+});
+
+const isDisableMap = computed(() => windows.value.reduce((val, item) => {
   val[item._id] = true;
   return val;
-}, {} as { [key: string]: boolean }))
+}, {} as { [key: string]: boolean }));
+
+const isLoadingRestartMap = computed(() => cloudActionStore.master.reduce((val, item) => {
+  val[item.dockerContainerId] = val[item.dockerContainerId] || item.jobDockerType === CloudActionType.Restart;
+  return val;
+}, {} as SMap<boolean>));
+
+
+watch(() => cloudActionStore.master, (current) => {
+  if (current?.length) {
+    if (!reloadActionCloudRef.value) {
+      console.log('register reload action!');
+      reloadActionCloudRef.value = setInterval(() => {
+        cloudActionStore.loadAll();
+      }, 2000); 
+    }
+  } else {
+    if (!!reloadActionCloudRef.value) {
+      console.log('clear reload action!');
+      clearInterval(reloadActionCloudRef.value);
+      reloadActionCloudRef.value = null;
+    }
+  }
+})
+
+watch(() => cloudActionStore.masterLength, (current, prev) => {
+  if (current < prev) {
+    cloudStore.loadAll(true);
+  }
+})
+
+onMounted(() => {
+  cloudStore.loadAll();
+})
 
 const onHoverDrag = () => {
   state.hasDrag = true;
@@ -186,25 +234,12 @@ const onBlurDrag = () => {
   state.hasDrag = false;
 }
 
-const onAdd = (window: CloudDto) => {
-  state.initialX[window._id] = Math.round(Math.random() * 300 + 200);
-  state.initialY[window._id] = Math.round(Math.random() * 300);
-  state.windows.push(window);
-}
-
 const onRestart = (window: CloudDto) => {
-  console.log(window);
-}
-
-const onRemove = (window: CloudDto) => {
-  state.windows = state.windows.filter(w => w != window);
-}
-
-const onMoveTop = (window: CloudDto) => {
-  state.windows = [
-    ...state.windows.filter(w => w != window),
-    window,
-  ];
+  cloudService.restart(window._id)
+    .then(() => {})
+    .finally(() => {
+      cloudActionStore.loadAll();
+    })
 }
 
 </script>

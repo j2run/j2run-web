@@ -1,15 +1,18 @@
 <template>
   <div>
-    <div class="loading" v-if="state.isLoading">
+    <div class="loading" v-if="state.isLoading || state.retry > 0">
       <v-progress-circular
         :size="30"
         color="#fff"
         indeterminate
       ></v-progress-circular>
+      <div class="mt-5">
+        Retry... ({{ state.retry + 1 }})
+      </div>
     </div>
     <div
       class="window"
-      v-bind:class="{ 'is-hidden': state.isLoading }"
+      v-bind:class="{ 'is-hidden': state.isLoading || state.retry > 0 }"
       ref="novncContainer"
     ></div>
   </div>
@@ -22,6 +25,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  color: aliceblue;
 }
 .window {
   display: inline-block;
@@ -34,21 +39,38 @@
 
 <script lang="ts" setup>
 import RFB from '@novnc/novnc/core/rfb.js';
+import { watch } from 'vue';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
 const props = defineProps(['ip', 'port', 'password']);
-const { ip, port, password } = props;
+const tre = ref();
 
 const novncContainer = ref<HTMLDivElement>();
 const state = reactive({
   novnc: null as RFB | null,
   isLoading: false,
+  retry: 0,
 });
 
+watch(() => props.port, () => {
+  newConnect();
+});
 
 onMounted(function () {
-  console.log('mount');
+  newConnect();
+})
+
+onUnmounted(function () {
+})
+
+const newConnect = () => {
+  console.log('create new remote!', props);
   state.isLoading = true;
+  if (state.novnc) {
+    state.novnc.disconnect();
+  }
+  clearTimeout(tre.value);
+  const { ip, port, password } = props;
   const element = novncContainer.value as unknown as HTMLDivElement;
   const novnc = new RFB(element, `ws://${ip}:${port}`, {
     credentials: {
@@ -63,12 +85,14 @@ onMounted(function () {
     const desktopHeight = novnc._display._fbHeight;
     element.style.width = desktopWidth + 4 + 'px';
     element.style.height = desktopHeight + 4 + 'px';
+    state.retry = 0;
+  });
+  novnc.addEventListener('disconnect', () => {
+    state.isLoading = false;
+    state.retry++;
+    tre.value = setTimeout(() => newConnect(), 1000);
   });
   state.novnc = novnc;
-})
-
-onUnmounted(function () {
-  console.log('unmount');
-})
+}
 
 </script>

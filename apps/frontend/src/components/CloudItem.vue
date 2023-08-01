@@ -53,6 +53,7 @@
         variant="text"
         class="mr-1"
         :disabled="props.cloud.stage !== 'running' || states.isConfirmLoading || isActionDisabled"
+        @click="onRemote()"
       >
         Điều khiển
       </v-btn>
@@ -103,6 +104,8 @@ import moment from 'moment';
 import { useCloudActionStore } from '../stores/cloud-action.store';
 import { reactive } from 'vue';
 import { cloudService } from '../apis/cloud';
+import { useCloudStore } from '../stores/cloud.store';
+import { router } from '../router';
 
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
@@ -112,6 +115,7 @@ const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue'))
 const gameStore = useGameStore();
 const planStore = usePlanStore();
 const cloudActionStore = useCloudActionStore();
+const cloudStore = useCloudStore();
 
 const props = defineProps({
   cloud: {
@@ -184,4 +188,8 @@ const onStart = () => {
     })
 }
 
+const onRemote = () => {
+  cloudStore.addSelected(props.cloud);
+  router.push('/remote-dock');
+}
 </script>
