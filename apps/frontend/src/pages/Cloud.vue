@@ -134,10 +134,15 @@ watch(() => cloudActionStore.master, (current) => {
   } else {
     if (!!reloadActionCloudRef.value) {
       console.log('clear reload action!');
-      cloudStore.loadAll(true);
       clearInterval(reloadActionCloudRef.value);
       reloadActionCloudRef.value = null;
     }
+  }
+})
+
+watch(() => cloudActionStore.masterLength, (current, prev) => {
+  if (current < prev) {
+    cloudStore.loadAll(true);
   }
 })
 
@@ -153,6 +158,11 @@ onMounted(() => {
 onUnmounted(() => {
   if (!!reloadInvoiceCloudRef.value) {
     clearInterval(reloadInvoiceCloudRef.value);
+    reloadInvoiceCloudRef.value = null;
+  }
+  if (!!reloadActionCloudRef.value) {
+    clearInterval(reloadActionCloudRef.value);
+    reloadActionCloudRef.value = null;
   }
 })
 
