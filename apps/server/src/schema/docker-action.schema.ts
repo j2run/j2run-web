@@ -30,8 +30,14 @@ export class DockerAction extends SchemaDto {
 export const DockerActionSchema = SchemaFactory.createForClass(DockerAction);
 
 DockerActionSchema.index({ userId: 1, dockerContainerId: 1 });
+
 DockerActionSchema.index({
   userId: 1,
   dockerContainerId: 1,
+  jobDockerStatus: 1,
+});
+
+DockerActionSchema.index({
+  userId: 1,
   jobDockerStatus: 1,
 });

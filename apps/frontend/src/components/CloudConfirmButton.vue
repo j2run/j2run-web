@@ -12,6 +12,8 @@
           variant="text"
           class="mr-1"
           color="orange"
+          :disabled="gp.disabled"
+          :loading="gp.loading"
         >
           {{gp.label}}
         </v-btn>
@@ -32,7 +34,7 @@
           <v-btn
             color="primary"
             variant="text"
-            @click="state.menu = false"
+            @click="go"
           >
             Có
           </v-btn>
@@ -45,10 +47,15 @@
 <script lang="ts" setup>
 import { reactive } from 'vue';
 
-const gp = defineProps(['icon', 'label', 'message']);
-
-
+const gp = defineProps(['icon', 'label', 'message', 'disabled', 'loading']);
+const emit = defineEmits(['submit'])
+    
 const state = reactive({
   menu: false,
 });
+
+const go = () => {
+  state.menu = false;
+  emit('submit');
+}
 </script>

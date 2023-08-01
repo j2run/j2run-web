@@ -37,7 +37,7 @@
       >
         <span>
           #{{ ic._id }} <br />
-          Đang khởi tạo máy chủ
+          Đang khởi tạo máy ảo
         </span>
         <v-progress-linear
           class="mt-3"
@@ -67,6 +67,9 @@
       v-for="cloud of cloudStore.list"
       :cloud="cloud"
       />
+    <v-sheet v-if="cloudStore.list.length === 0">
+      <div class="text-center text-overline ma-4">Chưa có máy ảo nào được khởi tạo</div>
+    </v-sheet>
   </div>
 </template>
 
@@ -87,6 +90,7 @@ import { ref } from 'vue';
 import { watch } from 'vue';
 import { onUnmounted } from 'vue';
 import { InvoiceCloudDto } from '../dtos/invoice-cloud';
+import { useCloudActionStore } from '../stores/cloud-action.store';
 
 const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
 
@@ -94,8 +98,10 @@ const gameStore = useGameStore();
 const cloudStore = useCloudStore();
 const planStore = usePlanStore();
 const invoiceCloudStore = useInvoiceCloudStore();
+const cloudActionStore = useCloudActionStore();
 
 const reloadInvoiceCloudRef = ref<any>();
+const reloadActionCloudRef = ref<any>();
 
 watch(() => invoiceCloudStore.doing, (current) => {
   if (current?.length) {
@@ -103,13 +109,34 @@ watch(() => invoiceCloudStore.doing, (current) => {
       console.log('register reload doing!');
       reloadInvoiceCloudRef.value = setInterval(() => {
         invoiceCloudStore.loadDoing();
-        invoiceCloudStore.loadError();
       }, 2000); 
     }
   } else {
     if (!!reloadInvoiceCloudRef.value) {
       console.log('clear reload doing!');
+      invoiceCloudStore.loadError();
+      cloudStore.loadAll(true);
       clearInterval(reloadInvoiceCloudRef.value);
+      reloadInvoiceCloudRef.value = null;
+    }
+  }
+})
+
+
+watch(() => cloudActionStore.master, (current) => {
+  if (current?.length) {
+    if (!reloadActionCloudRef.value) {
+      console.log('register reload action!');
+      reloadActionCloudRef.value = setInterval(() => {
+        cloudActionStore.loadAll();
+      }, 2000); 
+    }
+  } else {
+    if (!!reloadActionCloudRef.value) {
+      console.log('clear reload action!');
+      cloudStore.loadAll(true);
+      clearInterval(reloadActionCloudRef.value);
+      reloadActionCloudRef.value = null;
     }
   }
 })
@@ -120,6 +147,7 @@ onMounted(() => {
   cloudStore.loadAll();
   invoiceCloudStore.loadDoing();
   invoiceCloudStore.loadError();
+  cloudActionStore.loadAll();
 })
 
 onUnmounted(() => {

@@ -29,7 +29,7 @@
         <div class="font-weight-light text-medium-emphasis">
           {{ gameCurrent.name || props.cloud.gameId }}
         </div>
-        <!-- <CloudJob /> -->
+        <CloudJob v-for="action of actions" :action="action" />
       </div>
     </v-card-item>
 
@@ -52,23 +52,44 @@
         prepend-icon="mdi-remote-desktop"
         variant="text"
         class="mr-1"
+        :disabled="props.cloud.stage !== 'running' || states.isConfirmLoading || isActionDisabled"
       >
         Điều khiển
       </v-btn>
 
-      <CloudGameButton />
+      <!-- <CloudGameButton /> -->
 
       <CloudConfirmButton
-        icon="mdi-restart"
-        label="Khởi động lại"
-        message="Bạn có muốn khởi động lại không?"
-      />
-      <CloudConfirmButton
+        v-if="props.cloud.stage !== 'running'"
         icon="mdi-power"
-        label="Tắt"
-        message="Bạn có muốn tắt không?"
+        label="Khởi động"
+        message="Bạn có muốn khởi động không?"
+        :loading="states.isConfirmLoading"
+        :disabled="isActionDisabled"
+        @submit="onStart"
       />
-      <CloudDeleteButton />
+      <template v-if="props.cloud.stage === 'running'">
+        <CloudConfirmButton
+          icon="mdi-restart"
+          label="Khởi động lại"
+          message="Bạn có muốn khởi động lại không?"
+          :loading="states.isConfirmLoading"
+          :disabled="isActionDisabled"
+          @submit="onRestart"
+        />
+        <CloudConfirmButton
+          icon="mdi-power"
+          label="Tắt"
+          message="Bạn có muốn tắt không?"
+          :loading="states.isConfirmLoading"
+          :disabled="isActionDisabled"
+          @submit="onStop"
+        />
+      </template>
+      <CloudDeleteButton
+        :cloud="props.cloud"
+        :disabled="isActionDisabled"
+        />
     </div>
   </v-card>
 </template>
@@ -79,15 +100,18 @@ import { CloudDto } from '../dtos/cloud';
 import { useGameStore } from '../stores/game.store';
 import { usePlanStore } from '../stores/plan.store';
 import moment from 'moment';
-
+import { useCloudActionStore } from '../stores/cloud-action.store';
+import { reactive } from 'vue';
+import { cloudService } from '../apis/cloud';
 
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
 const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue')));
-const CloudGameButton = shallowRef(defineAsyncComponent(() => import('./CloudGameButton.vue')));
+// const CloudGameButton = shallowRef(defineAsyncComponent(() => import('./CloudGameButton.vue')));
 
 const gameStore = useGameStore();
 const planStore = usePlanStore();
+const cloudActionStore = useCloudActionStore();
 
 const props = defineProps({
   cloud: {
@@ -95,6 +119,18 @@ const props = defineProps({
     required: true,
   }
 });
+
+const states = reactive({
+  isConfirmLoading: false
+})
+
+const actions = computed(() => {
+  return cloudActionStore.masterMap[props.cloud._id] || [];
+})
+
+const isActionDisabled = computed(() => {
+  return (cloudActionStore.masterMap[props.cloud._id] || []).length > 0;
+})
 
 const planCurrent = computed(() => {
   return planStore.masterMap[props.cloud.planId];
@@ -118,5 +154,34 @@ const colorStage = computed(() => {
   return 'red';
 })
 
+const onStop = () => {
+  states.isConfirmLoading = true;
+  cloudService.stop(props.cloud._id)
+    .then(() => {})
+    .finally(() => {
+      states.isConfirmLoading =  false;
+      cloudActionStore.loadAll();
+    })
+}
+
+const onRestart = () => {
+  states.isConfirmLoading = true;
+  cloudService.restart(props.cloud._id)
+    .then(() => {})
+    .finally(() => {
+      states.isConfirmLoading =  false;
+      cloudActionStore.loadAll();
+    })
+}
+
+const onStart = () => {
+  states.isConfirmLoading = true;
+  cloudService.start(props.cloud._id)
+    .then(() => {})
+    .finally(() => {
+      states.isConfirmLoading =  false;
+      cloudActionStore.loadAll();
+    })
+}
 
 </script>

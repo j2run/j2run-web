@@ -11,16 +11,17 @@
         prepend-icon="mdi-delete"
         variant="text"
         color="red"
+        :disabled="ps.disabled"
       >
         Xóa
       </v-btn>
     </template>
     <v-card>
       <v-card-title class="text-h5 mt-1">
-        Xóa "aejkakd" ?
+        Xóa "{{ ps.cloud.name || ps.cloud._id }}" ?
       </v-card-title>
       <v-card-text>
-        <v-checkbox :label="subTitle"></v-checkbox>
+        <v-checkbox :label="subTitle" v-model="state.isConfirm"></v-checkbox>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -34,7 +35,9 @@
         <v-btn
           color="red"
           variant="text"
-          @click="state.dialog = false"
+          :disabled="!state.isConfirm"
+          :loading="state.isLoading"
+          @click="onDelete"
         >
           Xóa
         </v-btn>
@@ -44,11 +47,40 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { PropType, reactive } from 'vue';
+import { CloudDto } from '../dtos/cloud';
+import { cloudService } from '../apis/cloud';
+import { useCloudActionStore } from '../stores/cloud-action.store';
+
+const ps = defineProps({
+  cloud: {
+    type: Object as PropType<CloudDto>,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+  }
+});
+
+const cloudActionStore = useCloudActionStore();
 
 const subTitle = 'Thời hạn gói hiện tại còn lại sẽ khônng được hoàn tiền, và không thể khôi phục thao tác này';
 
 const state = reactive({
-  dialog: false
+  dialog: false,
+  isConfirm: false,
+  isLoading: false,
 })
+
+const onDelete = () => {
+  state.isLoading = true;
+  cloudService.delete(ps.cloud._id)
+    .then(() => {
+      state.dialog = false;
+      cloudActionStore.loadAll();
+    })
+    .finally(() => {
+      state.isLoading = false;
+    })
+}
 </script>

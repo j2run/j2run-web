@@ -13,12 +13,16 @@ import { JwtConfig } from 'src/configs/jwt.config';
 import { CloudService } from './cloud.service';
 import { BullModule } from '@nestjs/bull';
 import { BullConfig } from 'src/configs/bull.config';
-import { JOB_NAME_DOCKER, JOB_NAME_SUBSCRIPTION } from 'src/constants/job.constant';
+import {
+  JOB_NAME_DOCKER,
+  JOB_NAME_SUBSCRIPTION,
+} from 'src/constants/job.constant';
 import { QueueDockerService } from './queue-docker.service';
 import { QueueDockerProcessor } from './queue-docker.processor';
 import { QueueSubscriptionService } from './queue-subscription.service';
 import { QueueSubscriptionProcessor } from './queue-subscription.processor';
 import { InvoiceCloudService } from './invoice-cloud.service';
+import { DockerActionService } from './docker-action.service';
 
 const services = [
   J2ContainerService,
@@ -35,6 +39,7 @@ const services = [
   QueueSubscriptionService,
   QueueSubscriptionProcessor,
   InvoiceCloudService,
+  DockerActionService,
 ];
 
 @Module({
