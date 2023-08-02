@@ -27,7 +27,10 @@ import {
   JobDockerType,
 } from 'src/dtos/job.dto';
 import { DockerContainer } from 'src/schema/docker-container.schema';
-import { DockerAction, DockerActionDocument } from 'src/schema/docker-action.schema';
+import {
+  DockerAction,
+  DockerActionDocument,
+} from 'src/schema/docker-action.schema';
 
 type J2ContainerServiceMethods = {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -79,6 +82,8 @@ export class QueueDockerProcessor {
         return await this.actionContainerProcess(job, 'stopContainer');
       case JobDockerType.Restart:
         return await this.actionContainerProcess(job, 'restartContainer');
+      case JobDockerType.RestartGame:
+        return await this.actionContainerProcess(job, 'restartGameContainer');
       case JobDockerType.Remove:
         return await this.actionContainerProcess(job, 'removeContainer');
     }
@@ -94,6 +99,7 @@ export class QueueDockerProcessor {
       case JobDockerType.Start:
       case JobDockerType.Stop:
       case JobDockerType.Restart:
+      case JobDockerType.RestartGame:
       case JobDockerType.Remove:
         return await this.actionContainerEnd(job, JobDockerStatus.Completed);
     }
@@ -109,6 +115,7 @@ export class QueueDockerProcessor {
       case JobDockerType.Start:
       case JobDockerType.Stop:
       case JobDockerType.Restart:
+      case JobDockerType.RestartGame:
       case JobDockerType.Remove:
         return await this.actionContainerEnd(job, JobDockerStatus.Failed);
     }

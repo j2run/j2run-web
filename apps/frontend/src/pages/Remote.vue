@@ -194,7 +194,9 @@ const isDisableMap = computed(() => windows.value.reduce((val, item) => {
 }, {} as { [key: string]: boolean }));
 
 const isLoadingRestartMap = computed(() => cloudActionStore.master.reduce((val, item) => {
-  val[item.dockerContainerId] = val[item.dockerContainerId] || item.jobDockerType === CloudActionType.Restart;
+  val[item.dockerContainerId] = val[item.dockerContainerId] || 
+    item.jobDockerType === CloudActionType.RestartGame ||
+    item.jobDockerType === CloudActionType.Restart;
   return val;
 }, {} as SMap<boolean>));
 
@@ -235,7 +237,7 @@ const onBlurDrag = () => {
 }
 
 const onRestart = (window: CloudDto) => {
-  cloudService.restart(window._id)
+  cloudService.restartGame(window._id)
     .then(() => {})
     .finally(() => {
       cloudActionStore.loadAll();

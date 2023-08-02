@@ -49,4 +49,13 @@ export class CloudController {
     const user = request.user as UserDocument;
     return this.cloudService.action(JobDockerType.Restart, dto, user);
   }
+
+  @Post('restart-game')
+  restartGame(
+    @Req() request: express.Request,
+    @Body() dto: CloudActionRequest,
+  ) {
+    const user = request.user as UserDocument;
+    return this.cloudService.action(JobDockerType.RestartGame, dto, user);
+  }
 }

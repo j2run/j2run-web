@@ -3,6 +3,7 @@ export enum CloudActionType {
   Start,
   Stop,
   Restart,
+  RestartGame,
   Remove,
   CronSync,
 }

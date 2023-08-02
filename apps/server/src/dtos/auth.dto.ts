@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsAlphanumeric,
-  IsEmail,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import { User } from 'src/schema/user.schema';
 
 export class JwtPayload {
@@ -14,7 +8,6 @@ export class JwtPayload {
 
 export class LoginRequest {
   @ApiProperty()
-  @IsAlphanumeric()
   @IsEmail()
   email: string;
 
@@ -38,7 +31,6 @@ export class LoginResponse {
 
 export class RegisterRequest {
   @ApiProperty()
-  @IsAlphanumeric()
   @IsEmail()
   email: string;
 

@@ -29,4 +29,9 @@ export const cloudService = {
       dockerContainerId: id,
     });
   },
+  restartGame: (id: string) => {
+    return axiosInstance.post('cloud/restart-game',  {
+      dockerContainerId: id,
+    });
+  },
 }

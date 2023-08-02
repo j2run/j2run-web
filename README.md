@@ -36,3 +36,5 @@ ssh root@172.16.10.101
 
 docker rm -f $(docker ps -aq)
 docker rmi $(docker images -aq)
+
+docker exec 2b bash -c "kill -15 \$(ps | grep 'java -jar' | awk '{print \$1}')"

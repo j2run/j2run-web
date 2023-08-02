@@ -387,6 +387,19 @@ export class J2ContainerService {
     );
   }
 
+  restartGameContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    return this.queryContainer(containerRow, progress, (container) => {
+      return this.command(container, [
+        'bash',
+        '-c',
+        "kill -15 $(ps | grep 'java -jar' | awk '{print $1}')",
+      ]);
+    });
+  }
+
   removeContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,
