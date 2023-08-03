@@ -23,6 +23,8 @@ import { QueueSubscriptionService } from './queue-subscription.service';
 import { QueueSubscriptionProcessor } from './queue-subscription.processor';
 import { InvoiceCloudService } from './invoice-cloud.service';
 import { DockerActionService } from './docker-action.service';
+import { SIBService } from './sib.service';
+import { EmailService } from './email.service';
 
 const services = [
   J2ContainerService,
@@ -40,6 +42,8 @@ const services = [
   QueueSubscriptionProcessor,
   InvoiceCloudService,
   DockerActionService,
+  SIBService,
+  EmailService,
 ];
 
 @Module({
