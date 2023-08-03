@@ -27,7 +27,7 @@
         <div class="text-h6">{{ props.cloud.name || props.cloud._id }}</div>
 
         <div class="font-weight-light text-medium-emphasis">
-          {{ gameCurrent.name || props.cloud.gameId }}
+          {{ gameCurrent?.name || props.cloud.gameId }}
         </div>
         <CloudJob v-for="action of actions" :action="action" />
       </div>
@@ -87,6 +87,10 @@
           @submit="onStop"
         />
       </template>
+      <CloudResetButton
+        :cloud="props.cloud"
+        :disabled="isActionDisabled"
+        />
       <CloudDeleteButton
         :cloud="props.cloud"
         :disabled="isActionDisabled"
@@ -110,7 +114,7 @@ import { router } from '../router';
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));
 const CloudJob = shallowRef(defineAsyncComponent(() => import('./CloudJob.vue')));
-// const CloudGameButton = shallowRef(defineAsyncComponent(() => import('./CloudGameButton.vue')));
+const CloudResetButton = shallowRef(defineAsyncComponent(() => import('./CloudResetButton.vue')));
 
 const gameStore = useGameStore();
 const planStore = usePlanStore();

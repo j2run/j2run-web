@@ -86,6 +86,8 @@ export class QueueDockerProcessor {
         return await this.actionContainerProcess(job, 'restartGameContainer');
       case JobDockerType.Remove:
         return await this.actionContainerProcess(job, 'removeContainer');
+      case JobDockerType.Reset:
+        return await this.actionContainerProcess(job, 'resetContainer');
     }
   }
 
@@ -101,6 +103,7 @@ export class QueueDockerProcessor {
       case JobDockerType.Restart:
       case JobDockerType.RestartGame:
       case JobDockerType.Remove:
+      case JobDockerType.Reset:
         return await this.actionContainerEnd(job, JobDockerStatus.Completed);
     }
   }
@@ -117,6 +120,7 @@ export class QueueDockerProcessor {
       case JobDockerType.Restart:
       case JobDockerType.RestartGame:
       case JobDockerType.Remove:
+      case JobDockerType.Reset:
         return await this.actionContainerEnd(job, JobDockerStatus.Failed);
     }
   }

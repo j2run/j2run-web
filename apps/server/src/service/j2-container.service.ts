@@ -400,6 +400,24 @@ export class J2ContainerService {
     });
   }
 
+  resetContainer(
+    containerRow: DockerContainerDocument,
+    progress: (val: number) => void,
+  ) {
+    return this.queryContainer(containerRow, progress, async (container) => {
+      await this.command(container, [
+        'bash',
+        '-c',
+        "find /root/.microemulator/ -mindepth 1 ! -name 'config2.xml' -exec rm -rf {} +",
+      ]);
+      return this.command(container, [
+        'bash',
+        '-c',
+        "kill -15 $(ps | grep 'java -jar' | awk '{print $1}')",
+      ]);
+    });
+  }
+
   removeContainer(
     containerRow: DockerContainerDocument,
     progress: (val: number) => void,

@@ -45,6 +45,7 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue';
 const props = defineProps(['ip', 'port', 'password']);
 const tre = ref();
 
+const isMounted = ref(false);
 const novncContainer = ref<HTMLDivElement>();
 const state = reactive({
   novnc: null as RFB | null,
@@ -57,20 +58,29 @@ watch(() => props.port, () => {
 });
 
 onMounted(function () {
+  isMounted.value = true;
   newConnect();
 })
 
 onUnmounted(function () {
+  console.log('disconnect remote!');
+  isMounted.value = false;
+  state.novnc.disconnect();
+  state.novnc = null;
 })
 
 const newConnect = () => {
-  console.log('create new remote!', props);
+  if (!isMounted.value) {
+    return;
+  }
+  console.log('create new remote!');
+  const { ip, port, password } = props;
   state.isLoading = true;
   if (state.novnc) {
     state.novnc.disconnect();
   }
   clearTimeout(tre.value);
-  const { ip, port, password } = props;
+  
   const element = novncContainer.value as unknown as HTMLDivElement;
   const novnc = new RFB(element, `ws://${ip}:${port}`, {
     credentials: {

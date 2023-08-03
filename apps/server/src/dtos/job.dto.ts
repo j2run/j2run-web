@@ -19,6 +19,7 @@ export enum JobDockerType {
   RestartGame,
   Remove,
   CronSync,
+  Reset,
 }
 
 export enum JobDockerStatus {

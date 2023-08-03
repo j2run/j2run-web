@@ -38,3 +38,4 @@ docker rm -f $(docker ps -aq)
 docker rmi $(docker images -aq)
 
 docker exec 2b bash -c "kill -15 \$(ps | grep 'java -jar' | awk '{print \$1}')"
+find /root/.microemulator/ -mindepth 1 ! -name 'config2.xml' -exec rm -rf {} +

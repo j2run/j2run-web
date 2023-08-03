@@ -34,4 +34,9 @@ export const cloudService = {
       dockerContainerId: id,
     });
   },
+  reset: (id: string) => {
+    return axiosInstance.post('cloud/reset',  {
+      dockerContainerId: id,
+    });
+  },
 }

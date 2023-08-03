@@ -6,6 +6,7 @@ export enum CloudActionType {
   RestartGame,
   Remove,
   CronSync,
+  Reset
 }
 
 export enum CloudActionStatus {
