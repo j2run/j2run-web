@@ -39,12 +39,6 @@ export class RegisterRequest {
   @MaxLength(32)
   @IsString()
   password: string;
-
-  @ApiProperty()
-  @MinLength(9)
-  @MaxLength(15)
-  @IsString()
-  phone: string;
 }
 
 export class RegisterResponse {

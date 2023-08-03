@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { v4 } from 'uuid';
 import {
   GetAccessTokenRequest,
   GetAccessTokenResponse,
@@ -18,6 +19,8 @@ import {
 } from 'src/dtos/auth.dto';
 import { UserService } from './user.service';
 import { UserDocument } from 'src/schema/user.schema';
+import { EmailService } from './email.service';
+import { emailAllows } from 'src/constants/email.constant';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +28,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async login(dto: LoginRequest): Promise<LoginResponse> {
@@ -36,6 +40,10 @@ export class AuthService {
     const isPasswordMatches = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordMatches) {
       throw new UnauthorizedException();
+    }
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException('Tài khoản chưa được xác minh');
     }
 
     delete user.password;
@@ -50,17 +58,27 @@ export class AuthService {
   async register(dto: RegisterRequest): Promise<RegisterResponse> {
     const user = await this.userService.findByEmail(dto.email);
     if (!!user) {
-      throw new ConflictException('User existed');
+      throw new ConflictException('Email tồn tại');
+    }
+
+    if (!emailAllows.includes(dto.email.split('@')[1])) {
+      throw new ConflictException(
+        'Chỉ hổ trợ cái email sau: ' + emailAllows.join(', '),
+      );
     }
 
     const newUser = {} as UserDocument;
     newUser.email = dto.email;
     newUser.password = await bcrypt.hash(dto.password, 12);
+    newUser.verifyToken = v4();
+    newUser.isVerified = false;
 
     const isCreated = await this.userService.insert(newUser);
     if (!isCreated?._id) {
       throw new InternalServerErrorException();
     }
+
+    await this.emailService.sendVerifyEmail(newUser.email, newUser.verifyToken);
 
     const response: RegisterResponse = {
       status: true,

@@ -20,6 +20,14 @@ export class User extends SchemaDto {
   @ApiProperty({ default: 0 })
   @Prop()
   balance: number;
+
+  @ApiProperty()
+  @Prop()
+  verifyToken: string;
+
+  @ApiProperty({ default: false })
+  @Prop()
+  isVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
