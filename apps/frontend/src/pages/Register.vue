@@ -7,10 +7,38 @@
     ></v-img>
 
     <v-card
+      class="mx-auto mt-4 border pa-1"
+      max-width="400px"
+      elevation="2"
+      rounded="lg"
+      v-if="state.registerDone"
+    >
+      <v-card-text>
+        <div class="text-h6">
+          Chào mừng bạn đã đăng ký thành công!
+        </div>
+        <br />
+        Vui lòng kiểm tra hộp thư đến của bạn để tìm email xác thực từ chúng tôi. Nếu bạn không nhận được email trong vòng vài phút, vui lòng kiểm tra hộp thư Spam hoặc thư rác.
+      </v-card-text>
+      <v-card-actions>
+        <v-card-text class="text-center">
+          <v-btn
+            variant="plain"
+            class="text-blue"
+            to="/login"
+          >
+          Đăng nhập
+          </v-btn>
+        </v-card-text>
+      </v-card-actions>
+    </v-card>
+
+    <v-card
       class="mx-auto mt-4 border pa-12 pb-8"
       max-width="400px"
       elevation="2"
       rounded="lg"
+      v-else
     >
       <v-alert
         v-if="!!state.toastMessage"
@@ -20,7 +48,7 @@
       ></v-alert>
       <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
       <v-text-field
-        v-model="state.email"
+        v-model.trim="state.email"
         :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
         density="compact"
         placeholder="Địa chỉ email"
@@ -33,14 +61,6 @@
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
         Mật khẩu
-
-        <!-- <a
-          class="text-caption text-decoration-none text-blue"
-          href="#"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Quên mật khẩu?</a> -->
       </div>
       <v-text-field
         v-model="state.password"
@@ -57,37 +77,45 @@
         @blur="v$.password.$touch"
       ></v-text-field>
 
-      <v-card
-          class="mb-12"
-          color="surface-variant"
-          variant="tonal"
-        >
-          <v-card-text class="text-medium-emphasis text-caption">
-            Cảnh báo: Sau 3 lần thất bại liên tiếp trong việc đăng nhập, tài khoản của bạn sẽ bị tạm khóa trong ba giờ. Nếu bạn cần đăng nhập ngay bây giờ, bạn cũng có thể nhấp vào "Quên mật khẩu?" phía dưới để đặt lại mật khẩu đăng nhập.
-          </v-card-text>
-        </v-card>
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Nhập lại mật khẩu
+      </div>
+      <v-text-field
+        v-model="state.confirmPassword"
+        :error-messages="v$.confirmPassword.$errors.map(e => e.$message as unknown as string)"
+        :append-inner-icon="state.visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="state.visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Nhập lại mật khẩu"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        required
+        @click:append-inner="state.visible = !state.visible"
+        @input="v$.confirmPassword.$touch"
+        @blur="v$.confirmPassword.$touch"
+      ></v-text-field>
 
+      <v-btn
+        block
+        class="mb-8"
+        color="blue"
+        size="large"
+        variant="tonal"
+        :loading="state.isLoading"
+        @click="onLogin"
+      >
+        Đăng ký
+      </v-btn>
+
+      <v-card-text class="text-center">
         <v-btn
-          block
-          class="mb-8"
-          color="blue"
-          size="large"
-          variant="tonal"
-          :loading="state.isLoading"
-          @click="onLogin"
+          variant="plain"
+          class="text-blue"
+          to="/login"
         >
-          Đăng nhập
+        <v-icon icon="mdi-chevron-left"></v-icon>Đã có tài khoản
         </v-btn>
-
-        <v-card-text class="text-center">
-          <v-btn
-            variant="plain"
-            class="text-blue"
-            to="/register"
-          >
-            Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
-          </v-btn>
-        </v-card-text>
+      </v-card-text>
     </v-card>
   </div>
 </template>
@@ -109,28 +137,27 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { email, maxLength, minLength, required } from '@vuelidate/validators'
+import { email, maxLength, minLength, required, sameAs } from '@vuelidate/validators'
 import j2runLogo from '../assets/j2run-logo.png'
-import { useAuthStore } from '../stores/auth.store';
 import { authService } from '../apis/auth';
-import { useRoute } from 'vue-router';
-import { onMounted } from 'vue';
-import { router } from '../router';
-
-const route = useRoute();
+import { computed } from 'vue';
 
 const initialState = {
   password: '',
+  confirmPassword: '',
   email: '',
-  visible: false
 }
 
 const state = reactive({
   ...initialState,
   isLoading: false,
+  visible: false,
+  registerDone: false,
   toastMessage: '',
   toastType: 'error' as "error" | "success" | "warning" | "info" | undefined,
-})
+});
+
+const passwordCmp = computed(() => state.password);
 
 const rules = {
   password: {
@@ -138,42 +165,27 @@ const rules = {
     minLength: minLength(6),
     maxLength: maxLength(32),
   },
+  confirmPassword: {
+    required, sameAsPassword: sameAs(passwordCmp) 
+  },
   email: { required, email },
-}
+};
 
-const v$ = useVuelidate(rules, state)
-const authStore = useAuthStore();
+const v$ = useVuelidate(rules, state);
 
 const onLogin = async () => {
   if (v$.value.$invalid) {
     return;
   }
   state.isLoading = true;
-  await authStore.login(state.email, state.password)
+  await authService.register(state.email, state.password)
     .finally(() => state.isLoading = false)
+    .then(() => {
+      state.registerDone = true;
+    })
     .catch((e) => {
       state.toastMessage = e.response?.data?.message || 'Unknown';
       state.toastType = 'error';
     });
 }
-
-onMounted(() => {
-  const qr = route.query;
-  if (qr.code) {
-    state.isLoading = true;
-    authService.verify(qr.code as string)
-      .finally(() => {
-        state.isLoading = false;
-        router.push('/login');
-      })
-      .then(() => {
-        state.toastMessage = 'Xác thực tài khoản thành công';
-        state.toastType = 'success';
-      })
-      .catch((e) => {
-        state.toastMessage = e.response?.data?.message || 'Unknown'
-        state.toastType = 'error';
-      });
-  }
-})
 </script>

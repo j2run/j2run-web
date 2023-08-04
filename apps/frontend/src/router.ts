@@ -2,14 +2,19 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
 
 const routes: Readonly<RouteRecordRaw[]> = [
-  {
-    path: '/',
-    component: () => import('./pages/Home.vue'),
-    meta: { noAuth: true },
-  },
+  // {
+  //   path: '/',
+  //   component: () => import('./pages/Home.vue'),
+  //   meta: { noAuth: true },
+  // },
   {
     path: '/login',
     component: () => import('./pages/Login.vue'),
+    meta: { noAuth: true },
+  },
+  {
+    path: '/register',
+    component: () => import('./pages/Register.vue'),
     meta: { noAuth: true },
   },
   { 
@@ -40,6 +45,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/remote-dock',
     meta: { auth: true },
     component: () => import('./pages/Remote.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/login',
+    meta: { noAuth: true },
   },
 ]
 

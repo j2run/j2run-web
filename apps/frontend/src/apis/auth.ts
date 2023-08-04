@@ -10,6 +10,12 @@ export const authService = {
       password
     }).then((rs) => rs.data);
   },
+  register: (email: string, password: string) => {
+    return axios.post<LoginResponseDto>(endpoint + 'auth/register', {
+      email,
+      password
+    }).then((rs) => rs.data);
+  },
   verify: (code: string) => {
     return axios.post(endpoint + 'auth/verify', {
       code
