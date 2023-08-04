@@ -9,5 +9,10 @@ export const authService = {
       email,
       password
     }).then((rs) => rs.data);
-  }
+  },
+  verify: (code: string) => {
+    return axios.post(endpoint + 'auth/verify', {
+      code
+    })
+  },
 }

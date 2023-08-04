@@ -13,10 +13,10 @@
       rounded="lg"
     >
       <v-alert
-        v-if="!!state.errorMessage"
-        type="error"
+        v-if="!!state.toastMessage"
         class="mb-3"
-        :text="state.errorMessage"
+        :type="state.toastType"
+        :text="state.toastMessage"
       ></v-alert>
       <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
       <v-text-field
@@ -113,6 +113,12 @@ import { useVuelidate } from '@vuelidate/core'
 import { email, maxLength, minLength, required } from '@vuelidate/validators'
 import j2runLogo from '../assets/j2run-logo.png'
 import { useAuthStore } from '../stores/auth.store';
+import { authService } from '../apis/auth';
+import { useRoute } from 'vue-router';
+import { onMounted } from 'vue';
+import { router } from '../router';
+
+const route = useRoute();
 
 const initialState = {
   password: '',
@@ -123,7 +129,8 @@ const initialState = {
 const state = reactive({
   ...initialState,
   isLoading: false,
-  errorMessage: ''
+  toastMessage: '',
+  toastType: 'error' as "error" | "success" | "warning" | "info" | undefined,
 })
 
 const rules = {
@@ -146,7 +153,28 @@ const onLogin = async () => {
   await authStore.login(state.email, state.password)
     .finally(() => state.isLoading = false)
     .catch((e) => {
-      state.errorMessage = e.response?.data?.message || 'Unknown'
+      state.toastMessage = e.response?.data?.message || 'Unknown';
+      state.toastType = 'error';
     });
 }
+
+onMounted(() => {
+  const qr = route.query;
+  if (qr.code) {
+    state.isLoading = true;
+    authService.verify(qr.code as string)
+      .finally(() => {
+        state.isLoading = false;
+        router.push('/login');
+      })
+      .then(() => {
+        state.toastMessage = 'Xác thực tài khoản thành công';
+        state.toastType = 'success';
+      })
+      .catch((e) => {
+        state.toastMessage = e.response?.data?.message || 'Unknown'
+        state.toastType = 'error';
+      });
+  }
+})
 </script>

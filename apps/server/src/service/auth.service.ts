@@ -110,7 +110,7 @@ export class AuthService {
   async verifyAccount(dto: VerifyRequest) {
     const user = await this.userService.findByVerifyCode(dto.code);
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('Mã xác thực không hợp lệ');
     }
     user.verifyToken = null;
     user.isVerified = true;
