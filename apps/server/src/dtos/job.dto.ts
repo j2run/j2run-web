@@ -3,6 +3,7 @@ export class JobCreateContainer {
   planId: string;
   userId: string;
   invoiceCloudId: string;
+  name: string;
 }
 
 export class JobActionContainer {

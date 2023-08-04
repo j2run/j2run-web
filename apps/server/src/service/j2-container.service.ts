@@ -199,6 +199,7 @@ export class J2ContainerService {
   }
 
   async newContainer(
+    name: string,
     user: UserDocument,
     game: GameDocument,
     plan: PlanDocument,
@@ -330,9 +331,10 @@ export class J2ContainerService {
       userId: new Types.ObjectId(user._id),
       planId: new Types.ObjectId(plan._id),
       gameId: new Types.ObjectId(game._id),
-      isAutoRenew: true,
+      isAutoRenew: !plan.notRenew,
       password,
       expirationDate,
+      name,
     });
 
     // create subscription

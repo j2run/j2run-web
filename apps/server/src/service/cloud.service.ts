@@ -102,7 +102,13 @@ export class CloudService {
     });
 
     // add job
-    await this.queueDockerService.createContainer(plan, game, invoice, user);
+    await this.queueDockerService.createContainer(
+      dto.name,
+      plan,
+      game,
+      invoice,
+      user,
+    );
 
     return true;
   }

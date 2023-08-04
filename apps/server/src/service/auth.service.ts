@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   async register(dto: RegisterRequest): Promise<RegisterResponse> {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.findByEmailVerified(dto.email);
     if (!!user) {
       throw new ConflictException('Email tồn tại');
     }

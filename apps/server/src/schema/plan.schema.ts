@@ -48,6 +48,10 @@ export class Plan extends SchemaDto {
   @ApiProperty()
   @Prop()
   dockerLabelIds: Types.ObjectId[];
+
+  @ApiProperty()
+  @Prop()
+  notRenew: boolean;
 }
 
 export const PlanSchema = SchemaFactory.createForClass(Plan);

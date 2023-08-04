@@ -51,6 +51,7 @@ export class QueueDockerService {
   }
 
   createContainer(
+    name: string,
     plan: PlanDocument,
     game: GameDocument,
     invoice: InvoiceCloudDocument,
@@ -63,6 +64,7 @@ export class QueueDockerService {
         gameId: game._id.toString(),
         invoiceCloudId: invoice._id.toString(),
         userId: user._id.toString(),
+        name,
       },
     });
   }

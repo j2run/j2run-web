@@ -17,7 +17,7 @@ export class User extends SchemaDto {
   @Prop()
   password: string;
 
-  @ApiProperty({ default: 0 })
+  @ApiProperty({ default: 1000 })
   @Prop()
   balance: number;
 

@@ -154,8 +154,12 @@ export class QueueDockerProcessor {
     invoiceCloud.status = 'creating';
     await this.invoiceCloudModel.bulkSave([invoiceCloud]);
 
-    return await this.j2ContainerService.newContainer(user, game, plan, (val) =>
-      job.progress(val),
+    return await this.j2ContainerService.newContainer(
+      data.name,
+      user,
+      game,
+      plan,
+      (val) => job.progress(val),
     );
   }
 

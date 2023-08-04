@@ -22,6 +22,13 @@ export class UserService {
     });
   }
 
+  findByEmailVerified(email: string) {
+    return this.userModel.findOne({
+      email,
+      isVerified: true,
+    });
+  }
+
   insert(user: UserDocument) {
     return this.userModel.create(user);
   }
