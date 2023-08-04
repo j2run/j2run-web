@@ -56,3 +56,9 @@ export class GetAccessTokenResponse {
   @IsString()
   accessToken: string;
 }
+
+export class VerifyRequest {
+  @ApiProperty()
+  @IsString()
+  code: string;
+}

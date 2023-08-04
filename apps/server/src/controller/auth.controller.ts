@@ -7,6 +7,7 @@ import {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  VerifyRequest,
 } from 'src/dtos/auth.dto';
 import { AuthService } from 'src/service/auth.service';
 
@@ -28,5 +29,10 @@ export class AuthController {
   @Post('access')
   access(@Body() dto: GetAccessTokenRequest): Promise<GetAccessTokenResponse> {
     return this.authService.generationAccessToken(dto);
+  }
+
+  @Post('verify')
+  verify(@Body() dto: VerifyRequest) {
+    return this.authService.verifyAccount(dto);
   }
 }

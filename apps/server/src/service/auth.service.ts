@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -16,6 +17,7 @@ import {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  VerifyRequest,
 } from 'src/dtos/auth.dto';
 import { UserService } from './user.service';
 import { UserDocument } from 'src/schema/user.schema';
@@ -103,6 +105,17 @@ export class AuthService {
     return {
       accessToken: await this.signAccess(user._id.toString()),
     };
+  }
+
+  async verifyAccount(dto: VerifyRequest) {
+    const user = await this.userService.findByVerifyCode(dto.code);
+    if (!user) {
+      throw new NotFoundException();
+    }
+    user.verifyToken = null;
+    user.isVerified = true;
+    await this.userService.save(user);
+    await this.userService.removeAllAccountWithoutUserId(user.email, user._id);
   }
 
   signAccess(id: string) {

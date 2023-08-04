@@ -29,7 +29,26 @@ export class UserService {
     });
   }
 
+  findByVerifyCode(code: string) {
+    return this.userModel.findOne({
+      verifyToken: code,
+    });
+  }
+
+  removeAllAccountWithoutUserId(email: string, userId: string) {
+    return this.userModel.deleteMany({
+      email,
+      _id: {
+        $ne: new Types.ObjectId(userId),
+      },
+    });
+  }
+
   insert(user: UserDocument) {
     return this.userModel.create(user);
+  }
+
+  save(user: UserDocument) {
+    return this.userModel.bulkSave([user]);
   }
 }
