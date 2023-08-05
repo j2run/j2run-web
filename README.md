@@ -39,3 +39,22 @@ docker rmi $(docker images -aq)
 
 docker exec 2b bash -c "kill -15 \$(ps | grep 'java -jar' | awk '{print \$1}')"
 find /root/.microemulator/ -mindepth 1 ! -name 'config2.xml' -exec rm -rf {} +
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04
+cat ~/.ssh/id_rsa_gitpod.pub | ssh root@14.225.255.89 "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
+sudo nano /etc/ssh/sshd_config
+PasswordAuthentication no
+sudo systemctl restart ssh
+
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22
+sudo ufw enable
+
+// my ip
+118.68.84.249
+sudo ufw allow from 118.68.84.249 to any port 2376
+sudo ufw delete from 118.68.84.249 to any port 2376
+
+// srv1
+ssh root@14.225.255.89

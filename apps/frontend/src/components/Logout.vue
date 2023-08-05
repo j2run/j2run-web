@@ -13,7 +13,7 @@
       ></v-list-item>
     </template>
     <v-card>
-      <v-card-title class="text-h5 mt-1">
+      <v-card-title>
         Bạn có muốn đăng xuất không?
       </v-card-title>
       <v-card-actions>

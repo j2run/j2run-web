@@ -18,7 +18,7 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="text-h5 mt-1">
+      <v-card-title>
         Xóa "{{ ps.cloud.name || ps.cloud._id }}" ?
       </v-card-title>
       <v-card-text>
