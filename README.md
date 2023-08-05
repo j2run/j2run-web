@@ -33,6 +33,7 @@ sudo service libvirtd start
 
 ssh root@172.16.10.100
 ssh root@172.16.10.101
+ssh root@172.16.10.102
 
 docker rm -f $(docker ps -aq)
 docker rmi $(docker images -aq)
@@ -58,3 +59,5 @@ sudo ufw delete from 118.68.84.249 to any port 2376
 
 // srv1
 ssh root@14.225.255.89
+
+docker image prune -f

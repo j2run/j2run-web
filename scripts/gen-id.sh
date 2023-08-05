@@ -2,10 +2,19 @@
 
 id=$(id -u)
 uname=$(id -nu)
+envFile="env/.env.dev"
 
 echo "uname:$uname & id:$id"
 
-node scripts/remove-env-host.js
+function updateEnv() {
+  local varName=$1
+  local varValue=$2
+  if grep -q "^${varName}=" "${envFile}"; then
+    sed -i "s/^${varName}=.*/${varName}=${varValue}/" "$envFile"
+  else
+    echo "${varName}=${varValue}" >> "$envFile"
+  fi
+}
 
-echo "J2_H_NAME=$uname
-J2_H_ID=$id" >> env/.env.dev
+updateEnv "J2_H_NAME" "$uname"
+updateEnv "J2_H_ID" "$id"

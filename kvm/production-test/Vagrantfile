@@ -1,0 +1,24 @@
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/ubuntu2004"
+    config.vm.network "private_network", ip: "172.16.10.102"
+    config.vm.hostname = "j2.prod"
+  
+    config.vm.provider :libvirt do |lv|
+      lv.title = "j2.prod"
+      lv.cpus = 2
+      lv.memory = 1024
+      lv.management_network_address = '192.169.1.0/24'
+    end
+    
+    config.vm.provision "shell", path: "./../fix-prod.sh"
+  
+    config.vm.provision "shell", inline: <<-SHELL
+      echo -e "123\n123" | sudo passwd root
+      sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+      systemctl reload sshd
+    SHELL
+  end

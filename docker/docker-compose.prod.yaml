@@ -20,35 +20,26 @@ x-shared_environment: &shared_environment
   
 services:
   j2-gateway:
-    image: j2-dev
-    build:
-      dockerfile: ./dev.node18.Dockerfile
-      context: .
-      args:
-        - gUser=${J2_H_NAME}
-        - gId=${J2_H_ID}
+    image: j2-prod-server
     environment:
       <<: *shared_environment
     ports:
       - "${J2_BE_PORT}:3000"
     volumes:
-      - ../apps/server:/data/apps
-      - ../data-img:/data/image
-      - ../keys:/keys
+      - /data/img:/data/image
     networks:
       - all
-      - docker-swarm
     
   j2-redis:
-    image: redis:7.0.7-alpine3.17
+    image: redis:6.0.20-alpine3.18
     environment:
       <<: *shared_environment
     ports:
       - "6379:6379"
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
-      - ../conf/redis.dev.conf:/usr/local/etc/redis/redis.conf
-      - ../data/redis:/data
+      - /data/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - /data/data/redis:/data
     networks:
       - all
 
@@ -60,20 +51,11 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ../conf/mongod.dev.conf:/etc/mongodb.conf
-      - ../data/mongo/log:/var/log/mongodb/
-      - ../data/mongo/data:/data/db
+      - /data/conf/mongod.conf:/etc/mongodb.conf
+      - /data/data/mongo/log:/var/log/mongodb/
+      - /data/data/mongo/data:/data/db
     networks:
       - all
 
 networks:
   all:
-  docker-swarm:
-    driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: "${J2_DOCKER_INTERFACE}"
-    ipam:
-      config:
-        - subnet: 172.16.10.0/24
-          gateway: 172.16.10.1
-          ip_range: 172.16.10.110/28
