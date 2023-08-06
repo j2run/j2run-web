@@ -16,6 +16,7 @@ export class J2Docker {
     this.docker = new Docker({
       host,
       port,
+      timeout: 10000,
     });
   }
 
