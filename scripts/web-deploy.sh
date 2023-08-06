@@ -37,44 +37,75 @@ echo "Docker installed! version: $dockerVersion"
 FOLDER_CONF=/data/conf
 FOLDER_IMG=/data/img
 FOLDER_DATA=/data
+
 imageJ2ProdBackend="j2-prod-server:latest"
 fileJ2ProdBackend="${currentDir}/../data-docker/j2-prod-server.tar"
 fileJ2ProdBackendRemote="~/j2-prod-server.tar"
+fileJ2ProdBackendContinue=1
+if ssh -q -o ConnectTimeout=10 "${SSH_USERNAME}@${SSH_HOST}" "[ -f ${fileJ2ProdBackendRemote} ]"; then
+    echo "File ${fileJ2ProdBackendRemote} exists on the remote server."
+    read -p "You can overwrite ${fileJ2ProdBackendRemote}? (y/n): " answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+      fileJ2ProdBackendContinue=1
+      echo "${fileJ2ProdBackendRemote} overwrite it!"
+    else
+      fileJ2ProdBackendContinue=0
+    fi
+else
+    echo "File ${fileJ2ProdBackendRemote} does not exist on the remote server."
+fi
 
 imageJ2ProdFrontend="j2-prod-frontend:latest"
 fileJ2ProdFrontend="${currentDir}/../data-docker/j2-prod-frontend.tar"
 fileJ2ProdFrontendRemote="~/j2-prod-frontend.tar"
+fileJ2ProdFrontendContinue=1
+if ssh -q -o ConnectTimeout=10 "${SSH_USERNAME}@${SSH_HOST}" "[ -f ${fileJ2ProdFrontendRemote} ]"; then
+    echo "File ${fileJ2ProdFrontendRemote} exists on the remote server."
+    read -p "You can overwrite ${fileJ2ProdFrontendRemote}? (y/n): " answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+      fileJ2ProdFrontendContinue=1
+      echo "${fileJ2ProdFrontendRemote} overwrite it!"
+    else
+      fileJ2ProdFrontendContinue=0
+    fi
+else
+    echo "File ${fileJ2ProdFrontendRemote} does not exist on the remote server."
+fi
 
 runCommandRemote "mkdir -p /data"
 runCommandRemote "mkdir -p /data/data"
 
 # build backend
-echo "Building server..."
-docker build -f "${currentDir}/../docker/prod.backend.Dockerfile" -t "${imageJ2ProdBackend}" "${currentDir}/.."
+if [ "$fileJ2ProdBackendContinue" -eq 1 ]; then
+  echo "Building server..."
+  docker build -f "${currentDir}/../docker/prod.backend.Dockerfile" -t "${imageJ2ProdBackend}" "${currentDir}/.."
 
-echo "Save server image to file..."
-if [ -f "${fileJ2ProdBackend}" ]; then
-  echo "Remove server image old..."
-  rm -f "${fileJ2ProdBackend}"
+  echo "Save server image to file..."
+  if [ -f "${fileJ2ProdBackend}" ]; then
+    echo "Remove server image old..."
+    rm -f "${fileJ2ProdBackend}"
+  fi
+  docker save -o "${fileJ2ProdBackend}" "${imageJ2ProdBackend}"
+
+  echo "Remove server image..."
+  docker rmi "${imageJ2ProdBackend}"
 fi
-docker save -o "${fileJ2ProdBackend}" "${imageJ2ProdBackend}"
-
-echo "Remove server image..."
-docker rmi "${imageJ2ProdBackend}"
 
 # build frontend
-echo "Building frontend..."
-docker build -f "${currentDir}/../docker/prod.nginx.Dockerfile" -t "${imageJ2ProdFrontend}" "${currentDir}/.."
+if [ "$fileJ2ProdFrontendContinue" -eq 1 ]; then
+  echo "Building frontend..."
+  docker build -f "${currentDir}/../docker/prod.nginx.Dockerfile" -t "${imageJ2ProdFrontend}" "${currentDir}/.."
 
-echo "Save frontend image to file..."
-if [ -f "${fileJ2ProdFrontend}" ]; then
-  echo "Remove frontend image old..."
-  rm -f "${fileJ2ProdFrontend}"
+  echo "Save frontend image to file..."
+  if [ -f "${fileJ2ProdFrontend}" ]; then
+    echo "Remove frontend image old..."
+    rm -f "${fileJ2ProdFrontend}"
+  fi
+  docker save -o "${fileJ2ProdFrontend}" "${imageJ2ProdFrontend}"
+
+  echo "Remove frontend image..."
+  docker rmi "${imageJ2ProdFrontend}"
 fi
-docker save -o "${fileJ2ProdFrontend}" "${imageJ2ProdFrontend}"
-
-echo "Remove frontend image..."
-docker rmi "${imageJ2ProdFrontend}"
 
 # stop & remove image
 cmdRemoveImage=" \
@@ -88,10 +119,6 @@ runCommandRemote "$cmdRemoveImage"
 runCommandRemote "rm -rf ${FOLDER_CONF}"
 scp -r "${currentDir}/../conf/production/" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_CONF}"
 
-# push image & game to remote
-runCommandRemote "rm -rf ${FOLDER_IMG}"
-scp -r "${currentDir}/../data-img/" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_IMG}"
-
 # push env
 scp "${currentDir}/../env/.env.prod" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_DATA}"
 
@@ -99,15 +126,38 @@ scp "${currentDir}/../env/.env.prod" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_DATA}
 scp "${currentDir}/../docker/docker-compose.prod.yaml" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_DATA}"
 
 
+# push image & game to remote
+isExistsDataImg=$(runCommandRemote "test -d ${FOLDER_IMG} && echo 1 || echo 0")
+overwriteDataImg=1
+if [ "$isExistsDataImg" -eq 1 ]; then
+  echo "Folder ${FOLDER_IMG} exists on the remote server."
+  read -p "You can overwrite ${FOLDER_IMG}? (y/n): " answer
+  if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+    overwriteDataImg=1
+    echo "${FOLDER_IMG} overwrite it!"
+  else
+    overwriteDataImg=0
+  fi
+fi
+
+if [ "$overwriteDataImg" -eq 1 ]; then
+  runCommandRemote "rm -rf ${FOLDER_IMG}"
+  scp -r "${currentDir}/../data-img/" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_IMG}"
+fi
+
 # push backend to remote
-echo "Push server image..."
-scp "$fileJ2ProdBackend" "${SSH_USERNAME}@${SSH_HOST}:~/"
-runCommandRemote "docker rmi ${imageJ2ProdBackend}; docker load -i ${fileJ2ProdBackendRemote};"
+if [ "$fileJ2ProdBackendContinue" -eq 1 ]; then
+  echo "Push server image..."
+  scp "$fileJ2ProdBackend" "${SSH_USERNAME}@${SSH_HOST}:~/"
+  runCommandRemote "docker rmi ${imageJ2ProdBackend}; docker load -i ${fileJ2ProdBackendRemote};"
+fi
 
 # push frontend to remote
-echo "Push frontend image..."
-scp "$fileJ2ProdFrontend" "${SSH_USERNAME}@${SSH_HOST}:~/"
-runCommandRemote "docker rmi ${imageJ2ProdFrontend}; docker load -i ${fileJ2ProdFrontendRemote};"
+if [ "$fileJ2ProdFrontendContinue" -eq 1 ]; then
+  echo "Push frontend image..."
+  scp "$fileJ2ProdFrontend" "${SSH_USERNAME}@${SSH_HOST}:~/"
+  runCommandRemote "docker rmi ${imageJ2ProdFrontend}; docker load -i ${fileJ2ProdFrontendRemote};"
+fi
 
 # deploy web
 cmdDeploy=" \
