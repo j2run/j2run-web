@@ -17,7 +17,7 @@ function pushSshKey() {
     cat ~/.ssh/id_rsa_gitpod.pub | ssh ${username}@${host} "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
 
     echo "Config ssh..."
-    remoteCommand="sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config"
+    remoteCommand="sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config"
     if ssh "${username}@${host}" "${remoteCommand}"; then
       echo "Ssh config done!"
     else

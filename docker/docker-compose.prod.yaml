@@ -42,7 +42,7 @@ services:
     environment:
       <<: *shared_environment
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - /data/conf/redis.conf:/usr/local/etc/redis/redis.conf
@@ -56,7 +56,7 @@ services:
     environment:
       <<: *shared_environment
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - /data/conf/mongod.conf:/etc/mongodb.conf
       - /data/data/mongo/log:/var/log/mongodb/

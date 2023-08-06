@@ -23,9 +23,16 @@ if [ -z "$dockerVersion" ]; then
   echo "Docker installing..."
   fileDockerRemote="~/setup-docker.sh"
   scp "$FILE_DOCKER_SETUP" "${SSH_USERNAME}@${SSH_HOST}:~/"
-  runCommandRemote "chmod +x $fileDockerRemote; $fileDockerRemote;"
+  runCommandRemote "chmod +x $fileDockerRemote"
+  runCommandRemote "$fileDockerRemote"
   dockerVersion=$(runCommandRemote "$cmdGetDockerVersion")
 fi
+
+if [ -z "${dockerVersion}" ]; then
+  echo "Docker not installed"
+  exit;
+fi
+
 echo "Docker installed! version: $dockerVersion"
 
 #####################

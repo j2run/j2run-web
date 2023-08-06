@@ -63,3 +63,5 @@ ssh root@14.225.255.89
 docker image prune -f
 
 echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
+e2JJ#NybyEk@P^K!
