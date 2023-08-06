@@ -20,6 +20,7 @@ function pushSshKey() {
     remoteCommand="sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config"
     if ssh "${username}@${host}" "${remoteCommand}"; then
       echo "Ssh config done!"
+      remoteCommand "systemctl restart ssh"
     else
       echo "Ssh config failed!"
       exit
