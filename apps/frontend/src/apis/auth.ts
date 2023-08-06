@@ -1,7 +1,7 @@
 import axios from "axios"
 import { LoginResponseDto } from "../dtos/auth";
 
-const endpoint = 'http://localhost:8010/';
+const endpoint = '/api/';
 
 export const authService = {
   login: (email: string, password: string) => {

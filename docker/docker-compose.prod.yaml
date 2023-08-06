@@ -19,12 +19,19 @@ x-shared_environment: &shared_environment
   J2_VERIFY_LINK: ${J2_VERIFY_LINK}
   
 services:
-  j2-gateway:
+  j2-frontend:
+    image: j2-prod-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - /data/conf/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - all
+
+  j2-backend:
     image: j2-prod-server
     environment:
       <<: *shared_environment
-    ports:
-      - "${J2_BE_PORT}:3000"
     volumes:
       - /data/img:/data/image
     networks:

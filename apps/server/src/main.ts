@@ -53,6 +53,8 @@ async function bootstrap() {
     origin: cors,
   });
 
+  const isProduction = configService.get('NODE_ENV') === 'production';
+
   app.use(
     '/mana',
     (
@@ -87,7 +89,7 @@ async function bootstrap() {
   });
 
   const bullAdapter = new ExpressAdapter();
-  bullAdapter.setBasePath('/mana/bull');
+  bullAdapter.setBasePath(isProduction ? '/api/mana/bull' : '/mana/bull');
   createBullBoard({
     queues: [
       new BullAdapter(app.get<Queue>('BullQueue_' + JOB_NAME_DOCKER)),
