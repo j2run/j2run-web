@@ -61,3 +61,5 @@ sudo ufw delete from 118.68.84.249 to any port 2376
 ssh root@14.225.255.89
 
 docker image prune -f
+
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
