@@ -37,3 +37,44 @@ if [ -z "${dockerVersion}" ]; then
 fi
 
 echo "Docker installed! version: $dockerVersion"
+
+# stop nginx
+fileDockerCompose="${currentDir}/../docker/docker-compose.prod-node.yaml"
+fileDockerComposeRemote="/data/docker-compose.prod-node.yaml"
+cmdRemoveImage=" \
+cd /data;
+docker compose -f $fileDockerComposeRemote down; \
+"
+echo "Container Stoping..."
+runCommandRemote "$cmdRemoveImage"
+
+# push conf
+fileNginxNodeConf="${currentDir}/../conf/production/nginx-node.conf"
+fileNginxNodeConfRemote="/data/conf/nginx.conf"
+
+echo "Push nginx conf..."
+runCommandRemote "mkdir -p /data/conf"
+runCommandRemote "rm -rf $fileNginxNodeConfRemote"
+scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
+
+# update conf
+ipDocker=$(runCommandRemote "docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}'")
+echo "Update nginx conf.. ${ipDocker}"
+cmdUpdateIp="sed -i 's/proxy_pass http:\/\/__FIX__:\$1;/proxy_pass http:\/\/$ipDocker:\$1;/' $fileNginxNodeConfRemote"
+runCommandRemote "${cmdUpdateIp}"
+
+# push docker-compose file to remote
+runCommandRemote "rm -rf $fileDockerComposeRemote"
+scp "${fileDockerCompose}" "${SSH_USERNAME}@${SSH_HOST}:${fileDockerComposeRemote}"
+
+# deploy web
+cmdDeploy=" \
+cd /data;
+docker compose -f $fileDockerComposeRemote up -d --remove-orphans --build --force-recreate; \
+"
+runCommandRemote "$cmdDeploy"
+
+# # setup ufw
+# source "${currentDir}/web-update-ufw.sh"
+# runCommandRemote "$(getUfwCommand)"
+# runCommandRemote "ufw status"
