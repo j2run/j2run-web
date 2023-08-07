@@ -68,6 +68,10 @@ export class DockerNode extends SchemaDto {
   @ApiProperty()
   @Prop()
   operatingSystem: string;
+
+  @ApiProperty()
+  @Prop()
+  originUrl: string;
 }
 
 export const DockerNodeSchema = SchemaFactory.createForClass(DockerNode);

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { LoginResponseDto } from "../dtos/auth";
 
-const endpoint = '/api/';
+const endpoint = process.env.NODE_ENV === 'development' ? 'http://localhost:8010/' : '/api/';
 
 export const authService = {
   login: (email: string, password: string) => {

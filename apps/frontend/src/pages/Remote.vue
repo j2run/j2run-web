@@ -79,7 +79,7 @@
                   >Close</v-tooltip>
                 </v-btn>
               </div>
-              <Novnc :ip="window.forwardIp" :port="window.forwardPort" :password="window.password" />
+              <Novnc :connectionUrl="window.connectionUrl" :password="window.password" />
             </div>
           </vue-draggable-resizable>
         </div>

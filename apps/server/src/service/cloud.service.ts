@@ -65,7 +65,7 @@ export class CloudService {
         ],
       })
       .select(
-        '_id planId gameId name forwardIp forwardPort status stage expirationDate password isAutoRenew createdAt deleteAt',
+        '_id planId gameId name connectionUrl status stage expirationDate password isAutoRenew createdAt deleteAt',
       )
       .sort({
         createdAt: 'desc',

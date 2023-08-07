@@ -174,8 +174,11 @@ export class J2ContainerService {
           (port.IP === '0.0.0.0' || port.IP === '::') &&
           port.PrivatePort === 5900
         ) {
-          containerRow.forwardIp = node.ip;
-          containerRow.forwardPort = port.PublicPort;
+          if (node.originUrl) {
+            containerRow.connectionUrl = node.originUrl + port.PublicPort.toString();
+          } else {
+            containerRow.connectionUrl = `${node.ip}:${port.PublicPort}`;
+          }
         }
       }
       containerRow.deleteAt = null;

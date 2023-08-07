@@ -42,7 +42,7 @@ import RFB from '@novnc/novnc/core/rfb.js';
 import { watch } from 'vue';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
-const props = defineProps(['ip', 'port', 'password']);
+const props = defineProps(['connectionUrl', 'password']);
 const tre = ref();
 
 const isMounted = ref(false);
@@ -53,7 +53,7 @@ const state = reactive({
   retry: 0,
 });
 
-watch(() => props.port, () => {
+watch(() => props.connectionUrl, () => {
   newConnect();
 });
 
@@ -74,7 +74,7 @@ const newConnect = () => {
     return;
   }
   console.log('create new remote!');
-  const { ip, port, password } = props;
+  const { connectionUrl, password } = props;
   state.isLoading = true;
   if (state.novnc) {
     state.novnc.disconnect();
@@ -82,7 +82,7 @@ const newConnect = () => {
   clearTimeout(tre.value);
   
   const element = novncContainer.value as unknown as HTMLDivElement;
-  const novnc = new RFB(element, `ws://${ip}:${port}`, {
+  const novnc = new RFB(element, `ws://${connectionUrl}`, {
     credentials: {
       password: password,
     },

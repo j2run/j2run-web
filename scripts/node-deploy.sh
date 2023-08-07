@@ -63,6 +63,14 @@ echo "Update nginx conf.. ${ipDocker}"
 cmdUpdateIp="sed -i 's/proxy_pass http:\/\/__FIX__:\$1;/proxy_pass http:\/\/$ipDocker:\$1;/' $fileNginxNodeConfRemote"
 runCommandRemote "${cmdUpdateIp}"
 
+# update docker
+echo "Update docker.. ${ipDocker}"
+fileDockerService="/usr/lib/systemd/system/docker.service"
+cmdUpdateIp="sed -i 's/-H fd:\/\//-H tcp:\/\/0.0.0.0:2376 -H unix:\/\/\/var\/run\/docker.sock/' $fileDockerService"
+runCommandRemote "${cmdUpdateIp}"
+runCommandRemote "systemctl daemon-reload; \
+systemctl restart docker"
+
 # push docker-compose file to remote
 runCommandRemote "rm -rf $fileDockerComposeRemote"
 scp "${fileDockerCompose}" "${SSH_USERNAME}@${SSH_HOST}:${fileDockerComposeRemote}"
@@ -76,5 +84,5 @@ runCommandRemote "$cmdDeploy"
 
 # # setup ufw
 # source "${currentDir}/web-update-ufw.sh"
-# runCommandRemote "$(getUfwCommand)"
+# runCommandRemote "$(getUfwCommand $SSH_HOST_MASTER)"
 # runCommandRemote "ufw status"

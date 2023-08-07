@@ -17,8 +17,7 @@ export class CloudDto {
   isAutoRenew: boolean;
   createdAt: string;
   deleteAt: string;
-  forwardIp: string;
-  forwardPort: number;
+  connectionUrl: string;
   stage: CloudStage;
   status: string;
 }
