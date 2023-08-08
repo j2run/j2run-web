@@ -150,6 +150,7 @@ fi
 if [ "$overwriteDataImg" -eq 1 ]; then
   runCommandRemote "rm -rf ${FOLDER_IMG}"
   scp -r "${currentDir}/../data-img/" "${SSH_USERNAME}@${SSH_HOST}:${FOLDER_IMG}"
+  runCommandRemote "chmod -R +r ${FOLDER_IMG}"
 fi
 
 # push backend to remote
