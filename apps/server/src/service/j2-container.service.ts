@@ -169,17 +169,25 @@ export class J2ContainerService {
       containerRow.stage = container.State as DockerContainerStage;
       containerRow.status = container.Status;
       containerRow.created = container.Created;
-      for (const port of container.Ports) {
-        if (
-          (port.IP === '0.0.0.0' || port.IP === '::') &&
-          port.PrivatePort === 5900
-        ) {
-          if (node.originUrl) {
-            containerRow.connectionUrl = node.originUrl + port.PublicPort.toString();
-          } else {
-            containerRow.connectionUrl = `${node.ip}:${port.PublicPort}`;
-          }
-        }
+      // for (const port of container.Ports) {
+      //   if (
+      //     (port.IP === '0.0.0.0' ||
+      //       port.IP === '127.0.0.1' ||
+      //       port.IP === '::') &&
+      //     port.PrivatePort === 5900
+      //   ) {
+      //     if (node.originUrl) {
+      //       containerRow.connectionUrl =
+      //         node.originUrl + port.PublicPort.toString();
+      //     } else {
+      //       containerRow.connectionUrl = `${node.ip}:${port.PublicPort}`;
+      //     }
+      //   }
+      // }
+      if (container.NetworkSettings?.Networks?.bridge) {
+        const ip =
+          container.NetworkSettings.Networks.bridge.IPAddress.split('.');
+        containerRow.connectionUrl = node.originUrl + ip[2] + '.' + ip[3];
       }
       containerRow.deleteAt = null;
       delete hashmapRowContainers[k];
@@ -286,9 +294,12 @@ export class J2ContainerService {
     const dockerContainer = await docker.createContainer({
       Image: plan.image,
       HostConfig: {
-        PublishAllPorts: true,
+        // PublishAllPorts: true,
         Memory: plan.ram * 1024 * 1024,
         NanoCpus: !plan.cpu || plan.cpu < 0 ? undefined : plan.cpu * 10 ** 9,
+        // PortBindings: {
+        //   '5900/tcp': [{ HostIp: '127.0.0.1', HostPort: '0' }],
+        // },
       },
     });
 

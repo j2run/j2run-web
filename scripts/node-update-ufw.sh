@@ -10,6 +10,7 @@ function getUfwCommand() {
   echo "ufw allow 443;"
 
   echo "ufw allow from ${1} to any port 2376;"
+  # echo "ufw allow from 113.185.75.42 to any port 2376;"
 
   echo "ufw --force enable;"
 }
