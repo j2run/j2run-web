@@ -82,7 +82,7 @@ const newConnect = () => {
   clearTimeout(tre.value);
   
   const element = novncContainer.value as unknown as HTMLDivElement;
-  const novnc = new RFB(element, `ws://${connectionUrl}`, {
+  const novnc = new RFB(element, `${connectionUrl}`, {
     credentials: {
       password: password,
     },

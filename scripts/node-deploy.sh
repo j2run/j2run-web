@@ -8,9 +8,10 @@ SSH_HOST_MASTER="$SSH_HOST"
 
 SSH_USERNAME=$1
 SSH_HOST=$2
+SSH_PORT=$3
 FILE_DOCKER_SETUP="${currentDir}/common/setup-docker.sh"
 
-echo "SSH: ${SSH_HOST}, USERNAME: ${SSH_USERNAME}"
+echo "SSH: ${SSH_HOST}, USERNAME: ${SSH_USERNAME}, PORT: ${SSH_PORT}"
 
 # common
 source "${currentDir}/common/common.sh"
@@ -58,18 +59,21 @@ runCommandRemote "rm -rf $fileNginxNodeConfRemote"
 scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
 
 # update conf
-ipDocker=$(runCommandRemote "docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}'")
+# ipDocker=$(runCommandRemote "docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}'")
+ipDocker="172.18.0.1"
 echo "Update nginx conf.. ${ipDocker}"
 cmdUpdateIp="sed -i 's/proxy_pass http:\/\/__FIX__:\$1;/proxy_pass http:\/\/$ipDocker:\$1;/' $fileNginxNodeConfRemote"
 runCommandRemote "${cmdUpdateIp}"
 
-# update docker
-echo "Update docker.. ${ipDocker}"
-fileDockerService="/usr/lib/systemd/system/docker.service"
-cmdUpdateIp="sed -i 's/-H fd:\/\//-H tcp:\/\/0.0.0.0:2376 -H unix:\/\/\/var\/run\/docker.sock/' $fileDockerService"
-runCommandRemote "${cmdUpdateIp}"
-runCommandRemote "systemctl daemon-reload; \
-systemctl restart docker"
+# need update
+# ---------------------------------------------------
+# # update docker
+# echo "Update docker.. ${ipDocker}"
+# fileDockerService="/usr/lib/systemd/system/docker.service"
+# cmdUpdateIp="sed -i 's/-H fd:\/\//-H tcp:\/\/0.0.0.0:2376 -H unix:\/\/\/var\/run\/docker.sock/' $fileDockerService"
+# runCommandRemote "${cmdUpdateIp}"
+# runCommandRemote "systemctl daemon-reload; \
+# systemctl restart docker"
 
 # push docker-compose file to remote
 runCommandRemote "rm -rf $fileDockerComposeRemote"
@@ -82,7 +86,7 @@ docker compose -f $fileDockerComposeRemote up -d --remove-orphans --build --forc
 "
 runCommandRemote "$cmdDeploy"
 
-# # setup ufw
-# source "${currentDir}/web-update-ufw.sh"
-# runCommandRemote "$(getUfwCommand $SSH_HOST_MASTER)"
-# runCommandRemote "ufw status"
+# setup ufw
+source "${currentDir}/node-update-ufw.sh"
+runCommandRemote "$(getUfwCommand $SSH_HOST_MASTER)"
+runCommandRemote "ufw status"

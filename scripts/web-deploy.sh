@@ -159,6 +159,7 @@ if [ "$fileJ2ProdBackendContinue" -eq 1 ]; then
   runCommandRemote "docker rmi ${imageJ2ProdBackend}; docker load -i ${fileJ2ProdBackendRemote};"
 fi
 
+
 # push frontend to remote
 if [ "$fileJ2ProdFrontendContinue" -eq 1 ]; then
   echo "Push frontend image..."
