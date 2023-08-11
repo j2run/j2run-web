@@ -1,0 +1,14 @@
+version: "3.8"
+
+x-shared_environment: &shared_environment
+  J2_DOMAIN_SSL: ${J2_DOMAIN_SSL}
+
+services:
+  j2-ssl:
+    build:
+      dockerfile: ./docker/prod.ssl.Dockerfile
+      context: ..
+    environment:
+      <<: *shared_environment
+    volumes:
+      - ../keys:/etc/letsencrypt
