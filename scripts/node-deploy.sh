@@ -49,14 +49,42 @@ docker compose -f $fileDockerComposeRemote down; \
 echo "Container Stoping..."
 runCommandRemote "$cmdRemoveImage"
 
-# push conf
-fileNginxNodeConf="${currentDir}/../conf/production/nginx-node.conf"
+# push nginx
 fileNginxNodeConfRemote="/data/conf/nginx.conf"
-
 echo "Push nginx conf..."
 runCommandRemote "mkdir -p /data/conf"
 runCommandRemote "rm -rf $fileNginxNodeConfRemote"
-scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
+
+read -p "You can config ssl? (y/n): " answer
+if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+  fileNginxNodeConf="${currentDir}/../conf/production/nginx-node-ssl.conf"
+  scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
+  echo "${fileNginxNodeConf} push!"
+
+  pairs=(
+    "${currentDir}/../keys/live/j2run.com/fullchain.pem /data/ssl/fullchain.pem"
+    "${currentDir}/../keys/live/j2run.com/privkey.pem /data/ssl/privkey.pem"
+    "${currentDir}/../keys/ssl-dhparams.pem /data/ssl/dhparams.pem"
+  )
+
+  runCommandRemote "rm -rf /data/ssl"
+  runCommandRemote "mkdir -p /data/ssl"
+
+  for pair in "${pairs[@]}"; do
+    local="${pair% *}"
+    remote="${pair#* }"
+    echo "${local} -> ${remote}"
+    scp "${local}" "${SSH_USERNAME}@${SSH_HOST}:${remote}"
+  done
+
+  fileNginx="${currentDir}/../conf/production/nginx-node-ssl.conf"
+  scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
+else
+  fileNginxNodeConf="${currentDir}/../conf/production/nginx-node.conf"
+  scp "${fileNginxNodeConf}" "${SSH_USERNAME}@${SSH_HOST}:${fileNginxNodeConfRemote}"
+  echo "${fileNginxNodeConf} push!"
+fi
+
 
 # update conf
 ipDocker=$(runCommandRemote "docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' | awk -F '.' '{print \$1\".\"\$2}'")
