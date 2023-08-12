@@ -11,9 +11,12 @@
       </v-card-title>
       <v-card-text class="text-body-1">
         Chúng tôi đang trong quá trình phát triển giao diện trang web để mang đến trải nghiệm tốt hơn. Giao diện có thể chưa hoàn thiện và gặp lỗi nhỏ. Dữ liệu của bạn được đảm bảo an toàn. Xin lỗi vì bất tiện này và cảm ơn sự kiên nhẫn của bạn!
+        <v-checkbox class="ma-0" :hide-details="true" :label="'Không hiện lại trong 6 giờ'" v-model="state.isConfirm"></v-checkbox>
       </v-card-text>
       <v-card-actions>
-        <v-checkbox :label="'Không hiện lại trong 6 giờ'" v-model="state.isConfirm"></v-checkbox>
+        <div class="text-caption pa-4">
+          Version: {{ buildTime }}
+        </div>
         <v-spacer></v-spacer>
         <v-btn
           color="green-darken-1"
@@ -31,6 +34,8 @@
 import moment from 'moment';
 import { onMounted } from 'vue';
 import { reactive } from 'vue';
+
+const buildTime = moment(+BUILD_TIME).format('DD/MM/YYYY HH:mm:ss');
 
 const state = reactive({
   dialog: false,

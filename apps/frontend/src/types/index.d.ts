@@ -3,3 +3,5 @@ declare module '@novnc/novnc/core/rfb.js' {
 }
 
 declare type SMap<T> = { [key: string]: T };
+
+declare const BUILD_TIME: number;
