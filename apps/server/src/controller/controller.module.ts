@@ -6,6 +6,7 @@ import { GameController } from './game.controller';
 import { CloudController } from './cloud.controller';
 import { InvoiceCloudController } from './invoice-cloud.controller';
 import { DockerActionController } from './cloud-action.controller';
+import { DownloadController } from './download.controller';
 
 @Module({
   controllers: [
@@ -15,6 +16,7 @@ import { DockerActionController } from './cloud-action.controller';
     CloudController,
     InvoiceCloudController,
     DockerActionController,
+    DownloadController,
   ],
   imports: [ServicesModule],
 })

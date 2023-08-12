@@ -25,6 +25,7 @@ import { InvoiceCloudService } from './invoice-cloud.service';
 import { DockerActionService } from './docker-action.service';
 import { SIBService } from './sib.service';
 import { EmailService } from './email.service';
+import { DownloadService } from './download.service';
 
 const services = [
   J2ContainerService,
@@ -44,6 +45,7 @@ const services = [
   DockerActionService,
   SIBService,
   EmailService,
+  DownloadService,
 ];
 
 @Module({

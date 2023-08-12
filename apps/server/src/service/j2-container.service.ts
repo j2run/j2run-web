@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { J2Docker } from '../utils/docker';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -30,6 +30,7 @@ import {
 import { PlanService } from './plan.service';
 import { PlanHashmap } from 'src/dtos/plan.dto';
 import { QueueSubscriptionService } from './queue-subscription.service';
+import { Duplex } from 'stream';
 
 @Injectable()
 export class J2ContainerService {
@@ -525,6 +526,51 @@ export class J2ContainerService {
               return;
             }
             res();
+          });
+        },
+      );
+    });
+  }
+
+  async readLogByDockerContainterId(dockerContainerId: string) {
+    const containerRow = await this.dockerContainerModel.findById(
+      dockerContainerId,
+    );
+    if (!containerRow) {
+      throw new NotFoundException();
+    }
+
+    const node = await this.dockerNodeModel.findById(containerRow.dockerNodeId);
+    if (!node) {
+      return Promise.reject(new Error('not exists node'));
+    }
+
+    const docker = new J2Docker(node.ip, node.port);
+    const dockerContainer = docker.getContainer(containerRow.containerRawId);
+    return await this.cmdStream(dockerContainer, ['cat', '/var/log/j2run.log']);
+  }
+
+  cmdStream(container: Dockerode.Container, cmd: string[]) {
+    return new Promise<Duplex>((res, rej) => {
+      container.exec(
+        {
+          Cmd: cmd,
+          AttachStdin: true,
+          AttachStdout: true,
+          AttachStderr: true,
+        },
+        (err, exec) => {
+          if (err) {
+            rej(err);
+            return;
+          }
+
+          exec.start({ stdin: true }, (err, stream) => {
+            if (err) {
+              rej(err);
+              return;
+            }
+            res(stream);
           });
         },
       );

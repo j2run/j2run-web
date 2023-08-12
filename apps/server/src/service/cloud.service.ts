@@ -8,7 +8,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CloudActionRequest, CloudCreateRequest } from 'src/dtos/cloud.dto';
+import {
+  CloudActionRequest,
+  CloudCreateRequest,
+  GetCloudLogRequest,
+} from 'src/dtos/cloud.dto';
 import {
   DockerContainer,
   DockerContainerDocument,
@@ -26,6 +30,7 @@ import {
   DockerAction,
   DockerActionDocument,
 } from 'src/schema/docker-action.schema';
+import { DownloadService } from './download.service';
 
 @Injectable()
 export class CloudService {
@@ -45,6 +50,7 @@ export class CloudService {
     @InjectModel(DockerAction.name)
     private readonly dockerActionModel: Model<DockerActionDocument>,
     private readonly queueDockerService: QueueDockerService,
+    private readonly downloadService: DownloadService,
   ) {}
 
   getAllView(user: UserDocument) {
@@ -159,5 +165,22 @@ export class CloudService {
       dto.dockerContainerId,
       user._id,
     );
+  }
+
+  async createLinkLog(dto: GetCloudLogRequest, user: UserDocument) {
+    const dockerContainerId_ = new Types.ObjectId(dto.dockerContainerId);
+    const container = await this.dockerContainerModel.findById({
+      _id: dockerContainerId_,
+    });
+    if (!container) {
+      throw new NotFoundException('container not exists');
+    }
+    if (container.userId.toString() != user._id.toString()) {
+      throw new ForbiddenException();
+    }
+    if (container.deleteAt) {
+      throw new ForbiddenException('container removed');
+    }
+    return this.downloadService.createLinkCloudLog(dto.dockerContainerId);
   }
 }

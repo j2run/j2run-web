@@ -23,3 +23,9 @@ export class CloudActionRequest {
   @IsObjectId()
   dockerContainerId: string;
 }
+
+export class GetCloudLogRequest {
+  @ApiProperty()
+  @IsObjectId()
+  dockerContainerId: string;
+}
