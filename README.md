@@ -67,3 +67,5 @@ echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 e2JJ#NybyEk@P^K!
 
 e2JJ#NybyEk@P^K!121
+
+keep
