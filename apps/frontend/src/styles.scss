@@ -1,2 +1,11 @@
 @import "@mdi/font/css/materialdesignicons.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
+
+:root {
+  --header-background: #37517e;
+  --header-text: #ffffff;
+}
+
+.gap-5 {
+  gap: 5px;
+}

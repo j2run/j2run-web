@@ -2,11 +2,11 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
 
 const routes: Readonly<RouteRecordRaw[]> = [
-  // {
-  //   path: '/',
-  //   component: () => import('./pages/Home.vue'),
-  //   meta: { noAuth: true },
-  // },
+  {
+    path: '',
+    component: () => import('./pages/Home.vue'),
+    meta: { noAuth: true },
+  },
   {
     path: '/login',
     component: () => import('./pages/Login.vue'),
@@ -46,6 +46,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     meta: { auth: true },
     component: () => import('./pages/Remote.vue'),
   },
+  // { 
+  //   path: '/remote-mobile',
+  //   meta: { auth: true },
+  //   component: () => import('./pages/RemoteMobile.vue'),
+  // },
   {
     path: '/:pathMatch(.*)*',
     redirect: '/login',
