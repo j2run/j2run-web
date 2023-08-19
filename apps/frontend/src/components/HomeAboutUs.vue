@@ -26,32 +26,6 @@
 </template>
 
 <style scoped lang="scss">
-
-.line-bottom  {
-  display: inline-block;
-  position: relative;
-  &::before {
-    position: absolute;
-    display: inline-block;
-    content: '';
-    width: 90%;
-    height: 1px;
-    background-color: #ccc;
-    left: 5%;
-    bottom: -10px;
-  }
-  &::after {
-    position: absolute;
-    display: inline-block;
-    content: '';
-    width: 30%;
-    height: 3px;
-    background-color: #47b2e4;
-    left: 35%;
-    bottom: -11px;
-  }
-}
-
 .about-us{
   line-height: 1.8rem;
 }

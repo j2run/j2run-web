@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <div id="home"></div>
     <v-app-bar
       class="header"
       elevation="0"
@@ -14,6 +15,14 @@
           <v-spacer></v-spacer>
 
           <template v-if="display.mdAndUp">
+            <v-btn
+              v-for="item of menuItems"
+              class="text-none default-button"
+              variant="plain"
+              :to="item.to"
+            >
+              {{ item.name }}
+            </v-btn>
             <v-btn
               class="text-none login-button"
               variant="tonal"
@@ -93,7 +102,7 @@
         </v-container>
       </div>
 
-      <section>
+      <section id="about">
         <HomeAboutUs />
       </section>
 
@@ -105,23 +114,13 @@
         <HomeCallToAction />
       </section>
 
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
+      <section id="pricing">
+        <HomePricing />
+      </section>
+
+      <section id="faq">
+        <HomeFAQ />
+      </section>
 
       <section>
         <Footer />
@@ -131,12 +130,20 @@
 
     <v-navigation-drawer
       v-model="state.drawerMenu"
-      location="bottom"
+      location="top"
       temporary
-      class="menu-mobile"
+      class="menu-mobile h-100"
       color="rgb(17 31 56)"
     >
       <v-list>
+        <v-btn
+          v-for="item of menuItems"
+          class="text-none default-button"
+          variant="plain"
+          :to="item.to"
+        >
+          {{ item.name }}
+        </v-btn>
         <v-list-item>
           <v-btn
             class="text-none login-button"
@@ -222,12 +229,18 @@
   }
 }
 
+:deep(.default-button) {
+  font-weight: 700;
+  color: white !important;
+}
+
 .menu-mobile {
   &:not(.v-navigation-drawer--active) {
     margin-top: -40px !important;
   }
-  .reg-button, .login-button {
+  .reg-button, .login-button, .default-button {
     width: 100%;
+    text-align: left;
   }
 }
 
@@ -254,15 +267,39 @@ import heroImg from '../assets/hero-img.png';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useRoute } from 'vue-router';
+import { watch } from 'vue';
 
 const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
 const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
 const HomeAdvantage = shallowRef(defineAsyncComponent(() => import('../components/HomeAdvantage.vue')));
 const Footer = shallowRef(defineAsyncComponent(() => import('../components/Footer.vue')));
 const HomeCallToAction = shallowRef(defineAsyncComponent(() => import('../components/HomeCallToAction.vue')));
+const HomePricing = shallowRef(defineAsyncComponent(() => import('../components/HomePricing.vue')));
+const HomeFAQ = shallowRef(defineAsyncComponent(() => import('../components/HomeFAQ.vue')));
+
+const menuItems = [
+  {
+    name: 'Trang chủ',
+    to: '/#home'
+  },
+  {
+    name: 'Giới thiệu',
+    to: '/#about'
+  },
+  {
+    name: 'Dịch vụ',
+    to: '/#pricing'
+  },
+  {
+    name: 'FAQ',
+    to: '/#faq'
+  },
+];
 
 const imageBanner = ref<HTMLImageElement>();
 const display = ref(useDisplay())
+const route = useRoute();
 
 const state = reactive({
   isHeaderBlur: false,
@@ -273,9 +310,20 @@ const onWindowScroll = function () {
   state.isHeaderBlur = (window.scrollY > 60);
 }
 
+const gotoHash = (hash: string) => {
+  const element = document.getElementById(hash.substring(1, hash.length));
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    document.body.scrollTo(0, 0);
+  }
+}
+
 const test = () => {
   alert('Đang phát triễn, vui lòng chọn nhận 6h treo miễn phí!');
 }
+
+watch(() => route.hash, gotoHash);
 
 onMounted(() => {
   AOS.init({
@@ -286,6 +334,7 @@ onMounted(() => {
   window.addEventListener('scroll', onWindowScroll, false);
   setTimeout(() => {
     imageBanner.value?.classList.add('img-anim');
+    gotoHash(route.hash);
   }, 400)
 })
 

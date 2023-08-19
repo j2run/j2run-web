@@ -53,7 +53,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
   // },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login',
+    redirect: '/',
     meta: { noAuth: true },
   },
 ]
@@ -61,7 +61,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
 router.beforeEach(async (to, _, next) => {
   const auth = useAuthStore();
