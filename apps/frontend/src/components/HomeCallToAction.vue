@@ -1,16 +1,16 @@
 <template>
   <div class="cto-parallax" data-aos="fade-up">
     <v-parallax
-      src="https://vcc247.net/assets/img/cta-bg.jpg"
+      :src="ctaBg"
       height="300"
     >
       <v-container class="h-100">
         <v-row class="h-100" align="center" justify="space-between">
-          <v-col class="cto-body">
+          <v-col class="cto-body" cols="12" md="6">
             <div class="font-unbounded text-h5 my-3">Hành động ngay</div>
             Bắt đầu hoàn toàn miễn phí và dễ dàng. Bạn có thể đăng ký tài khoản trong một phút và ngay lập tức bắt đầu sử dụng tất cả các dịch vụ của chúng tôi.
           </v-col>
-          <v-col class="text-right">
+          <v-col class="text-right" cols="12" md="6">
             <v-btn class="getting-btn" variant="tonal" to="/register">Bắt đầu</v-btn>
           </v-col>
         </v-row>
@@ -56,3 +56,7 @@
   }
 }
 </style>
+
+<script setup lang="ts">
+import ctaBg from '../assets/cta-bg.jpg'
+</script>

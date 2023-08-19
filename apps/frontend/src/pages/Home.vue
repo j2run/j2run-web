@@ -97,7 +97,7 @@
         <HomeAboutUs />
       </section>
 
-      <section>
+      <section style="overflow-x: hidden">
         <HomeAdvantage />
       </section>
 
