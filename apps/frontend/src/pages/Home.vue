@@ -101,6 +101,28 @@
         <HomeAdvantage />
       </section>
 
+      <section class="mt-10">
+        <HomeCallToAction />
+      </section>
+
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+
       <section>
         <Footer />
       </section>
@@ -237,6 +259,7 @@ const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vu
 const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
 const HomeAdvantage = shallowRef(defineAsyncComponent(() => import('../components/HomeAdvantage.vue')));
 const Footer = shallowRef(defineAsyncComponent(() => import('../components/Footer.vue')));
+const HomeCallToAction = shallowRef(defineAsyncComponent(() => import('../components/HomeCallToAction.vue')));
 
 const imageBanner = ref<HTMLImageElement>();
 const display = ref(useDisplay())
@@ -257,7 +280,8 @@ const test = () => {
 onMounted(() => {
   AOS.init({
     once: true,
-    delay: 200,
+    delay: 100,
+    duration: 700
   });
   window.addEventListener('scroll', onWindowScroll, false);
   setTimeout(() => {
