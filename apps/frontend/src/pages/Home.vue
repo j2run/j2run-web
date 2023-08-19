@@ -53,11 +53,17 @@
             }"
           >
             <v-col cols="0" md="6" :order="2" :order-md="1">
-              <h1 class="logen">Giải pháp treo game Java J2ME dành cho game thủ.</h1>
+              <h1
+                class="logen font-unbounded"
+                data-aos="fade-up"
+              >
+                Giải pháp treo game Java J2ME dành cho game thủ.
+              </h1>
               <v-btn
                 class="mt-2 mr-2 text-none getting-button"
                 variant="tonal"
                 size="large"
+                data-aos="fade-up"
                 @click="test"
               >
                 Thử miễn phí
@@ -66,6 +72,7 @@
                 class="mt-2 text-none"
                 variant="text"
                 to="register"
+                data-aos="fade-up"
               >
                 Nhận 6h treo miễn phí
               </v-btn>
@@ -76,6 +83,8 @@
                 :style="{
                   width: display.mdAndUp ? '100%' : '80%'
                 }"
+                ref="imageBanner"
+                data-aos="zoom-in"
                 />
             </v-col>
           </v-row>
@@ -83,6 +92,19 @@
         <v-container class="h-100">
         </v-container>
       </div>
+
+      <section>
+        <HomeAboutUs />
+      </section>
+
+      <section>
+        <HomeAdvantage />
+      </section>
+
+      <section>
+        <Footer />
+      </section>
+      
     </v-main>
 
     <v-navigation-drawer
@@ -134,10 +156,6 @@
   background: var(--header-background) !important;
   color: var(--header-text) !important;
 
-  .logen {
-    font-family: Unbounded;
-    font-weight: 600;
-  }
 
   &.mobile {
     text-align: center;
@@ -190,6 +208,19 @@
     width: 100%;
   }
 }
+
+.img-anim {
+  animation: up-down 2s ease-in-out infinite alternate-reverse both;
+}
+
+@keyframes up-down {
+  0% {
+    transform: translateY(10px);
+  }
+  100% {
+      transform: translateY(-10px);
+  }
+}
 </style>
 
 <script lang="ts" setup>
@@ -199,8 +230,15 @@ import { onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import heroImg from '../assets/hero-img.png';
 
-const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
+const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
+const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
+const HomeAdvantage = shallowRef(defineAsyncComponent(() => import('../components/HomeAdvantage.vue')));
+const Footer = shallowRef(defineAsyncComponent(() => import('../components/Footer.vue')));
+
+const imageBanner = ref<HTMLImageElement>();
 const display = ref(useDisplay())
 
 const state = reactive({
@@ -217,7 +255,14 @@ const test = () => {
 }
 
 onMounted(() => {
+  AOS.init({
+    once: true,
+    delay: 200,
+  });
   window.addEventListener('scroll', onWindowScroll, false);
+  setTimeout(() => {
+    imageBanner.value?.classList.add('img-anim');
+  }, 400)
 })
 
 onUnmounted(() => {

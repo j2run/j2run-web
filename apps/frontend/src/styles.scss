@@ -31,16 +31,16 @@ $font: Manrope, Roboto;
 
 @font-face {
   font-family: Manrope;
-  src: url("@/assets/fonts/Manrope/static/Manrope-ExtraLight.ttf") format("woff");
-  font-weight: 400;
+  src: url("@/assets/fonts/Manrope/static/Manrope-Light.ttf") format("woff");
+  font-weight: 300;
   font-style: normal;
 }
-
 
 @font-face {
   font-family: Manrope;
   src: url("@/assets/fonts/Manrope/static/Manrope-Regular.ttf") format("woff");
   font-style: normal;
+  font-weight: 500;
 }
 
 @font-face {
@@ -48,4 +48,17 @@ $font: Manrope, Roboto;
   src: url("@/assets/fonts/Manrope/static/Manrope-SemiBold.ttf") format("woff");
   font-weight: 700;
   font-style: normal;
+}
+
+.font-unbounded {
+  font-family: Unbounded !important;
+  font-weight: 600;
+}
+
+.font-logo {
+  font-family: ADLaM_Display;
+}
+
+.color-hb {
+  color: var(--header-background)
 }
