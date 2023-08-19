@@ -10,7 +10,7 @@
     >
       <v-container>
         <v-row class="gap-5" align="center">
-          <span class="text-h5">J2RUN.COM</span>
+          <Logo />
           <v-spacer></v-spacer>
 
           <template v-if="display.mdAndUp">
@@ -40,7 +40,7 @@
           mobile: !display.mdAndUp
         }"
         :style="{
-          height: display.mdAndUp ? '80vh' : '100vh'
+          height: display.mdAndUp ? '80vh' : 'calc(100vh - 64px)'
         }"
       >
         <v-container class="pl-2 h-100">
@@ -87,9 +87,10 @@
 
     <v-navigation-drawer
       v-model="state.drawerMenu"
-      location="top"
+      location="bottom"
       temporary
       class="menu-mobile"
+      color="rgb(17 31 56)"
     >
       <v-list>
         <v-list-item>
@@ -115,7 +116,7 @@
   </v-app>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header {
   background: var(--header-background) !important;
   color: var(--header-text) !important;
@@ -132,6 +133,11 @@
 .getting {
   background: var(--header-background) !important;
   color: var(--header-text) !important;
+
+  .logen {
+    font-family: Unbounded;
+    font-weight: 600;
+  }
 
   &.mobile {
     text-align: center;
@@ -150,7 +156,7 @@
   background: #47b2e4;
 }
 
-.reg-button {
+:deep(.reg-button) {
   border-radius: 50px;
   color: #fff;
   font-size: 14px;
@@ -163,7 +169,7 @@
   }
 }
 
-.login-button {
+:deep(.login-button) {
   border-radius: 50px;
   color: #fff;
   font-size: 14px;
@@ -182,17 +188,18 @@
   }
   .reg-button, .login-button {
     width: 100%;
-    color: black;
   }
 }
 </style>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { defineAsyncComponent, reactive, ref, shallowRef } from 'vue';
 import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import heroImg from '../assets/hero-img.png';
+
+const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
 
 const display = ref(useDisplay())
 

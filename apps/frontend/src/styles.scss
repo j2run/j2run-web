@@ -1,3 +1,11 @@
+
+$font: Manrope, Roboto;
+
+@use 'vuetify' with (
+  $heading-font-family: $font,
+  $body-font-family: $font,
+);
+
 @import "@mdi/font/css/materialdesignicons.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
 
@@ -8,4 +16,36 @@
 
 .gap-5 {
   gap: 5px;
+}
+
+@font-face {
+  font-family: ADLaM_Display;
+  src: url('@/assets/fonts/ADLaM_Display/ADLaMDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: Unbounded;
+  src: url('@/assets/fonts/Unbounded/static/Unbounded-SemiBold.ttf');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: Manrope;
+  src: url("@/assets/fonts/Manrope/static/Manrope-ExtraLight.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: Manrope;
+  src: url("@/assets/fonts/Manrope/static/Manrope-Regular.ttf") format("woff");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Manrope;
+  src: url("@/assets/fonts/Manrope/static/Manrope-SemiBold.ttf") format("woff");
+  font-weight: 700;
+  font-style: normal;
 }
