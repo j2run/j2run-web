@@ -12,7 +12,7 @@
       Xin đừng ngần ngại liên hệ với chúng tôi qua chat trực tiếp hoặc Telegram, Zalo nếu bạn cần thêm thông tin hoặc hỗ trợ gì thêm.
     </div>
     <div>
-      <v-expansion-panels multiple class="custom-expand">
+      <v-expansion-panels multiple class="custom-expand" data-aos="fade-up">
         <v-expansion-panel v-for="item of helps" elevation="0">
           <v-expansion-panel-title class="color-hb font-weight-bold">
             <v-icon :icon="'mdi-help-circle-outline'"></v-icon>

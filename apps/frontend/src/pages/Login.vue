@@ -1,17 +1,20 @@
 <template>
-  <div>
-    <v-img
-      class="mx-auto my-6"
-      max-width="125"
-      :src="j2runLogo"
-    ></v-img>
-
+  <div class="wrapper">
+    <effect-card />
     <v-card
-      class="mx-auto mt-4 border pa-12 pb-8"
-      max-width="400px"
+      class="border pa-12 pb-8"
+      max-width="420px"
       elevation="2"
       rounded="lg"
     >
+      <v-row justify="center" class="color-hb">
+        <v-col cols="12" class="text-center">
+          <v-icon class="icon-login">mdi-lock-open-outline</v-icon>
+        </v-col>
+        <v-col cols="12" class="text-center text-h5 font-unbounded mb-8">
+          Đăng nhập
+        </v-col>
+      </v-row>
       <v-alert
         v-if="!!state.toastMessage"
         class="mb-3"
@@ -57,42 +60,45 @@
         @blur="v$.password.$touch"
       ></v-text-field>
 
-      <v-card
-          class="mb-12"
-          color="surface-variant"
-          variant="tonal"
-        >
-          <v-card-text class="text-medium-emphasis text-caption">
-            Cảnh báo: Sau 3 lần thất bại liên tiếp trong việc đăng nhập, tài khoản của bạn sẽ bị tạm khóa trong ba giờ. Nếu bạn cần đăng nhập ngay bây giờ, bạn cũng có thể nhấp vào "Quên mật khẩu?" phía dưới để đặt lại mật khẩu đăng nhập.
-          </v-card-text>
-        </v-card>
+      <v-btn
+        block
+        class="mb-8"
+        color="blue"
+        size="large"
+        variant="tonal"
+        :loading="state.isLoading"
+        @click="onLogin"
+      >
+        Đăng nhập
+      </v-btn>
 
+      <v-card-text class="text-center">
         <v-btn
-          block
-          class="mb-8"
-          color="blue"
-          size="large"
-          variant="tonal"
-          :loading="state.isLoading"
-          @click="onLogin"
+          variant="plain"
+          class="text-blue"
+          to="/register"
         >
-          Đăng nhập
+          Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
         </v-btn>
-
-        <v-card-text class="text-center">
-          <v-btn
-            variant="plain"
-            class="text-blue"
-            to="/register"
-          >
-            Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
-          </v-btn>
-        </v-card-text>
+      </v-card-text>
     </v-card>
+    <footer-v2 />
   </div>
 </template>
 
 <style scoped lang="scss">
+.wrapper {
+  position: relative;
+  margin: auto;
+  max-width: 420px;
+  margin-top: 4rem;
+  padding: 6px;
+}
+
+.icon-login {
+  font-size: 45px;
+}
+
 .title {
   .el-form-item__content b {
     font-size: 20px;
@@ -107,15 +113,17 @@
 </style>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { defineAsyncComponent, reactive, shallowRef } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { email, maxLength, minLength, required } from '@vuelidate/validators'
-import j2runLogo from '../assets/j2run-logo.png'
 import { useAuthStore } from '../stores/auth.store';
 import { authService } from '../apis/auth';
 import { useRoute } from 'vue-router';
 import { onMounted } from 'vue';
 import { router } from '../router';
+
+const EffectCard = shallowRef(defineAsyncComponent(() => import('../components/EffectCard.vue')));
+const FooterV2 = shallowRef(defineAsyncComponent(() => import('../components/FooterV2.vue')));
 
 const route = useRoute();
 

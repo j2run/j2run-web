@@ -1,14 +1,9 @@
 <template>
-  <div>
-    <v-img
-      class="mx-auto my-6"
-      max-width="125"
-      :src="j2runLogo"
-    ></v-img>
-
+  <div class="wrapper">
+    <effect-card />
     <v-card
-      class="mx-auto mt-4 border pa-1"
-      max-width="400px"
+      class="border pa-1"
+      max-width="420px"
       elevation="2"
       rounded="lg"
       v-if="state.registerDone"
@@ -35,11 +30,19 @@
 
     <v-card
       class="mx-auto mt-4 border pa-12 pb-8"
-      max-width="400px"
+      max-width="420px"
       elevation="2"
       rounded="lg"
       v-else
     >
+      <v-row justify="center" class="color-hb">
+        <v-col cols="12" class="text-center">
+          <v-icon class="icon-login">mdi-lock-open-outline</v-icon>
+        </v-col>
+        <v-col cols="12" class="text-center text-h5 font-unbounded mb-8">
+          Đăng ký
+        </v-col>
+      </v-row>
       <v-alert
         v-if="!!state.toastMessage"
         class="mb-3"
@@ -117,10 +120,23 @@
         </v-btn>
       </v-card-text>
     </v-card>
+    <footer-v2 />
   </div>
 </template>
 
 <style scoped lang="scss">
+.wrapper {
+  position: relative;
+  margin: auto;
+  max-width: 420px;
+  margin-top: 3rem;
+  padding: 6px;
+}
+
+.icon-login {
+  font-size: 45px;
+}
+
 .title {
   .el-form-item__content b {
     font-size: 20px;
@@ -135,12 +151,14 @@
 </style>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { defineAsyncComponent, reactive, shallowRef } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { email, maxLength, minLength, required, sameAs } from '@vuelidate/validators'
-import j2runLogo from '../assets/j2run-logo.png'
 import { authService } from '../apis/auth';
 import { computed } from 'vue';
+
+const EffectCard = shallowRef(defineAsyncComponent(() => import('../components/EffectCard.vue')));
+const FooterV2 = shallowRef(defineAsyncComponent(() => import('../components/FooterV2.vue')));
 
 const initialState = {
   password: '',

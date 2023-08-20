@@ -83,7 +83,7 @@
                 to="register"
                 data-aos="fade-up"
               >
-                Nhận 1.000vnđ trãi nghiệm
+                Nhận 1.000vnđ trải nghiệm
               </v-btn>
             </v-col>
             <v-col cols="0" md="6" :order="1" :order-md="2">
