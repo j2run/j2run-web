@@ -183,6 +183,7 @@ const descriptionMap = computed(() => {
     } else {
       data.push('Uptime: 99.9%');
     }
+    data.push('Hỗ trợ điều khiển trên mobile');
     return val;
   }, {})
 })

@@ -73,7 +73,7 @@
                 variant="tonal"
                 size="large"
                 data-aos="fade-up"
-                @click="test"
+                to="/trial"
               >
                 Thử miễn phí
               </v-btn>
@@ -307,7 +307,7 @@ const state = reactive({
 })
 
 const onWindowScroll = function () {
-  state.isHeaderBlur = (window.scrollY > 60);
+  state.isHeaderBlur = window.scrollY > 60;
 }
 
 const gotoHash = (hash: string) => {
@@ -317,10 +317,6 @@ const gotoHash = (hash: string) => {
   } else {
     document.body.scrollTo(0, 0);
   }
-}
-
-const test = () => {
-  alert('Đang phát triễn, vui lòng chọn nhận 6h treo miễn phí!');
 }
 
 watch(() => route.hash, gotoHash);
