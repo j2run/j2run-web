@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export function formatVnd(money: number) {
-  return money.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+  return money.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}).replace('VND', 'vnđ');
 }
 
 export function formatCpu(cpu: number) {

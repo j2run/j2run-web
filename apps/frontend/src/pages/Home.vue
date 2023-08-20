@@ -83,7 +83,7 @@
                 to="register"
                 data-aos="fade-up"
               >
-                Nhận 6h treo miễn phí
+                Nhận 1.000vnđ trãi nghiệm
               </v-btn>
             </v-col>
             <v-col cols="0" md="6" :order="1" :order-md="2">
