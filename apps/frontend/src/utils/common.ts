@@ -11,6 +11,13 @@ export function formatCpu(cpu: number) {
   return 'CPU: ' + cpu;
 }
 
+export function formatRam(ram: number) {
+  if (ram === -1) {
+    return 'RAM: shared'
+  }
+  return 'RAM: ' + ram + 'MB';
+}
+
 export function formatSecondsToTime(seconds: number) {
   const duration = moment.duration(seconds, 'seconds');
 

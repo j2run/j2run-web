@@ -10,7 +10,7 @@
     </div>
     <v-row justify="center">
       <v-col v-for="plan of plans" cols="12" :md="6" :lg="4">
-        <v-card :class="classMap[plan._id]" elevation="0">
+        <v-card :class="classMap[plan._id]" elevation="0" data-aos="fade-up">
           <span class="c-icon">
             <v-icon :icon="iconMap[plan._id]"></v-icon>
           </span>
@@ -129,7 +129,7 @@ import { usePlanStore } from '../stores/plan.store';
 import { formatVnd } from '../utils/common';
 import { formatSecondsToTime } from '../utils/common';
 import { computed } from 'vue';
-import { formatCpu } from '../utils/common';
+import { formatCpu, formatRam } from '../utils/common';
 import { PlanDto } from '../dtos/plan';
 
 const planStore = usePlanStore();
@@ -176,8 +176,8 @@ const descriptionMap = computed(() => {
     if (!val[item._id]) {
       data = val[item._id] = [];
     }
-    data.push('Cpu: ' + formatCpu(item.cpu));
-    data.push('Ram: ' + formatCpu(item.ram) + 'MB')
+    data.push(formatCpu(item.cpu));
+    data.push(formatRam(item.ram))
     if (item.usageSecond < 60 * 60 * 24) {
       data.push('Uptime: 90%');
     } else {
