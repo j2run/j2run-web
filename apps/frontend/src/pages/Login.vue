@@ -1,92 +1,99 @@
 <template>
-  <div class="wrapper">
-    <effect-card />
-    <v-card
-      class="border pa-12 pb-8"
-      max-width="420px"
-      elevation="2"
-      rounded="lg"
-    >
-      <v-row justify="center" class="color-hb">
-        <v-col cols="12" class="text-center">
-          <v-icon class="icon-login">mdi-lock-open-outline</v-icon>
-        </v-col>
-        <v-col cols="12" class="text-center text-h5 font-unbounded mb-8">
-          Đăng nhập
-        </v-col>
-      </v-row>
-      <v-alert
-        v-if="!!state.toastMessage"
-        class="mb-3"
-        :type="state.toastType"
-        :text="state.toastMessage"
-      ></v-alert>
-      <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
-      <v-text-field
-        v-model="state.email"
-        :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
-        density="compact"
-        placeholder="Địa chỉ email"
-        prepend-inner-icon="mdi-email-outline"
-        variant="outlined"
-        required
-        @input="v$.email.$touch"
-        @blur="v$.email.$touch"
-      ></v-text-field>
-
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Mật khẩu
-
-        <!-- <a
-          class="text-caption text-decoration-none text-blue"
-          href="#"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Quên mật khẩu?</a> -->
-      </div>
-      <v-text-field
-        v-model="state.password"
-        :error-messages="v$.password.$errors.map(e => e.$message as unknown as string)"
-        :append-inner-icon="state.visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="state.visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Nhập mật khẩu"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        required
-        @click:append-inner="state.visible = !state.visible"
-        @input="v$.password.$touch"
-        @blur="v$.password.$touch"
-      ></v-text-field>
-
-      <v-btn
-        block
-        class="mb-8"
-        color="blue"
-        size="large"
-        variant="tonal"
-        :loading="state.isLoading"
-        @click="onLogin"
+  <div class="over-wrapper">
+    <div class="wrapper">
+      <effect-card />
+      <v-card
+        class="border pa-12 pb-8"
+        max-width="420px"
+        elevation="2"
+        rounded="lg"
       >
-        Đăng nhập
-      </v-btn>
+        <v-row justify="center" class="color-hb">
+          <v-col cols="12" class="text-center">
+            <v-icon class="icon-login">mdi-lock-open-outline</v-icon>
+          </v-col>
+          <v-col cols="12" class="text-center text-h5 font-unbounded mb-8">
+            Đăng nhập
+          </v-col>
+        </v-row>
+        <v-alert
+          v-if="!!state.toastMessage"
+          class="mb-3"
+          :type="state.toastType"
+          :text="state.toastMessage"
+        ></v-alert>
+        <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
+        <v-text-field
+          v-model="state.email"
+          :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
+          density="compact"
+          placeholder="Địa chỉ email"
+          prepend-inner-icon="mdi-email-outline"
+          variant="outlined"
+          required
+          @input="v$.email.$touch"
+          @blur="v$.email.$touch"
+        ></v-text-field>
 
-      <v-card-text class="text-center">
+        <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+          Mật khẩu
+
+          <!-- <a
+            class="text-caption text-decoration-none text-blue"
+            href="#"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Quên mật khẩu?</a> -->
+        </div>
+        <v-text-field
+          v-model="state.password"
+          :error-messages="v$.password.$errors.map(e => e.$message as unknown as string)"
+          :append-inner-icon="state.visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="state.visible ? 'text' : 'password'"
+          density="compact"
+          placeholder="Nhập mật khẩu"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          required
+          @click:append-inner="state.visible = !state.visible"
+          @input="v$.password.$touch"
+          @blur="v$.password.$touch"
+        ></v-text-field>
+
         <v-btn
-          variant="plain"
-          class="text-blue"
-          to="/register"
+          block
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          :loading="state.isLoading"
+          @click="onLogin"
         >
-          Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
+          Đăng nhập
         </v-btn>
-      </v-card-text>
-    </v-card>
-    <footer-v2 />
+
+        <v-card-text class="text-center">
+          <v-btn
+            variant="plain"
+            class="text-blue"
+            to="/register"
+          >
+            Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
+          </v-btn>
+        </v-card-text>
+      </v-card>
+      <footer-v2 />
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.over-wrapper {
+  overflow: hidden;
+  min-height: 100vh;
+}
+
 .wrapper {
   position: relative;
   margin: auto;

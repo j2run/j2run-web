@@ -8,12 +8,12 @@
 
 <style lang="scss" scoped>
 .footer {
-  position: fixed;
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
   color: var(--header-background);
-  font-weight: bold;
   text-align: center;
+  z-index: 99999;
 }
 </style>
