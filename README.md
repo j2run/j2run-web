@@ -69,3 +69,21 @@ e2JJ#NybyEk@P^K!
 e2JJ#NybyEk@P^K!121
 
 keep
+
+
+virsh
+/etc/libvirt/qemu/networks
+virsh net-start wlxd03745825bc0
+
+virsh net-edit default
+
+sudo ip route add default via 192.168.150.10 dev eth1 metric 1
+
+sudo ip route add default via 192.168.150.10 dev virbr1 metric 1
+sudo ip route delete default via 192.168.150.10 dev virbr1 metric 1
+
+sudo ip route add default via 192.168.1.1 dev wlxd03745d1164c proto dhcp metric 618 
+sudo ip route add default via 192.168.1.1 dev wlxd03745825bc0 proto dhcp metric 620
+
+sudo ip route delete default via 192.168.1.1 dev wlxd03745d1164c proto dhcp metric 618 
+sudo ip route delete default via 192.168.1.1 dev wlxd03745825bc0 proto dhcp metric 620
