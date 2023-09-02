@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { authService } from '../apis/auth';
 import { clearToken, setAccessToken, setRefreshToken } from '../apis/axios';
 import { router } from '../router';
+import { UserDto } from '../dtos/user';
 
 const getUser = () => {
   try {
@@ -15,7 +16,7 @@ const getUser = () => {
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
-        user: getUser(),
+        user: getUser() as UserDto,
     }),
     actions: {
         async login(email: string, password: string) {
@@ -27,7 +28,7 @@ export const useAuthStore = defineStore({
           router.push('/manage');
         },
         logout() {
-          this.user = null;
+          this.user = null as any;
           localStorage.removeItem('user');
           clearToken();
           router.push('/login');
