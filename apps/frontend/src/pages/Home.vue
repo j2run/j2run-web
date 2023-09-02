@@ -273,6 +273,8 @@ import 'aos/dist/aos.css';
 
 import { router } from '../router';
 import heroImg from '../assets/hero-img.png';
+import { useWindowScroll } from '@vueuse/core';
+import { watch } from 'vue';
 
 const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
 const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
@@ -310,15 +312,12 @@ const imageBanner = ref<HTMLImageElement>();
 const display = ref(useDisplay());
 const timeInit = ref(new Date().getTime());
 const route = useRoute();
+const { y } = useWindowScroll();
 
 const state = reactive({
   isHeaderBlur: false,
   drawerMenu: false,
 })
-
-const onWindowScroll = function () {
-  state.isHeaderBlur = window.scrollY > 60;
-}
 
 const gotoHash = (hash: string) => {
   const element = document.getElementById(hash.substring(1, hash.length));
@@ -346,21 +345,21 @@ const onSectionIntersect = (hash: string) => {
   }) as IntersectionObserverCallback
 }
 
+watch(() => y.value > 60, (v) => {
+  state.isHeaderBlur = v;
+});
+
 onMounted(() => {
   AOS.init({
     once: true,
     delay: 100,
     duration: 700
   });
-  window.addEventListener('scroll', onWindowScroll, false);
   setTimeout(() => {
     imageBanner.value?.classList.add('img-anim');
     gotoHash(route.hash);
   }, 400)
 })
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', onWindowScroll, false);
-})
 
 </script>
