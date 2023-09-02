@@ -88,9 +88,24 @@ $font: Manrope, Roboto;
   }
 }
 
+// fix width: auto - modal vuetify
 @media screen and (max-width: 400px) {
   .v-overlay__content {
     width: calc(100% - 48px) !important;
     max-width: calc(100% - 48px) !important;
+  }
+}
+
+// responsive font size
+html {
+  font-size: 90%;
+  @media only screen and (min-width: 600px) {
+      font-size: 94%;
+  }
+  @media only screen and (min-width: 1000px) {
+      font-size: 98%;
+  }
+  @media only screen and (min-width: 1200px) {
+      font-size: 100%;
   }
 }

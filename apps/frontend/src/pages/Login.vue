@@ -83,8 +83,8 @@
           </v-btn>
           <br />
           <v-btn variant="plain"  class="text-blue" :to="'/'">
-            <v-icon size="large">mdi-home-import-outline</v-icon>
             Trang chủ
+            <v-icon size="large">mdi-home-import-outline</v-icon>
           </v-btn>
         </v-card-text>
       </v-card>
