@@ -19,7 +19,7 @@
               v-for="item of menuItems"
               class="text-none default-button"
               variant="plain"
-              :to="item.to"
+              @click="pushHash(item.to)"
             >
               {{ item.name }}
             </v-btn>
@@ -45,6 +45,7 @@
     <v-main>
       <div
         class="getting"
+        v-intersection-observer="onSectionIntersect(HASH_HOME)"
         :class="{
           mobile: !display.mdAndUp
         }"
@@ -102,7 +103,7 @@
         </v-container>
       </div>
 
-      <section id="about">
+      <section id="about" v-intersection-observer="onSectionIntersect(HASH_ABOUT)">
         <HomeAboutUs />
       </section>
 
@@ -114,11 +115,11 @@
         <HomeCallToAction />
       </section>
 
-      <section id="pricing">
+      <section id="pricing"  v-intersection-observer="onSectionIntersect(HASH_PRICING)">
         <HomePricing />
       </section>
 
-      <section id="faq">
+      <section id="faq"  v-intersection-observer="onSectionIntersect(HASH_FAQ)">
         <HomeFAQ />
       </section>
 
@@ -140,7 +141,7 @@
           v-for="item of menuItems"
           class="text-none default-button"
           variant="plain"
-          :to="item.to"
+          @click="pushHash(item.to)"
         >
           {{ item.name }}
         </v-btn>
@@ -263,12 +264,15 @@ import { defineAsyncComponent, reactive, ref, shallowRef } from 'vue';
 import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
-import heroImg from '../assets/hero-img.png';
+import { vIntersectionObserver } from '@vueuse/components';
+
+import { useRoute } from 'vue-router';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { useRoute } from 'vue-router';
-import { watch } from 'vue';
+
+import { router } from '../router';
+import heroImg from '../assets/hero-img.png';
 
 const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
 const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
@@ -278,27 +282,33 @@ const HomeCallToAction = shallowRef(defineAsyncComponent(() => import('../compon
 const HomePricing = shallowRef(defineAsyncComponent(() => import('../components/HomePricing.vue')));
 const HomeFAQ = shallowRef(defineAsyncComponent(() => import('../components/HomeFAQ.vue')));
 
+const HASH_HOME = '#home';
+const HASH_ABOUT = '#about';
+const HASH_PRICING = '#pricing';
+const HASH_FAQ = '#faq';
+
 const menuItems = [
   {
     name: 'Trang chủ',
-    to: '/#home'
+    to: HASH_HOME
   },
   {
     name: 'Giới thiệu',
-    to: '/#about'
+    to: HASH_ABOUT
   },
   {
     name: 'Dịch vụ',
-    to: '/#pricing'
+    to: HASH_PRICING
   },
   {
     name: 'FAQ',
-    to: '/#faq'
+    to: HASH_FAQ
   },
 ];
 
 const imageBanner = ref<HTMLImageElement>();
-const display = ref(useDisplay())
+const display = ref(useDisplay());
+const timeInit = ref(new Date().getTime());
 const route = useRoute();
 
 const state = reactive({
@@ -319,7 +329,22 @@ const gotoHash = (hash: string) => {
   }
 }
 
-watch(() => route.hash, gotoHash);
+const pushHash = (hash: string) => {
+  router.push({ hash });
+  gotoHash(hash);
+}
+
+const onSectionIntersect = (hash: string) => {
+  return ((data) => {
+    if (timeInit.value + 700 > new Date().getTime()) {
+      return;
+    }
+    const d0 = data[0];
+    if (d0.isIntersecting) {
+      router.push({ hash });
+    }
+  }) as IntersectionObserverCallback
+}
 
 onMounted(() => {
   AOS.init({
