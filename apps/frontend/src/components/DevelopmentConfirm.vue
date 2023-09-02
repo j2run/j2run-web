@@ -2,7 +2,6 @@
   <v-dialog
     v-model="state.dialog"
     persistent
-    width="auto"
     max-width="500"
   >
     <v-card>
