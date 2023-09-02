@@ -87,3 +87,10 @@ $font: Manrope, Roboto;
     bottom: -11px;
   }
 }
+
+@media screen and (max-width: 400px) {
+  .v-overlay__content {
+    width: calc(100% - 48px) !important;
+    max-width: calc(100% - 48px) !important;
+  }
+}

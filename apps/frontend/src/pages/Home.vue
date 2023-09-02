@@ -261,7 +261,6 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, reactive, ref, shallowRef } from 'vue';
-import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import { vIntersectionObserver } from '@vueuse/components';

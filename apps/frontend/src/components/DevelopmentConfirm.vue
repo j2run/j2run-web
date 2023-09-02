@@ -3,6 +3,7 @@
     v-model="state.dialog"
     persistent
     max-width="500"
+    width="auto"
   >
     <v-card>
       <v-card-title>

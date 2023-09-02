@@ -81,6 +81,11 @@
           >
             Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
           </v-btn>
+          <br />
+          <v-btn variant="plain"  class="text-blue" :to="'/'">
+            <v-icon size="large">mdi-home-import-outline</v-icon>
+            Trang chủ
+          </v-btn>
         </v-card-text>
       </v-card>
       <footer-v2 />

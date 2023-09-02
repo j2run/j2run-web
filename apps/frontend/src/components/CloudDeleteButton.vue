@@ -2,6 +2,7 @@
   <v-dialog
     v-model="state.dialog"
     persistent
+    width="auto"
   >
     <template v-slot:activator="{ props }">
       <v-btn
