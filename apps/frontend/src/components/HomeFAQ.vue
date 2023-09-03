@@ -14,7 +14,7 @@
     <div>
       <v-expansion-panels multiple class="custom-expand" data-aos="fade-up">
         <v-expansion-panel v-for="item of helps" elevation="0">
-          <v-expansion-panel-title class="color-hb font-weight-bold">
+          <v-expansion-panel-title class="color-hb font-weight-bold title">
             <v-icon :icon="'mdi-help-circle-outline'"></v-icon>
             <span class="ml-2">
               {{ item.question }}
@@ -41,6 +41,10 @@
       border: unset !important;
     }
   }
+
+  .title {
+    line-height: 16px;
+  }
 } 
 </style>
 
@@ -52,7 +56,7 @@ const helps = [
     answer: "Chắc chắn. Hệ thống cho phép bạn hoàn toàn có thể chạy các game J2ME như NSO, NRO và nhiều ứng dụng khác một cách dễ dàng."
   },
   {
-    question: "Có hoạt động 24/24, ngay cả khi tôi thoát khỏi bảng điều khiển?",
+    question: "Có hoạt động 24/7, ngay cả khi tôi thoát khỏi bảng điều khiển?",
     answer: "Đúng vậy. Hệ thống sẽ tiếp tục hoạt động liên tục 24/24, ngay cả khi bạn đã thoát khỏi bảng điều khiển. Bạn hoàn toàn có thể yên tâm về việc này."
   },
   {

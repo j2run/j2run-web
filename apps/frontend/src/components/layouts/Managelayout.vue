@@ -1,20 +1,26 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-      v-model="drawer"
       class="menu-wrapper"
       :class="{
-        mobile: display.smAndDown
+        mobile: isMobile
       }"
-      :permanent="!display.smAndDown"
-      :temporary="display.smAndDown"
+      :model-value="state.drawer || !isMobile"
+      :permanent="!isMobile"
+      :temporary="isMobile"
+      :rail="!state.drawer"
+      @update:model-value="e => state.drawer = e"
     >
-      <v-list :elevation="0" class="mx-3 my-2">
-        <Logo :size="22" />
+      <v-list
+        class="mx-3 my-2"
+        :elevation="0"
+        :class="{ 'text-center': !state.drawerDelay }"
+      >
+        <Logo :size="22" :short="!isMobile && !state.drawerDelay" />
         <v-icon
           class="close-menu"
-          v-if="display.smAndDown"
-          @click="drawer = false"
+          v-if="isMobile"
+          @click="state.drawer = false"
         >
           mdi-close
         </v-icon>
@@ -46,13 +52,13 @@
     </v-navigation-drawer>
 
     <v-app-bar :elevation="0" border class="toolbar">
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="state.drawer = !state.drawer"></v-app-bar-nav-icon>
       <v-row class="toolbar-main">
         <div class="toolbar-title">
           Máy ảo
         </div>
         <v-spacer></v-spacer>
-        <div v-if="!display.smAndDown">
+        <div v-if="!isMobile">
           <span class="balance">{{ balance }}</span>
           <span class="email">
             {{ user.email }}
@@ -122,7 +128,7 @@
 </style>
 
 <script setup lang="ts">
-import { defineAsyncComponent, reactive, shallowRef } from 'vue';
+import { defineAsyncComponent, reactive, shallowRef, watch } from 'vue';
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify';
 import { useAuthStore } from '../../stores/auth.store';
@@ -131,22 +137,37 @@ import { formatVnd } from '../../utils/common';
 
 const authStore = useAuthStore();
 const display = ref(useDisplay());
+const drawerTimer = ref<NodeJS.Timeout | undefined>();
 const Logout = shallowRef(defineAsyncComponent(() => import('../Logout.vue')));
 const Logo = shallowRef(defineAsyncComponent(() => import('../Logo.vue')));
 const LogoutButton = shallowRef(defineAsyncComponent(() => import('../LogoutButton.vue')));
-
-const drawer = ref(display.value?.smAndDown);
 
 const user = authStore.user;
 
 const balance = computed(() => formatVnd(user.balance));
 
 const state = reactive({
+  drawer: !display.value?.smAndDown,
+  drawerDelay: !display.value?.smAndDown,
   items: [
     { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
     { text: 'Cửa sổ', icon: 'mdi-remote-desktop', to: '/remote-dock' },
   ],
 });
 
+const isMobile = computed(() => display.value.smAndDown);
+
+watch(() => state.drawer, (v) => {
+  if (v) {
+    state.drawerDelay = v;
+    return;
+  }
+  if (drawerTimer.value) {
+    clearTimeout(drawerTimer.value);
+  }
+  drawerTimer.value = setTimeout(() => {
+    state.drawerDelay = v;
+  }, 150);
+})
 
 </script>

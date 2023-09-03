@@ -1,6 +1,11 @@
 <template>
   <span class="logo" :style="{ fontSize: (props.size || 25) + 'px' }">
-    J2Run.com
+    <template v-if="props.short">
+      J2
+    </template>
+    <template v-else>
+      J2Run.com
+    </template>
   </span>
 </template>
 
@@ -16,6 +21,10 @@
 const props = defineProps({
   size: {
     type: Number,
+    required: false,
+  },
+  short: {
+    type: Boolean,
     required: false,
   }
 });
