@@ -29,24 +29,53 @@
       <v-divider></v-divider>
 
       <v-list
+        class="j2-menu"
         :lines="false"
         density="compact"
         nav
       >
-        <v-list-item
-          v-for="(item, i) in state.items"
+        <v-tooltip
+          v-if="!isMobile && !state.drawer"
+          v-for="(item, i) in menu"
           :key="i"
-          :value="item"
-          :to="item.to"
-          :exact="true"
-          color="primary"
+          :text="item.text"
+          content-class="tooltip-menu-custom"
         >
-          <template v-slot:prepend>
-            <v-icon :icon="item.icon"></v-icon>
-          </template>
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              :value="item"
+              :to="item.to"
+              :exact="true"
+              :disabled="route.path == item.to"
+              color="primary"
+            >
+              <template v-slot:prepend>
+                <v-icon :icon="item.icon"></v-icon>
+              </template>
 
-          <v-list-item-title v-text="item.text"></v-list-item-title>
-        </v-list-item>
+              <v-list-item-title v-text="item.text"></v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-tooltip>
+
+        <template v-else>
+          <v-list-item
+            v-for="(item, i) in menu"
+            :key="i"
+            :value="item"
+            :to="item.to"
+            :exact="true"
+            color="primary"
+          >
+            <template v-slot:prepend>
+              <v-icon :icon="item.icon"></v-icon>
+            </template>
+
+            <v-list-item-title v-text="item.text"></v-list-item-title>
+          </v-list-item>
+        </template>
+        
         <Logout />
       </v-list>
     </v-navigation-drawer>
@@ -55,7 +84,7 @@
       <v-app-bar-nav-icon @click="state.drawer = !state.drawer"></v-app-bar-nav-icon>
       <v-row class="toolbar-main">
         <div class="toolbar-title">
-          Máy ảo
+          {{ title }}
         </div>
         <v-spacer></v-spacer>
         <div v-if="!isMobile">
@@ -79,6 +108,77 @@
   &.v-navigation-drawer {
     background: var(--header-background) !important;
     color: var(--header-text) !important;
+  }
+
+  &:not(.mobile) {
+    &.v-navigation-drawer {
+      border: 0;
+
+      .v-list.j2-menu {
+        padding: 0;
+        padding-left: 10px;
+        padding-top: 10px;
+
+        .v-list-item {
+          position: relative;
+          padding: 6px 10px;
+        }
+
+        .v-list-item--disabled {
+          opacity: 1;
+        }
+
+        .v-list-item--active {
+          border-top-right-radius: 0px;
+          border-bottom-right-radius: 0px;
+          border-top-left-radius: 20px;
+          border-bottom-left-radius: 20px;
+          background-color: white;
+
+          &::after, &::before {
+            position: absolute;
+            display: inline-block;
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: var(--header-background);
+            opacity: 1;
+            border: 0;
+            border-radius: 100%;
+            box-shadow: 12px 18px 0px 6px white;
+            z-index: -1;
+            transition: unset;
+          }
+
+          &::after {
+            left: unset;
+            right: 0;
+            top: -20px;
+          }
+
+          &::before {
+            right: 0;
+            bottom: -20px;
+            transform: scaleY(-1);
+          }
+
+          .v-list-item__prepend {
+            color: var(--header-background);
+          }
+
+          .v-list-item__content {
+            color: var(--header-background) !important;
+            div {
+              color: var(--header-background);
+            }
+          }
+
+          .v-list-item__overlay {
+            opacity: 0;
+          }
+        }
+      }
+    }
   }
 
   .v-list-item.v-list-item--active {
@@ -134,6 +234,7 @@ import { useDisplay } from 'vuetify';
 import { useAuthStore } from '../../stores/auth.store';
 import { computed } from 'vue';
 import { formatVnd } from '../../utils/common';
+import { useRoute } from 'vue-router';
 
 const authStore = useAuthStore();
 const display = ref(useDisplay());
@@ -144,15 +245,24 @@ const LogoutButton = shallowRef(defineAsyncComponent(() => import('../LogoutButt
 
 const user = authStore.user;
 
+const route = useRoute();
+
 const balance = computed(() => formatVnd(user.balance));
 
+const menu = [
+  { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
+  { text: 'Điều khiển', icon: 'mdi-remote-desktop', to: '/remote-dock' },
+  { text: 'Hóa đơn', icon: 'mdi-receipt-text-outline', to: '/manage/invoice' },
+  { text: 'Hồ sơ', icon: 'mdi-account', to: '/manage/profile' },
+];
+
 const state = reactive({
-  drawer: !display.value?.smAndDown,
-  drawerDelay: !display.value?.smAndDown,
-  items: [
-    { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
-    { text: 'Cửa sổ', icon: 'mdi-remote-desktop', to: '/remote-dock' },
-  ],
+  drawer: false,
+  drawerDelay: false,
+});
+
+const title = computed(() => {
+  return menu.find((item) => item.to === route.path)?.text || 'Unknown';
 });
 
 const isMobile = computed(() => display.value.smAndDown);

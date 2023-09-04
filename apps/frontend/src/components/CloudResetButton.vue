@@ -6,9 +6,7 @@
   >
     <template v-slot:activator="{ props }">
       <v-btn
-        class="mr-1"
         v-bind="props"
-        border
         prepend-icon="mdi-history"
         variant="text"
         color="red"

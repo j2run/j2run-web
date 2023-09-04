@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
+import { usePageStore } from './stores/app.store';
 
 const routes: Readonly<RouteRecordRaw[]> = [
   {
@@ -34,6 +35,10 @@ const routes: Readonly<RouteRecordRaw[]> = [
         path: 'invoice',
         component: () => import('./pages/Invoice.vue'),
       },
+      {
+        path: 'profile',
+        component: () => import('./pages/Profile.vue'),
+      },
     ]
   },
   { 
@@ -67,7 +72,16 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, _, next) => {
+router.beforeEach(async (to, prev, next) => {
+  const pageStore = usePageStore();
+  let showPageLoading = true;
+  if (prev && prev.path == to.path) {
+    showPageLoading = false;
+  }
+  if (showPageLoading) {
+    pageStore.showPageLoading();
+  }
+
   const auth = useAuthStore();
   if (to.meta.auth && !auth.user) {
     next('/login');
@@ -77,3 +91,8 @@ router.beforeEach(async (to, _, next) => {
     next();
   }
 });
+
+router.afterEach(async (_to, _, _fail) => {
+  const pageStore = usePageStore();
+  pageStore.hidePageLoading();
+})

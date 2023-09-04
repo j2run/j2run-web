@@ -60,7 +60,21 @@ $font: Manrope, Roboto;
 }
 
 .color-hb {
-  color: var(--header-background)
+  color: var(--header-background);
+}
+
+.color-link-1 {
+  color: #00a035;
+  span {
+    color: #00a035;
+  }
+}
+
+.color-link-2 {
+  color: var(--header-background);
+  span {
+    color: var(--header-background);
+  }
 }
 
 .line-bottom  {
@@ -108,4 +122,22 @@ html {
   @media only screen and (min-width: 1200px) {
       font-size: 100%;
   }
+}
+
+// remove opacity plain button
+.v-btn--variant-plain {
+  opacity: 1 !important;
+
+  &:hover {
+    text-shadow: 1px 1px 4px #ccc;
+  }
+}
+
+.tooltip-menu-custom {
+  transform: translateX(-10px);
+  border-radius: 20px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  background-color: var(--header-background) !important;
+  padding: 4px 20px !important;
 }

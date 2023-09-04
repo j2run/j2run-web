@@ -1,5 +1,6 @@
 <template>
   <div>
+    <PageLoading />
     <DevelopmentConfirm />
     <router-view></router-view>
   </div>
@@ -10,5 +11,6 @@ import { defineAsyncComponent, shallowRef } from 'vue';
 
 
 const DevelopmentConfirm = shallowRef(defineAsyncComponent(() => import('./components/DevelopmentConfirm.vue')));
+const PageLoading = shallowRef(defineAsyncComponent(() => import('./components/PageLoading.vue')));
 
 </script>

@@ -7,7 +7,6 @@
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
-          border
           :prepend-icon="gp.icon"
           variant="text"
           class="mr-1"

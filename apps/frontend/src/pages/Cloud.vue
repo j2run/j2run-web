@@ -1,17 +1,27 @@
 <template>
   <div>
-    <v-card :elevation="0" class="mt-4">
+    <v-card :elevation="0" class="sticky-menu">
       <v-card-item>
         <v-btn
-          class="me-2"
-          prepend-icon="mdi-plus"
-          color="medium-emphasis"
+          class="me-2 color-link-1"
+          prepend-icon="mdi-newspaper-plus"
           min-width="92"
           rounded
-          variant="outlined"
+          variant="plain"
           to="/manage/create"
         >
           Tạo máy ảo
+        </v-btn>
+        <v-btn
+          class="me-2"
+          prepend-icon="mdi-test-tube"
+          color="medium-emphasis"
+          min-width="92"
+          rounded
+          variant="plain"
+          to="/trial"
+        >
+          Thử miễn phí
         </v-btn>
         <v-btn
           class="me-2"
@@ -19,10 +29,10 @@
           color="medium-emphasis"
           min-width="92"
           rounded
-          variant="outlined"
+          variant="plain"
           to="/remote-dock"
         >
-          Cửa sổ điều khiển
+          Điều khiển
         </v-btn>
       </v-card-item>
     </v-card>
@@ -63,7 +73,7 @@
       </v-alert>
     </div>
 
-    <CloudItem
+    <CloudMiniItem
       v-for="cloud of cloudStore.list"
       :cloud="cloud"
       />
@@ -76,6 +86,14 @@
 <style scoped lang="scss">
 .pointer {
   cursor: pointer;
+}
+
+.sticky-menu {
+  position: sticky;
+  top: 65px;
+  z-index: 10;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 0;
 }
 </style>
 
@@ -92,7 +110,8 @@ import { onUnmounted } from 'vue';
 import { InvoiceCloudDto } from '../dtos/invoice-cloud';
 import { useCloudActionStore } from '../stores/cloud-action.store';
 
-const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
+const CloudMiniItem = shallowRef(defineAsyncComponent(() => import('../components/CloudMiniItem.vue')));
+// const CloudItem = shallo2wRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
 
 const gameStore = useGameStore();
 const cloudStore = useCloudStore();
