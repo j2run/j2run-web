@@ -41,6 +41,19 @@ services:
     networks:
       - all
       - docker-swarm
+
+  j2-fcloud:
+    image: j2-dev
+    depends_on:
+      - j2-gateway
+    environment:
+      <<: *shared_environment
+    ports:
+      - "${J2_FCLOUD_PORT}:3000"
+    volumes:
+      - ../apps/server:/data/apps
+    networks:
+      - all
     
   j2-redis:
     image: redis:7.0.7-alpine3.17
