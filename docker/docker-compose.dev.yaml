@@ -51,7 +51,7 @@ services:
     ports:
       - "${J2_FCLOUD_PORT}:3000"
     volumes:
-      - ../apps/server:/data/apps
+      - ../apps/fcloud:/data/apps
     networks:
       - all
     
