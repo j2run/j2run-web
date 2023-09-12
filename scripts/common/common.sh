@@ -11,3 +11,8 @@ function runCommandRemote() {
   local cmd=$1
   ssh "${SSH_USERNAME}@${SSH_HOST}" -p $SSH_PORT "$cmd"
 }
+
+function runCommandRemoteI() {
+  local cmd=$1
+  ssh -i ${SSH_KEY} "${SSH_USERNAME}@${SSH_HOST}" -p $SSH_PORT "$cmd"
+}

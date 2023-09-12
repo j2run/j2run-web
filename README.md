@@ -87,3 +87,7 @@ sudo ip route add default via 192.168.1.1 dev wlxd03745825bc0 proto dhcp metric 
 
 sudo ip route delete default via 192.168.1.1 dev wlxd03745d1164c proto dhcp metric 618 
 sudo ip route delete default via 192.168.1.1 dev wlxd03745825bc0 proto dhcp metric 620
+
+apk add openrc
+
+ssh-keygen -t ed25519
