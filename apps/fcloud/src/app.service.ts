@@ -1,6 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PWDocker } from './utils/PWDocker';
 import { PWDKeep } from './utils/PWDKeep';
+import {
+  Browser,
+  Builder,
+  WebDriver,
+  Session,
+  Capabilities,
+} from 'selenium-webdriver';
+import nodeFetch from 'node-fetch';
+import { HttpClient, Executor } from 'selenium-webdriver/http';
 
 @Injectable()
 export class AppService {
