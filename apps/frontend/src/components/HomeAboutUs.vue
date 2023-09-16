@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <div class="text-center mt-15 mb-13 mx-2 text-h4 font-unbounded">
+    <div class="text-center about mb-13 mx-2 text-h4 font-unbounded">
       <div
         class="line-bottom"
         data-aos="fade-up"
@@ -26,6 +26,9 @@
 </template>
 
 <style scoped lang="scss">
+.about {
+  margin-top: 120px;
+}
 .about-us{
   line-height: 1.8rem;
 }
