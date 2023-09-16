@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
+import { IBreadcrumbsItem } from '../dtos/app';
 
 
 export const usePageStore = defineStore({
     id: 'app',
     state: () => ({
-      isPageLoading: false
+      isPageLoading: false,
+      breadcrumbs: [] as IBreadcrumbsItem[],
     }),
     actions: {
       showPageLoading() {
@@ -12,6 +14,9 @@ export const usePageStore = defineStore({
       },
       hidePageLoading() {
         this.isPageLoading = false;
+      },
+      setBreadcrumbs(breadcrumbs: IBreadcrumbsItem[]) {
+        this.breadcrumbs = breadcrumbs;
       }
     }
 });

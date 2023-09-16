@@ -126,9 +126,11 @@ import { router } from '../router';
 import { nextTick } from 'vue';
 import { useGameStore } from '../stores/game.store';
 import { usePlanStore } from '../stores/plan.store';
+import { usePageStore } from '../stores/app.store';
 
 const gameStore = useGameStore();
 const planStore = usePlanStore();
+const appStore = usePageStore();
 
 const state = reactive({
   plan: '' as string | null,
@@ -176,6 +178,17 @@ const v$ = useVuelidate(rules, state);
 onMounted(() => {
   planStore.loadAll();
   gameStore.loadAll();
+
+  appStore.setBreadcrumbs([
+    {
+      title: 'Máy ảo',
+      to: '/manage/cloud',
+    },
+    {
+      title: 'Tạo máy ảo',
+      to: '/manage/cloud/create',
+    }
+  ]);
 });
 
 const onCreate = () => {

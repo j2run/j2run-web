@@ -43,6 +43,40 @@ services:
       - all
       - docker-swarm
 
+  j2-fcloud:
+    image: j2-dev
+    depends_on:
+      - j2-gateway
+    environment:
+      <<: *shared_environment
+    ports:
+      - "${J2_FCLOUD_PORT}:3000"
+    volumes:
+      - ../apps/fcloud:/data/apps
+      - ../scripts/lab:/data/ssh-keys
+    networks:
+      - all
+
+  j2-selenium-hub:
+    image: selenium/hub:4.12.1
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    networks:
+      - all
+
+  j2-selenium-node:
+    image: selenium/node-chrome:4.10
+    shm_size: 2gb
+    depends_on:
+      - j2-selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=j2-selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    networks:
+      - all
 
   j2-redis:
     image: redis:7.0.7-alpine3.17

@@ -8,7 +8,7 @@
           min-width="92"
           rounded
           variant="plain"
-          to="/manage/create"
+          to="/manage/cloud/create"
         >
           Tạo máy ảo
         </v-btn>
@@ -109,6 +109,7 @@ import { watch } from 'vue';
 import { onUnmounted } from 'vue';
 import { InvoiceCloudDto } from '../dtos/invoice-cloud';
 import { useCloudActionStore } from '../stores/cloud-action.store';
+import { usePageStore } from '../stores/app.store';
 
 const CloudMiniItem = shallowRef(defineAsyncComponent(() => import('../components/CloudMiniItem.vue')));
 // const CloudItem = shallo2wRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
@@ -118,6 +119,7 @@ const cloudStore = useCloudStore();
 const planStore = usePlanStore();
 const invoiceCloudStore = useInvoiceCloudStore();
 const cloudActionStore = useCloudActionStore();
+const appStore = usePageStore();
 
 const reloadInvoiceCloudRef = ref<any>();
 const reloadActionCloudRef = ref<any>();
@@ -172,6 +174,13 @@ onMounted(() => {
   invoiceCloudStore.loadDoing();
   invoiceCloudStore.loadError();
   cloudActionStore.loadAll();
+
+  appStore.setBreadcrumbs([
+    {
+      title: 'Máy ảo',
+      to: '/manage/cloud',
+    }
+  ]);
 })
 
 onUnmounted(() => {

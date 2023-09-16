@@ -44,11 +44,15 @@
           <template v-slot:activator="{ props }">
             <v-list-item
               v-bind="props"
+              color="primary"
               :value="item"
               :to="item.to"
               :exact="true"
-              :disabled="route.path == item.to"
-              color="primary"
+              :disabled="routePath == item.to"
+              :active="routePath == item.to"
+              :class="{
+                'color-white': i === 0
+              }"
             >
               <template v-slot:prepend>
                 <v-icon :icon="item.icon"></v-icon>
@@ -97,7 +101,14 @@
       </v-row>
     </v-app-bar>
 
-    <v-main>
+    <v-main class="j2-main">
+      <v-card elevation="0" class="breadcrumbs">
+        <v-breadcrumbs :items="breadcrumbsItems">
+          <template v-slot:title="{ item }">
+            {{ item.title }}
+          </template>
+        </v-breadcrumbs>
+      </v-card>
       <router-view />
     </v-main>
   </v-app>
@@ -133,7 +144,14 @@
           border-bottom-right-radius: 0px;
           border-top-left-radius: 20px;
           border-bottom-left-radius: 20px;
-          background-color: white;
+          background-color: var(--background-1);
+
+          &.color-white {
+            background: white;
+            &::after, &::before {
+              box-shadow: 12px 18px 0px 6px white;
+            }
+          }
 
           &::after, &::before {
             position: absolute;
@@ -145,7 +163,7 @@
             opacity: 1;
             border: 0;
             border-radius: 100%;
-            box-shadow: 12px 18px 0px 6px white;
+            box-shadow: 12px 18px 0px 6px var(--background-1);
             z-index: -1;
             transition: unset;
           }
@@ -225,6 +243,16 @@
   }
 }
 
+.j2-main {
+  background-color: #f5f5f5;
+}
+
+.breadcrumbs {
+  border-radius: 0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  font-size: 14px;
+}
+
 </style>
 
 <script setup lang="ts">
@@ -235,8 +263,11 @@ import { useAuthStore } from '../../stores/auth.store';
 import { computed } from 'vue';
 import { formatVnd } from '../../utils/common';
 import { useRoute } from 'vue-router';
+import { usePageStore } from '../../stores/app.store';
 
+const route = useRoute();
 const authStore = useAuthStore();
+const appStore = usePageStore();
 const display = ref(useDisplay());
 const drawerTimer = ref<NodeJS.Timeout | undefined>();
 const Logout = shallowRef(defineAsyncComponent(() => import('../Logout.vue')));
@@ -245,12 +276,10 @@ const LogoutButton = shallowRef(defineAsyncComponent(() => import('../LogoutButt
 
 const user = authStore.user;
 
-const route = useRoute();
-
 const balance = computed(() => formatVnd(user.balance));
 
 const menu = [
-  { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage' },
+  { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage/cloud' },
   { text: 'Điều khiển', icon: 'mdi-remote-desktop', to: '/remote-dock' },
   { text: 'Hóa đơn', icon: 'mdi-receipt-text-outline', to: '/manage/invoice' },
   { text: 'Hồ sơ', icon: 'mdi-account', to: '/manage/profile' },
@@ -261,8 +290,20 @@ const state = reactive({
   drawerDelay: false,
 });
 
+const routePath = computed(() => menu.find((item) => route.path.startsWith(item.to))?.to);
+
 const title = computed(() => {
-  return menu.find((item) => item.to === route.path)?.text || 'Unknown';
+  return menu.find((item) => item.to === routePath.value)?.text || 'Unknown';
+});
+
+const breadcrumbsItems = computed(() => {
+  return [
+    {
+      title: 'Quản lý',
+      to: '/manage/htop',
+    },
+    ...appStore.breadcrumbs,
+  ];
 });
 
 const isMobile = computed(() => display.value.smAndDown);

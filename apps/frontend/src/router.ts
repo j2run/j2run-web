@@ -24,11 +24,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     component: () => import('./components/layouts/Managelayout.vue'),
     children: [
       {
-        path: '',
+        path: 'cloud',
         component: () => import('./pages/Cloud.vue'),
       },
       {
-        path: 'create',
+        path: 'cloud/create',
         component: () => import('./pages/CreateCloud.vue'),
       },
       {
@@ -38,6 +38,10 @@ const routes: Readonly<RouteRecordRaw[]> = [
       {
         path: 'profile',
         component: () => import('./pages/Profile.vue'),
+      },
+      {
+        path: '',
+        redirect: '/manage/cloud',
       },
     ]
   },
