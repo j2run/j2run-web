@@ -1,102 +1,104 @@
 <template>
-  <v-card
-    class="ma-4"
-    rounded="lg"
-    variant="flat"
-    color="#fefefe"
-    border
-  >
-    <v-card-item>
-      <v-card-title class="text-body-2 d-flex align-center">
-        <v-icon
-          color="#949cf7"
-          icon="mdi-laptop"
-          start
-        ></v-icon>
+  <div>
+    <v-card
+      class="px-4 py-0 ma-0 mb-5"
+      rounded="lg"
+      variant="flat"
+      color="#fefefe"
+      elevation="0"
+      border
+    >
+      <v-card-item>
+        <div class="pt-2 d-flex flex-wrap gap-5 mr-4 align-center">
+          <div>
+            <span class="text-h6">{{ props.cloud.name || props.cloud._id }}</span>
+          </div>
 
-        <span class="text-medium-emphasis font-weight-bold">
-          {{ planCurrent?.name || props.cloud.planId }}
-        </span>
+          <v-spacer></v-spacer>
 
-        <v-spacer></v-spacer>
+          <div>
+            <span class="font-weight-light text-caption mr-4">
+              <v-icon>mdi-controller-classic</v-icon>
+              {{ gameCurrent?.name || props.cloud.gameId }}
+            </span>
 
-        <span class="text-medium-emphasis font-weight-bold">{{ expirationDate }}</span>
-      </v-card-title>
+            <span class="font-weight-light text-caption">
+              <v-icon
+                icon="mdi-laptop"
+                start
+              ></v-icon>
+              {{ planCurrent?.name || props.cloud.planId }}
+            </span>
+          </div>
+        </div>
+      </v-card-item>
 
-      <div class="py-2">
-        <div class="text-h6">{{ props.cloud.name || props.cloud._id }}</div>
-
-        <div class="font-weight-light text-medium-emphasis">
-          {{ gameCurrent?.name || props.cloud.gameId }}
+      <v-card-item>
+        <div>
+          <span class="font-weight-light text-body-2 mr-4">HSD: {{ expirationDate }}</span>
+          <span class="font-weight-light text-body-2 mr-4">
+            <v-icon
+              :color="colorStage"
+              icon="mdi-adjust"
+              start
+            ></v-icon>
+            <span class="text-overline">
+              {{ props.cloud.status }}
+            </span>
+          </span>
         </div>
         <CloudJob v-for="action of actions" :action="action" />
-      </div>
-    </v-card-item>
+      </v-card-item>
 
-    <v-divider></v-divider>
+      <v-row class="px-4 pb-8 pt-4 gap-5">
+        <v-btn
+          prepend-icon="mdi-remote-desktop"
+          variant="text"
+          :disabled="props.cloud.stage !== 'running' || states.isConfirmLoading || isActionDisabled"
+          @click="onRemote()"
+        >
+          Điều khiển
+        </v-btn>
 
-    <div class="pa-4 d-flex align-center">
-      <v-icon
-        :color="colorStage"
-        icon="mdi-adjust"
-        start
-      ></v-icon>
-      <span class="text-overline">
-        {{ props.cloud.status }}
-      </span>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        border
-        prepend-icon="mdi-remote-desktop"
-        variant="text"
-        class="mr-1"
-        :disabled="props.cloud.stage !== 'running' || states.isConfirmLoading || isActionDisabled"
-        @click="onRemote()"
-      >
-        Điều khiển
-      </v-btn>
-
-      <!-- <CloudGameButton /> -->
-
-      <CloudConfirmButton
-        v-if="props.cloud.stage !== 'running'"
-        icon="mdi-power"
-        label="Khởi động"
-        message="Bạn có muốn khởi động không?"
-        :loading="states.isConfirmLoading"
-        :disabled="isActionDisabled"
-        @submit="onStart"
-      />
-      <template v-if="props.cloud.stage === 'running'">
         <CloudConfirmButton
-          icon="mdi-restart"
-          label="Khởi động lại"
-          message="Bạn có muốn khởi động lại không?"
-          :loading="states.isConfirmLoading"
-          :disabled="isActionDisabled"
-          @submit="onRestart"
-        />
-        <CloudConfirmButton
+          v-if="props.cloud.stage !== 'running'"
           icon="mdi-power"
-          label="Tắt"
-          message="Bạn có muốn tắt không?"
+          label="Khởi động"
+          message="Bạn có muốn khởi động không?"
           :loading="states.isConfirmLoading"
           :disabled="isActionDisabled"
-          @submit="onStop"
+          @submit="onStart"
         />
-      </template>
-      <CloudResetButton
-        :cloud="props.cloud"
-        :disabled="isActionDisabled"
-        />
-      <CloudDeleteButton
-        :cloud="props.cloud"
-        :disabled="isActionDisabled"
-        />
-    </div>
-  </v-card>
+        <template v-if="props.cloud.stage === 'running'">
+          <CloudConfirmButton
+            icon="mdi-restart"
+            label="Khởi động lại"
+            message="Bạn có muốn khởi động lại không?"
+            :loading="states.isConfirmLoading"
+            :disabled="isActionDisabled"
+            @submit="onRestart"
+          />
+          <CloudConfirmButton
+            icon="mdi-power"
+            label="Tắt"
+            message="Bạn có muốn tắt không?"
+            :loading="states.isConfirmLoading"
+            :disabled="isActionDisabled"
+            @submit="onStop"
+          />
+        </template>
+        <CloudResetButton
+          :cloud="props.cloud"
+          :disabled="isActionDisabled"
+          />
+        <CloudDeleteButton
+          :cloud="props.cloud"
+          :disabled="isActionDisabled"
+          />
+      </v-row>
+    </v-card>
+  </div>
+
 </template>
 
 <script lang="ts" setup>

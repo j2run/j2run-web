@@ -32,8 +32,8 @@ const routes: Readonly<RouteRecordRaw[]> = [
         component: () => import('./pages/CreateCloud.vue'),
       },
       {
-        path: 'invoice',
-        component: () => import('./pages/Invoice.vue'),
+        path: 'payment',
+        component: () => import('./pages/Payment.vue'),
       },
       {
         path: 'profile',

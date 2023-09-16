@@ -92,7 +92,18 @@
         </div>
         <v-spacer></v-spacer>
         <div v-if="!isMobile">
-          <span class="balance">{{ balance }}</span>
+          <span class="balance mr-5">
+            {{ balance }}
+            <v-tooltip text="Nạp tiền" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="mdi-plus-circle-outline"  
+                  to="/manage/payment"
+                ></v-btn>
+              </template>
+            </v-tooltip>
+          </span>
           <span class="email">
             {{ user.email }}
           </span>
@@ -281,7 +292,7 @@ const balance = computed(() => formatVnd(user.balance));
 const menu = [
   { text: 'Máy ảo', icon: 'mdi-cloud', to: '/manage/cloud' },
   { text: 'Điều khiển', icon: 'mdi-remote-desktop', to: '/remote-dock' },
-  { text: 'Hóa đơn', icon: 'mdi-receipt-text-outline', to: '/manage/invoice' },
+  { text: 'Thanh toán', icon: 'mdi-receipt-text-outline', to: '/manage/payment' },
   { text: 'Hồ sơ', icon: 'mdi-account', to: '/manage/profile' },
 ];
 

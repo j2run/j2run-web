@@ -13,8 +13,8 @@ const appStore = usePageStore();
 onMounted(() => {
   appStore.setBreadcrumbs([
     {
-      title: 'Hóa đơn',
-      to: '/manage/invoice',
+      title: 'Thanh toán',
+      to: '/manage/payment',
     }
   ]);
 })
