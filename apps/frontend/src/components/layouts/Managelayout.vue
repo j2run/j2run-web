@@ -87,11 +87,11 @@
     <v-app-bar :elevation="0" border class="toolbar">
       <v-app-bar-nav-icon @click="state.drawer = !state.drawer"></v-app-bar-nav-icon>
       <v-row class="toolbar-main">
-        <div class="toolbar-title">
+        <div class="toolbar-title lh-60">
           {{ title }}
         </div>
         <v-spacer></v-spacer>
-        <div v-if="!isMobile">
+        <div v-if="!isMobile" class="lh-60">
           <span class="balance mr-5">
             {{ balance }}
             <v-tooltip text="Nạp tiền" location="bottom">
@@ -114,7 +114,7 @@
 
     <v-main class="j2-main">
       <v-card elevation="0" class="breadcrumbs">
-        <v-breadcrumbs :items="breadcrumbsItems">
+        <v-breadcrumbs :items="breadcrumbsItems" class="py-3">
           <template v-slot:title="{ item }">
             {{ item.title }}
           </template>

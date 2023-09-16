@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card :elevation="0" class="sticky-menu">
-      <v-card-item>
+      <v-card-item class="py-1 lh-36">
         <v-btn
           class="me-2 color-link-1"
           prepend-icon="mdi-newspaper-plus"
@@ -81,8 +81,12 @@
         v-for="cloud of cloudStore.list"
         :cloud="cloud"
         />
+        <CloudItem
+        v-for="cloud of cloudStore.list"
+        :cloud="cloud"
+        />
     </div>
-    <v-sheet class="ma-4" v-if="cloudStore.list.length === 0">
+    <v-sheet class="ma-4 pa-4" v-if="cloudStore.list.length === 0">
       <div class="text-center text-overline ma-4">Chưa có máy ảo nào được khởi tạo</div>
     </v-sheet>
   </div>
