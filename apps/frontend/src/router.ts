@@ -59,11 +59,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/trial',
     component: () => import('./pages/CloudTrial.vue'),
   },
-  // { 
-  //   path: '/remote-mobile',
-  //   meta: { auth: true },
-  //   component: () => import('./pages/RemoteMobile.vue'),
-  // },
   {
     path: '/:pathMatch(.*)*',
     redirect: '/',
