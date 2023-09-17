@@ -7,12 +7,12 @@
     <template v-slot:activator="{ props }">
       <v-btn
         v-bind="props"
-        prepend-icon="mdi-history"
+        prepend-icon="mdi-delete"
         variant="text"
         color="red"
         :disabled="ps.disabled"
       >
-        Khôi phục gốc
+        Xóa
       </v-btn>
     </template>
     <v-card>
@@ -38,7 +38,7 @@
           :loading="state.isLoading"
           @click="onDelete"
         >
-          Khôi phục
+          Xóa
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -47,9 +47,9 @@
 
 <script setup lang="ts">
 import { PropType, reactive } from 'vue';
-import { CloudDto } from '../dtos/cloud';
-import { cloudService } from '../apis/cloud';
-import { useCloudActionStore } from '../stores/cloud-action.store';
+import { CloudDto } from '../../dtos/cloud';
+import { cloudService } from '../../apis/cloud';
+import { useCloudActionStore } from '../../stores/cloud-action.store';
 
 const ps = defineProps({
   cloud: {
@@ -63,7 +63,7 @@ const ps = defineProps({
 
 const cloudActionStore = useCloudActionStore();
 
-const subTitle = 'Xóa toàn bộ cấu hình, thông tin tài khoản đã lưu trong máy ảo';
+const subTitle = 'Thời hạn gói hiện tại còn lại sẽ khônng được hoàn tiền, và không thể khôi phục thao tác này';
 
 const state = reactive({
   dialog: false,
@@ -73,7 +73,7 @@ const state = reactive({
 
 const onDelete = () => {
   state.isLoading = true;
-  cloudService.reset(ps.cloud._id)
+  cloudService.delete(ps.cloud._id)
     .then(() => {
       state.dialog = false;
       cloudActionStore.loadAll();

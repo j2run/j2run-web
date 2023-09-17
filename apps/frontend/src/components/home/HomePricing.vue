@@ -125,12 +125,12 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { usePlanStore } from '../stores/plan.store';
-import { formatVnd } from '../utils/common';
-import { formatSecondsToTime } from '../utils/common';
+import { usePlanStore } from '../../stores/plan.store';
+import { formatVnd } from '../../utils/common';
+import { formatSecondsToTime } from '../../utils/common';
 import { computed } from 'vue';
-import { formatCpu, formatRam } from '../utils/common';
-import { PlanDto } from '../dtos/plan';
+import { formatCpu, formatRam } from '../../utils/common';
+import { PlanDto } from '../../dtos/plan';
 
 const planStore = usePlanStore();
 

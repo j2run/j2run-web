@@ -36,5 +36,5 @@
 
 
 <script setup lang="ts">
-import { J2RunAdvantage } from '../dtos/home';
+import { J2RunAdvantage } from '../../dtos/home';
 </script>

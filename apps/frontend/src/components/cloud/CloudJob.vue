@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CloudActionDto, CloudActionType } from '../dtos/cloud-action';
+import { CloudActionDto, CloudActionType } from '../../dtos/cloud-action';
 
 
 const props = defineProps({

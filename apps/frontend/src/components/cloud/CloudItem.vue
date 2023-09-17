@@ -103,15 +103,15 @@
 
 <script lang="ts" setup>
 import { shallowRef, defineAsyncComponent, PropType, computed } from 'vue';
-import { CloudDto } from '../dtos/cloud';
-import { useGameStore } from '../stores/game.store';
-import { usePlanStore } from '../stores/plan.store';
+import { CloudDto } from '../../dtos/cloud';
+import { useGameStore } from '../../stores/game.store';
+import { usePlanStore } from '../../stores/plan.store';
 import moment from 'moment';
-import { useCloudActionStore } from '../stores/cloud-action.store';
+import { useCloudActionStore } from '../../stores/cloud-action.store';
 import { reactive } from 'vue';
-import { cloudService } from '../apis/cloud';
-import { useCloudStore } from '../stores/cloud.store';
-import { router } from '../router';
+import { cloudService } from '../../apis/cloud';
+import { useCloudStore } from '../../stores/cloud.store';
+import { router } from '../../router';
 
 const CloudDeleteButton = shallowRef(defineAsyncComponent(() => import('./CloudDeleteButton.vue')));
 const CloudConfirmButton = shallowRef(defineAsyncComponent(() => import('./CloudConfirmButton.vue')));

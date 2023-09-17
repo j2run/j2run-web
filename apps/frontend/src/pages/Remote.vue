@@ -167,8 +167,8 @@ import { cloudService } from '../apis/cloud';
 import { CloudActionType } from '../dtos/cloud-action';
 
 const VueDraggableResizable = shallowRef(defineAsyncComponent(() => import('vue3-draggable-resizable')));
-const Novnc = shallowRef(defineAsyncComponent(() => import('../components/Novnc.vue')));
-const RemoteExitButton = shallowRef(defineAsyncComponent(() => import('../components/RemoteExitButton.vue')));
+const Novnc = shallowRef(defineAsyncComponent(() => import('../components/remote/Novnc.vue')));
+const RemoteExitButton = shallowRef(defineAsyncComponent(() => import('../components/remote/RemoteExitButton.vue')));
 
 const cloudStore = useCloudStore();
 const cloudActionStore = useCloudActionStore();

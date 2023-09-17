@@ -81,10 +81,6 @@
         v-for="cloud of cloudStore.list"
         :cloud="cloud"
         />
-        <CloudItem
-        v-for="cloud of cloudStore.list"
-        :cloud="cloud"
-        />
     </div>
     <v-sheet class="ma-4 pa-4" v-if="cloudStore.list.length === 0">
       <div class="text-center text-overline ma-4">Chưa có máy ảo nào được khởi tạo</div>
@@ -120,7 +116,7 @@ import { InvoiceCloudDto } from '../dtos/invoice-cloud';
 import { useCloudActionStore } from '../stores/cloud-action.store';
 import { usePageStore } from '../stores/app.store';
 
-const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/CloudItem.vue')));
+const CloudItem = shallowRef(defineAsyncComponent(() => import('../components/cloud/CloudItem.vue')));
 
 const gameStore = useGameStore();
 const cloudStore = useCloudStore();

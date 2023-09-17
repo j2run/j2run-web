@@ -58,5 +58,5 @@
 </style>
 
 <script setup lang="ts">
-import ctaBg from '../assets/cta-bg.jpg'
+import ctaBg from '../../assets/cta-bg.jpg'
 </script>

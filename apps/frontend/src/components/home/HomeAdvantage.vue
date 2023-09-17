@@ -86,7 +86,7 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import * as sr from 'swiper';
 import 'swiper/css';
-import { J2RunAdvantage } from '../dtos/home';
+import { J2RunAdvantage } from '../../dtos/home';
 import { ref } from 'vue';
 import { useDisplay } from 'vuetify';
 

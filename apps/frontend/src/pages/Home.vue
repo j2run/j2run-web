@@ -288,12 +288,12 @@ import { useWindowScroll } from '@vueuse/core';
 import { watch } from 'vue';
 
 const Logo = shallowRef(defineAsyncComponent(() => import('../components/Logo.vue')));
-const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/HomeAboutUs.vue')));
-const HomeAdvantage = shallowRef(defineAsyncComponent(() => import('../components/HomeAdvantage.vue')));
+const HomeAboutUs = shallowRef(defineAsyncComponent(() => import('../components/home/HomeAboutUs.vue')));
+const HomeAdvantage = shallowRef(defineAsyncComponent(() => import('../components/home/HomeAdvantage.vue')));
 const Footer = shallowRef(defineAsyncComponent(() => import('../components/Footer.vue')));
-const HomeCallToAction = shallowRef(defineAsyncComponent(() => import('../components/HomeCallToAction.vue')));
-const HomePricing = shallowRef(defineAsyncComponent(() => import('../components/HomePricing.vue')));
-const HomeFAQ = shallowRef(defineAsyncComponent(() => import('../components/HomeFAQ.vue')));
+const HomeCallToAction = shallowRef(defineAsyncComponent(() => import('../components/home/HomeCallToAction.vue')));
+const HomePricing = shallowRef(defineAsyncComponent(() => import('../components/home/HomePricing.vue')));
+const HomeFAQ = shallowRef(defineAsyncComponent(() => import('../components/home/HomeFAQ.vue')));
 
 const HASH_HOME = '#home';
 const HASH_ABOUT = '#about';
