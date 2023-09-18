@@ -11,7 +11,6 @@
       </v-card-title>
       <v-card-text class="text-body-1">
         Tài nguyên không đủ, dự kiến sẽ được cập nhật trước 10/2023.<br />
-        Chúng tôi đang trong quá trình phát triển giao diện trang web để mang đến trải nghiệm tốt hơn. Giao diện có thể chưa hoàn thiện và gặp lỗi nhỏ. Xin lỗi vì bất tiện này và cảm ơn sự kiên nhẫn của bạn!
         <v-checkbox class="ma-0" :hide-details="true" :label="'Không hiện lại trong 6 giờ'" v-model="state.isConfirm"></v-checkbox>
       </v-card-text>
       <v-card-actions>
