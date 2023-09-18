@@ -33,7 +33,7 @@ export const useCloudStore = defineStore({
           return;
         }
         this.initialX[window._id] = Math.round(Math.random() * 300 + 200);
-        this.initialY[window._id] = Math.round(Math.random() * 300);
+        this.initialY[window._id] = Math.round(Math.random() * 300 + 100);
         this.cloudSelected.push(window._id);
       }
     }

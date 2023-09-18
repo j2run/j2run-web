@@ -4,13 +4,14 @@
     persistent
     width="auto"
   >
-    <template v-slot:activator="{ props }">
-      <v-list-item
-        v-bind="props"
-        base-color="orange"
-        prepend-icon="mdi-logout"
-        title="Thoát"
-      ></v-list-item>
+    <template v-slot:activator="dg">
+      <v-tooltip text="Thoát">
+        <template v-slot:activator="tt">
+          <v-icon v-bind="{...dg.props, ...tt.props}" class="logout">
+            mdi-logout
+          </v-icon>
+        </template>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title>
