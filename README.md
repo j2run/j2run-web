@@ -68,8 +68,6 @@ e2JJ#NybyEk@P^K!
 
 e2JJ#NybyEk@P^K!121
 
-keep
-
 
 virsh
 /etc/libvirt/qemu/networks
