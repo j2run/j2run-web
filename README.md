@@ -88,5 +88,3 @@ sudo ip route delete default via 192.168.1.1 dev wlxd03745825bc0 proto dhcp metr
 apk add openrc
 
 ssh-keygen -t ed25519
-
-keep
