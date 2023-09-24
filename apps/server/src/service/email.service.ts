@@ -27,4 +27,21 @@ export class EmailService {
 
     return this.sibService.sendEmail(to, subject, html);
   }
+
+  sendForgotPasswordEmail(to: string, forgotToken: string) {
+    const subject = '[J2RUN] Quên mật khẩu';
+    const link =
+      this.configService.get('J2_FORGOT_PASSWORD_LINK') + forgotToken;
+    const template = fs.readFileSync(
+      path.join(__dirname, '../templates/email-forgot-password.hbs'),
+      'utf8',
+    );
+    const compiledTemplate = handlebars.compile(template);
+    const html = compiledTemplate({
+      subject,
+      link,
+    });
+
+    return this.sibService.sendEmail(to, subject, html);
+  }
 }

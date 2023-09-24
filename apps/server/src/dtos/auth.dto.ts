@@ -62,3 +62,19 @@ export class VerifyRequest {
   @IsString()
   code: string;
 }
+
+export class ForgotPasswordRequest {
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+}
+
+export class ForgotPasswordResponse {
+  @ApiProperty()
+  status: boolean;
+}
+
+export class VerifyForgotPasswordRequest {
+  @ApiProperty()
+  code: string;
+}

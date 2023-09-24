@@ -28,6 +28,14 @@ export class User extends SchemaDto {
   @ApiProperty({ default: false })
   @Prop()
   isVerified: boolean;
+
+  @ApiProperty()
+  @Prop()
+  forgotPasswordToken: string;
+
+  @ApiProperty()
+  @Prop()
+  isResetPassword: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

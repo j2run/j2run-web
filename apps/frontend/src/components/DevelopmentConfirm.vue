@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-card-title>
-        Trang web đang trong quá trình phát triển
+        Thông báo
       </v-card-title>
       <v-card-text class="text-body-1">
         Tài nguyên không đủ, dự kiến sẽ được cập nhật trước 10/2023.<br />

@@ -17,7 +17,10 @@ import {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   VerifyRequest,
+  VerifyForgotPasswordRequest,
 } from 'src/dtos/auth.dto';
 import { UserService } from './user.service';
 import { UserDocument } from 'src/schema/user.schema';
@@ -116,6 +119,39 @@ export class AuthService {
     user.isVerified = true;
     await this.userService.save(user);
     await this.userService.removeAllAccountWithoutUserId(user.email, user._id);
+  }
+
+  async forgotPassword(
+    dto: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    const user = await this.userService.findByEmailVerified(dto.email);
+    if (!user) {
+      throw new ConflictException('Email không tồn tại');
+    }
+    user.forgotPasswordToken = v4();
+    await this.userService.save(user);
+    await this.emailService.sendForgotPasswordEmail(
+      user.email,
+      user.forgotPasswordToken,
+    );
+    return {
+      status: true,
+    };
+  }
+
+  async verifyForgotPassword(
+    dto: VerifyForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    const user = await this.userService.findByForgotPasswordCode(dto.code);
+    if (!user) {
+      throw new NotFoundException('Mã không hợp lệ');
+    }
+    user.forgotPasswordToken = null;
+    user.isResetPassword = true;
+    await this.userService.save(user);
+    return {
+      status: true,
+    };
   }
 
   signAccess(id: string) {

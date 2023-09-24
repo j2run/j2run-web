@@ -35,6 +35,12 @@ export class UserService {
     });
   }
 
+  findByForgotPasswordCode(code: string) {
+    return this.userModel.findOne({
+      forgotPasswordToken: code,
+    });
+  }
+
   removeAllAccountWithoutUserId(email: string, userId: string) {
     return this.userModel.deleteMany({
       email,

@@ -7,7 +7,10 @@ import {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   VerifyRequest,
+  VerifyForgotPasswordRequest,
 } from 'src/dtos/auth.dto';
 import { AuthService } from 'src/service/auth.service';
 
@@ -34,5 +37,19 @@ export class AuthController {
   @Post('verify')
   verify(@Body() dto: VerifyRequest) {
     return this.authService.verifyAccount(dto);
+  }
+
+  @Post('forgot-password')
+  forgotPassword(
+    @Body() dto: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('verify-forgot-password')
+  verifyForgotPassword(
+    @Body() dto: VerifyForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    return this.authService.verifyForgotPassword(dto);
   }
 }
