@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import { ResetPasswordRequest, ResetPasswordResponse } from 'src/dtos/user.dto';
 import { User, UserDocument } from 'src/schema/user.schema';
 
 @Injectable()
@@ -56,5 +58,24 @@ export class UserService {
 
   save(user: UserDocument) {
     return this.userModel.bulkSave([user]);
+  }
+
+  hideField(user: UserDocument) {
+    user.password = undefined;
+    user.verifyToken = undefined;
+    user.forgotPasswordToken = undefined;
+  }
+
+  async resetPassword(
+    dto: ResetPasswordRequest,
+    user: UserDocument,
+  ): Promise<ResetPasswordResponse> {
+    if (!user.isResetPassword) {
+      throw new ForbiddenException();
+    }
+    user.isResetPassword = null;
+    user.password = await bcrypt.hash(dto.password, 12);
+    await this.userModel.bulkSave([user]);
+    return { status: true };
   }
 }

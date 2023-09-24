@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
-import { InvoiceCloudSearchRequest, InvoiceCloudViewedRequest } from 'src/dtos/invoice-cloud.dto';
+import {
+  InvoiceCloudSearchRequest,
+  InvoiceCloudViewedRequest,
+} from 'src/dtos/invoice-cloud.dto';
 import { UserDocument } from 'src/schema/user.schema';
 import { InvoiceCloudService } from 'src/service/invoice-cloud.service';
 

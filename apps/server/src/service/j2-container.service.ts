@@ -170,21 +170,6 @@ export class J2ContainerService {
       containerRow.stage = container.State as DockerContainerStage;
       containerRow.status = container.Status;
       containerRow.created = container.Created;
-      // for (const port of container.Ports) {
-      //   if (
-      //     (port.IP === '0.0.0.0' ||
-      //       port.IP === '127.0.0.1' ||
-      //       port.IP === '::') &&
-      //     port.PrivatePort === 5900
-      //   ) {
-      //     if (node.originUrl) {
-      //       containerRow.connectionUrl =
-      //         node.originUrl + port.PublicPort.toString();
-      //     } else {
-      //       containerRow.connectionUrl = `${node.ip}:${port.PublicPort}`;
-      //     }
-      //   }
-      // }
       if (container.NetworkSettings?.Networks?.bridge) {
         const ip =
           container.NetworkSettings.Networks.bridge.IPAddress.split('.');

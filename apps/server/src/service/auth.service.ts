@@ -51,7 +51,7 @@ export class AuthService {
       throw new UnauthorizedException('Tài khoản chưa được xác minh');
     }
 
-    delete user.password;
+    this.userService.hideField(user);
     const response: LoginResponse = {
       user,
       accessToken: await this.signAccess(user._id),

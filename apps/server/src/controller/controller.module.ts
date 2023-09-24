@@ -7,6 +7,7 @@ import { CloudController } from './cloud.controller';
 import { InvoiceCloudController } from './invoice-cloud.controller';
 import { DockerActionController } from './cloud-action.controller';
 import { DownloadController } from './download.controller';
+import { UserController } from './user.controller';
 
 @Module({
   controllers: [
@@ -17,6 +18,7 @@ import { DownloadController } from './download.controller';
     InvoiceCloudController,
     DockerActionController,
     DownloadController,
+    UserController,
   ],
   imports: [ServicesModule],
 })
