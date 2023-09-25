@@ -141,17 +141,26 @@ export class AuthService {
 
   async verifyForgotPassword(
     dto: VerifyForgotPasswordRequest,
-  ): Promise<ForgotPasswordResponse> {
-    const user = await this.userService.findByForgotPasswordCode(dto.code);
+  ): Promise<LoginResponse> {
+    const user = await this.userService.findByForgotPasswordCode(
+      dto.email,
+      dto.code,
+    );
     if (!user) {
       throw new NotFoundException('Mã không hợp lệ');
     }
     user.forgotPasswordToken = null;
     user.isResetPassword = true;
     await this.userService.save(user);
-    return {
-      status: true,
+
+    // send data as login
+    this.userService.hideField(user);
+    const response: LoginResponse = {
+      user,
+      accessToken: await this.signAccess(user._id),
+      refreshToken: await this.signRefresh(user._id),
     };
+    return response;
   }
 
   signAccess(id: string) {

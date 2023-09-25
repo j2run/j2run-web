@@ -14,6 +14,21 @@ const routes: Readonly<RouteRecordRaw[]> = [
     meta: { noAuth: true },
   },
   {
+    path: '/forgot-password',
+    component: () => import('./pages/ForgotPassword.vue'),
+    meta: { noAuth: true },
+  },
+  {
+    path: '/forgot-password/:id',
+    component: () => import('./pages/ForgotPassword.vue'),
+    meta: { noAuth: true },
+  },
+  {
+    path: '/reset-password',
+    component: () => import('./pages/ResetPassword.vue'),
+    meta: { noAuth: true },
+  },
+  {
     path: '/register',
     component: () => import('./pages/Register.vue'),
     meta: { noAuth: true },

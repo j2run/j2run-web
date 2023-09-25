@@ -3,7 +3,7 @@
     <div class="wrapper">
       <effect-card />
       <v-card
-        class="border pa-12 pb-8"
+        class="mx-auto mt-4 border pa-12 pb-8"
         max-width="420px"
         elevation="2"
         rounded="lg"
@@ -13,7 +13,7 @@
             <v-icon class="icon-login">mdi-lock-open-outline</v-icon>
           </v-col>
           <v-col cols="12" class="text-center text-h5 font-unbounded mb-8">
-            Đăng nhập
+            Đổi mật khẩu
           </v-col>
         </v-row>
         <v-alert
@@ -22,27 +22,8 @@
           :type="state.toastType"
           :text="state.toastMessage"
         ></v-alert>
-        <div class="text-subtitle-1 text-medium-emphasis">Tài khoản</div>
-        <v-text-field
-          v-model="state.email"
-          :error-messages="(v$.email.$errors.map(e => e.$message) as unknown as string)"
-          density="compact"
-          placeholder="Địa chỉ email"
-          prepend-inner-icon="mdi-email-outline"
-          variant="outlined"
-          required
-          @input="v$.email.$touch"
-          @blur="v$.email.$touch"
-        ></v-text-field>
-
         <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
           Mật khẩu
-
-          <router-link
-            class="text-caption text-decoration-none text-blue"
-            :to="'/forgot-password'"
-          >
-            Quên mật khẩu?</router-link>
         </div>
         <v-text-field
           v-model="state.password"
@@ -59,6 +40,24 @@
           @blur="v$.password.$touch"
         ></v-text-field>
 
+        <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+          Nhập lại mật khẩu
+        </div>
+        <v-text-field
+          v-model="state.confirmPassword"
+          :error-messages="v$.confirmPassword.$errors.map(e => e.$message as unknown as string)"
+          :append-inner-icon="state.visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="state.visible ? 'text' : 'password'"
+          density="compact"
+          placeholder="Nhập lại mật khẩu"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          required
+          @click:append-inner="state.visible = !state.visible"
+          @input="v$.confirmPassword.$touch"
+          @blur="v$.confirmPassword.$touch"
+        ></v-text-field>
+
         <v-btn
           block
           class="mb-8"
@@ -68,21 +67,16 @@
           :loading="state.isLoading"
           @click="onLogin"
         >
-          Đăng nhập
+          Tiếp tục
         </v-btn>
 
         <v-card-text class="text-center">
           <v-btn
             variant="plain"
             class="text-blue"
-            to="/register"
+            to="/login"
           >
-            Đăng ký ngay <v-icon icon="mdi-chevron-right"></v-icon>
-          </v-btn>
-          <br />
-          <v-btn variant="plain"  class="text-blue" :to="'/'">
-            Trang chủ
-            <v-icon size="large">mdi-home-import-outline</v-icon>
+            <v-icon icon="mdi-logout" class="mr-1"></v-icon>Đăng xuất
           </v-btn>
         </v-card-text>
       </v-card>
@@ -101,7 +95,7 @@
   position: relative;
   margin: auto;
   max-width: 420px;
-  margin-top: 4rem;
+  margin-top: 3rem;
   padding: 6px;
 }
 
@@ -125,30 +119,29 @@
 <script setup lang="ts">
 import { defineAsyncComponent, reactive, shallowRef } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { email, maxLength, minLength, required } from '@vuelidate/validators'
-import { useAuthStore } from '../stores/auth.store';
+import { email, maxLength, minLength, required, sameAs } from '@vuelidate/validators'
 import { authService } from '../apis/auth';
-import { useRoute } from 'vue-router';
-import { onMounted } from 'vue';
-import { router } from '../router';
+import { computed } from 'vue';
 
 const EffectCard = shallowRef(defineAsyncComponent(() => import('../components/EffectCard.vue')));
 const FooterV2 = shallowRef(defineAsyncComponent(() => import('../components/FooterV2.vue')));
 
-const route = useRoute();
-
 const initialState = {
   password: '',
+  confirmPassword: '',
   email: '',
-  visible: false
 }
 
 const state = reactive({
   ...initialState,
   isLoading: false,
+  visible: false,
+  registerDone: false,
   toastMessage: '',
   toastType: 'error' as "error" | "success" | "warning" | "info" | undefined,
-})
+});
+
+const passwordCmp = computed(() => state.password);
 
 const rules = {
   password: {
@@ -156,42 +149,27 @@ const rules = {
     minLength: minLength(6),
     maxLength: maxLength(32),
   },
+  confirmPassword: {
+    required, sameAsPassword: sameAs(passwordCmp) 
+  },
   email: { required, email },
-}
+};
 
-const v$ = useVuelidate(rules, state)
-const authStore = useAuthStore();
+const v$ = useVuelidate(rules, state);
 
 const onLogin = async () => {
   if (v$.value.$invalid) {
     return;
   }
   state.isLoading = true;
-  await authStore.login(state.email, state.password)
+  await authService.register(state.email, state.password)
     .finally(() => state.isLoading = false)
+    .then(() => {
+      state.registerDone = true;
+    })
     .catch((e) => {
       state.toastMessage = e.response?.data?.message || 'Unknown';
       state.toastType = 'error';
     });
 }
-
-onMounted(() => {
-  const qr = route.query;
-  if (qr.code) {
-    state.isLoading = true;
-    authService.verify(qr.code as string)
-      .finally(() => {
-        state.isLoading = false;
-        router.push('/login');
-      })
-      .then(() => {
-        state.toastMessage = 'Xác thực tài khoản thành công';
-        state.toastType = 'success';
-      })
-      .catch((e) => {
-        state.toastMessage = e.response?.data?.message || 'Unknown'
-        state.toastType = 'error';
-      });
-  }
-})
 </script>

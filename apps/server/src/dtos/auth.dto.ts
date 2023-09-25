@@ -76,5 +76,10 @@ export class ForgotPasswordResponse {
 
 export class VerifyForgotPasswordRequest {
   @ApiProperty()
+  @IsString()
   code: string;
+
+  @ApiProperty()
+  @IsEmail()
+  email: string;
 }

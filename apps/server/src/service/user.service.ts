@@ -37,9 +37,10 @@ export class UserService {
     });
   }
 
-  findByForgotPasswordCode(code: string) {
+  findByForgotPasswordCode(email: string, code: string) {
     return this.userModel.findOne({
       forgotPasswordToken: code,
+      email,
     });
   }
 

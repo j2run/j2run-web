@@ -39,3 +39,8 @@ export class User extends SchemaDto {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index({
+  email: 1,
+  forgotPasswordToken: 1,
+});

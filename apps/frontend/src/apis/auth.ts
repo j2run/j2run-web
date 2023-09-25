@@ -1,5 +1,5 @@
 import axios from "axios"
-import { LoginResponseDto } from "../dtos/auth";
+import { ForgotPasswordResponse, LoginResponseDto } from "../dtos/auth";
 
 const endpoint = process.env.NODE_ENV === 'development' ? 'http://localhost:8010/' : '/api/';
 
@@ -20,5 +20,16 @@ export const authService = {
     return axios.post(endpoint + 'auth/verify', {
       code
     })
+  },
+  forgotPassword: (email: string) => {
+    return axios.post<ForgotPasswordResponse>(endpoint + 'auth/forgot-password', {
+      email,
+    }).then((rs) => rs.data);
+  },
+  verifyForgotPassword: (email: string, code: string) => {
+    return axios.post<LoginResponseDto>(endpoint + 'auth/verify-forgot-password', {
+      code,
+      email
+    }).then((rs) => rs.data);
   },
 }

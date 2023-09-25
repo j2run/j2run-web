@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SIBService } from './sib.service';
 import * as handlebars from 'handlebars';
@@ -7,6 +7,8 @@ import * as path from 'path';
 
 @Injectable()
 export class EmailService {
+  private logger = new Logger(EmailService.name);
+
   constructor(
     private readonly configService: ConfigService,
     private readonly sibService: SIBService,
@@ -29,9 +31,13 @@ export class EmailService {
   }
 
   sendForgotPasswordEmail(to: string, forgotToken: string) {
+    this.logger.warn('send forgot: ' + to);
     const subject = '[J2RUN] Quên mật khẩu';
     const link =
-      this.configService.get('J2_FORGOT_PASSWORD_LINK') + forgotToken;
+      this.configService.get('J2_FORGOT_PASSWORD_LINK') +
+      forgotToken +
+      '&email=' +
+      to;
     const template = fs.readFileSync(
       path.join(__dirname, '../templates/email-forgot-password.hbs'),
       'utf8',
@@ -41,7 +47,6 @@ export class EmailService {
       subject,
       link,
     });
-
     return this.sibService.sendEmail(to, subject, html);
   }
 }

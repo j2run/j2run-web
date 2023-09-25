@@ -49,7 +49,7 @@ export class AuthController {
   @Post('verify-forgot-password')
   verifyForgotPassword(
     @Body() dto: VerifyForgotPasswordRequest,
-  ): Promise<ForgotPasswordResponse> {
+  ): Promise<LoginResponse> {
     return this.authService.verifyForgotPassword(dto);
   }
 }
