@@ -89,4 +89,3 @@ apk add openrc
 
 ssh-keygen -t ed25519
 
-huhu
