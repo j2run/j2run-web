@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -94,7 +94,7 @@ export class UserService {
       user.password,
     );
     if (!isPasswordMatches) {
-      throw new UnauthorizedException('Mật khẩu cũ không hợp lệ.');
+      throw new ForbiddenException('Mật khẩu cũ không hợp lệ.');
     }
 
     user.password = await bcrypt.hash(dto.newPassword, 12);
