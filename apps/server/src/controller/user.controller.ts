@@ -2,7 +2,12 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
-import { ResetPasswordRequest, ResetPasswordResponse } from 'src/dtos/user.dto';
+import {
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+} from 'src/dtos/user.dto';
 import { UserDocument } from 'src/schema/user.schema';
 import { UserService } from 'src/service/user.service';
 
@@ -27,5 +32,14 @@ export class UserController {
   ): Promise<ResetPasswordResponse> {
     const user = request.user as UserDocument;
     return this.userService.resetPassword(dto, user);
+  }
+
+  @Post('change-password')
+  changePassword(
+    @Req() request: express.Request,
+    @Body() dto: ChangePasswordRequest,
+  ): Promise<ChangePasswordResponse> {
+    const user = request.user as UserDocument;
+    return this.userService.changePassword(dto, user);
   }
 }

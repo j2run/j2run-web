@@ -1,8 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { ResetPasswordRequest, ResetPasswordResponse } from 'src/dtos/user.dto';
+import {
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+} from 'src/dtos/user.dto';
 import { User, UserDocument } from 'src/schema/user.schema';
 
 @Injectable()
@@ -78,5 +83,28 @@ export class UserService {
     user.password = await bcrypt.hash(dto.password, 12);
     await this.userModel.bulkSave([user]);
     return { status: true };
+  }
+
+  async changePassword(
+    dto: ChangePasswordRequest,
+    user: UserDocument,
+  ): Promise<ChangePasswordResponse> {
+    const isPasswordMatches = await bcrypt.compare(
+      dto.oldPassword,
+      user.password,
+    );
+    if (!isPasswordMatches) {
+      throw new UnauthorizedException('Mật khẩu cũ không hợp lệ.');
+    }
+
+    user.password = await bcrypt.hash(dto.newPassword, 12);
+    await this.userModel.bulkSave([user]);
+
+    // TODO
+    // Send mail
+
+    return {
+      status: true,
+    };
   }
 }

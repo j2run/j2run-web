@@ -13,3 +13,22 @@ export class ResetPasswordResponse {
   @ApiProperty()
   status: boolean;
 }
+
+export class ChangePasswordRequest {
+  @ApiProperty()
+  @MinLength(6)
+  @MaxLength(32)
+  @IsString()
+  oldPassword: string;
+
+  @ApiProperty()
+  @MinLength(6)
+  @MaxLength(32)
+  @IsString()
+  newPassword: string;
+}
+
+export class ChangePasswordResponse {
+  @ApiProperty()
+  status: boolean;
+}
