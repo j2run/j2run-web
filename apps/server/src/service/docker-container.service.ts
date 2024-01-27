@@ -17,6 +17,13 @@ import { benchmarkRuntime } from 'src/utils/time';
 import { QueueDockerService } from './queue-docker.service';
 import { QueueSubscriptionService } from './queue-subscription.service';
 import { JobDockerType } from 'src/dtos/job.dto';
+import {
+  MSG_CONTAINER_CANNOT_STOP,
+  MSG_CONTAINER_HANDLING,
+  MSG_CONTAINER_NOT_EXISTS,
+  MSG_CONTAINER_NOT_EXPIRED,
+} from 'src/constants/message.constant';
+import { format } from 'src/utils/common';
 
 @Injectable()
 export class DockerContainerService {
@@ -56,7 +63,7 @@ export class DockerContainerService {
         },
       ],
     });
-    this.logger.warn(`${containers.length} container(s) can't end`);
+    this.logger.warn(`${containers.length} ${MSG_CONTAINER_CANNOT_STOP}`);
     for (const container of containers) {
       await this.checkExpiredContainerObject(container);
     }
@@ -80,7 +87,7 @@ export class DockerContainerService {
       ],
     });
     if (!container) {
-      throw new Error('container not exists');
+      throw new Error(MSG_CONTAINER_NOT_EXISTS);
     }
     return await this.checkExpiredContainerObject(container);
   }
@@ -91,14 +98,14 @@ export class DockerContainerService {
     this.logger.warn(`check subscription: ${dockerContainer.id}`);
     if (moment().isBefore(dockerContainer.expirationDate)) {
       return Promise.reject(
-        new Error(`container ${dockerContainer.id} not expired`),
+        new Error(format(MSG_CONTAINER_NOT_EXPIRED, dockerContainer.id)),
       );
     }
     if (dockerContainer.expirationHandleTime) {
       if (
         moment().add(5, 'minute').isAfter(dockerContainer.expirationHandleTime)
       ) {
-        this.logger.warn(`container ${dockerContainer.id} handling`);
+        this.logger.warn(format(MSG_CONTAINER_HANDLING, dockerContainer.id));
         return false;
       }
     }

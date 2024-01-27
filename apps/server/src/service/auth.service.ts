@@ -26,6 +26,13 @@ import { UserService } from './user.service';
 import { UserDocument } from 'src/schema/user.schema';
 import { EmailService } from './email.service';
 import { emailAllows } from 'src/constants/email.constant';
+import {
+  MSG_ACCOUNT_UNVERIFIED,
+  MSG_EMAIL_DOMAIN_SUPPORT,
+  MSG_EMAIL_EXISTS,
+  MSG_EMAIL_NOT_EXISTS,
+  MSG_VERIFY_CODE_ILEGAL,
+} from 'src/constants/message.constant';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +55,7 @@ export class AuthService {
     }
 
     if (!user.isVerified) {
-      throw new UnauthorizedException('Tài khoản chưa được xác minh');
+      throw new UnauthorizedException(MSG_ACCOUNT_UNVERIFIED);
     }
 
     this.userService.hideField(user);
@@ -63,12 +70,12 @@ export class AuthService {
   async register(dto: RegisterRequest): Promise<RegisterResponse> {
     const user = await this.userService.findByEmailVerified(dto.email);
     if (!!user) {
-      throw new ConflictException('Email tồn tại');
+      throw new ConflictException(MSG_EMAIL_EXISTS);
     }
 
     if (!emailAllows.includes(dto.email.split('@')[1])) {
       throw new ConflictException(
-        'Chỉ hổ trợ cái email sau: ' + emailAllows.join(', '),
+        MSG_EMAIL_DOMAIN_SUPPORT + emailAllows.join(', '),
       );
     }
 
@@ -113,7 +120,7 @@ export class AuthService {
   async verifyAccount(dto: VerifyRequest) {
     const user = await this.userService.findByVerifyCode(dto.code);
     if (!user) {
-      throw new NotFoundException('Mã xác thực không hợp lệ');
+      throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
     user.verifyToken = null;
     user.isVerified = true;
@@ -126,7 +133,7 @@ export class AuthService {
   ): Promise<ForgotPasswordResponse> {
     const user = await this.userService.findByEmailVerified(dto.email);
     if (!user) {
-      throw new ConflictException('Email không tồn tại');
+      throw new ConflictException(MSG_EMAIL_NOT_EXISTS);
     }
     user.forgotPasswordToken = v4();
     await this.userService.save(user);
@@ -147,7 +154,7 @@ export class AuthService {
       dto.code,
     );
     if (!user) {
-      throw new NotFoundException('Mã không hợp lệ');
+      throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
     user.forgotPasswordToken = null;
     user.isResetPassword = true;

@@ -11,9 +11,5 @@ export class DockerLabelService {
   constructor(
     @InjectModel(DockerLabel.name)
     private dockerLabelModel: Model<DockerLabelDocument>,
-  ) {
-    // this.dockerLabelModel.create({
-    //   name: 'NSO Plus',
-    // });
-  }
+  ) {}
 }

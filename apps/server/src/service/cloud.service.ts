@@ -31,6 +31,13 @@ import {
   DockerActionDocument,
 } from 'src/schema/docker-action.schema';
 import { DownloadService } from './download.service';
+import {
+  MSG_ACCOUNT_NOT_SUFFICENT_FUNDS,
+  MSG_ACTION_ILEGAL,
+  MSG_CONTAINER_NOT_EXISTS,
+  MSG_CONTAINER_REMOVED,
+  MSG_CONTAINER_REMOVING,
+} from 'src/constants/message.constant';
 
 @Injectable()
 export class CloudService {
@@ -91,7 +98,7 @@ export class CloudService {
     }
 
     if (plan.money > (user.balance || 0)) {
-      throw new BadRequestException('not enough money');
+      throw new BadRequestException(MSG_ACCOUNT_NOT_SUFFICENT_FUNDS);
     }
 
     // change money
@@ -131,13 +138,13 @@ export class CloudService {
       _id: dockerContainerId_,
     });
     if (!container) {
-      throw new NotFoundException('container not exists');
+      throw new NotFoundException(MSG_CONTAINER_NOT_EXISTS);
     }
     if (container.userId.toString() != user._id.toString()) {
       throw new ForbiddenException();
     }
     if (container.deleteAt) {
-      throw new ForbiddenException('container removed');
+      throw new ForbiddenException(MSG_CONTAINER_REMOVED);
     }
 
     const actionCurrent = await this.dockerActionModel.findOne({
@@ -153,11 +160,11 @@ export class CloudService {
       ],
     });
     if (actionCurrent) {
-      throw new ConflictException('action exists');
+      throw new ConflictException(MSG_ACTION_ILEGAL);
     }
 
     if (container.stage === 'removing') {
-      throw new ConflictException('container removing');
+      throw new ConflictException(MSG_CONTAINER_REMOVING);
     }
 
     return await this.queueDockerService.actionContainer(
@@ -173,13 +180,13 @@ export class CloudService {
       _id: dockerContainerId_,
     });
     if (!container) {
-      throw new NotFoundException('container not exists');
+      throw new NotFoundException(MSG_CONTAINER_NOT_EXISTS);
     }
     if (container.userId.toString() != user._id.toString()) {
       throw new ForbiddenException();
     }
     if (container.deleteAt) {
-      throw new ForbiddenException('container removed');
+      throw new ForbiddenException(MSG_CONTAINER_REMOVED);
     }
     return this.downloadService.createLinkCloudLog(dto.dockerContainerId);
   }

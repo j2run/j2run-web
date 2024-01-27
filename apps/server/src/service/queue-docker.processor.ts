@@ -31,6 +31,12 @@ import {
   DockerAction,
   DockerActionDocument,
 } from 'src/schema/docker-action.schema';
+import {
+  MSG_ACCOUNT_ILEGAL,
+  MSG_GAME_ILEGAL,
+  MSG_INVOICE_ILEGAL,
+  MSG_PLAN_ILEGAL,
+} from 'src/constants/message.constant';
 
 type J2ContainerServiceMethods = {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -131,24 +137,24 @@ export class QueueDockerProcessor {
     const data = job.data.data;
     const plan = await this.planModel.findById(data.planId);
     if (!plan) {
-      return Promise.reject(new Error('plan not found'));
+      return Promise.reject(new Error(MSG_PLAN_ILEGAL));
     }
 
     const game = await this.gameModel.findById(data.gameId);
     if (!game) {
-      return Promise.reject(new Error('game not found'));
+      return Promise.reject(new Error(MSG_GAME_ILEGAL));
     }
 
     const user = await this.userModel.findById(data.userId);
     if (!user) {
-      return Promise.reject(new Error('user not found'));
+      return Promise.reject(new Error(MSG_ACCOUNT_ILEGAL));
     }
 
     const invoiceCloud = await this.invoiceCloudModel.findById(
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      return Promise.reject(new Error('invoice not found'));
+      return Promise.reject(new Error(MSG_INVOICE_ILEGAL));
     }
 
     invoiceCloud.status = 'creating';
@@ -171,7 +177,7 @@ export class QueueDockerProcessor {
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      return Promise.reject(new Error('invoice not found'));
+      return Promise.reject(new Error(MSG_INVOICE_ILEGAL));
     }
 
     invoiceCloud.status = 'created';
@@ -184,7 +190,7 @@ export class QueueDockerProcessor {
       data.invoiceCloudId,
     );
     if (!invoiceCloud) {
-      return Promise.reject(new Error('invoice not found'));
+      return Promise.reject(new Error(MSG_INVOICE_ILEGAL));
     }
 
     invoiceCloud.status = 'error';

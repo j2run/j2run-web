@@ -9,6 +9,7 @@ import {
   ResetPasswordResponse,
 } from 'src/dtos/user.dto';
 import { User, UserDocument } from 'src/schema/user.schema';
+import { MSG_PASSWORD_OLD_ILEGAL } from 'src/constants/message.constant';
 
 @Injectable()
 export class UserService {
@@ -94,7 +95,7 @@ export class UserService {
       user.password,
     );
     if (!isPasswordMatches) {
-      throw new ForbiddenException('Mật khẩu cũ không hợp lệ.');
+      throw new ForbiddenException(MSG_PASSWORD_OLD_ILEGAL);
     }
 
     user.password = await bcrypt.hash(dto.newPassword, 12);

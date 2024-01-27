@@ -1,7 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
-import { InvoiceCloudSearchRequest, InvoiceCloudViewedRequest } from 'src/dtos/invoice-cloud.dto';
+import {
+  InvoiceCloudSearchRequest,
+  InvoiceCloudViewedRequest,
+} from 'src/dtos/invoice-cloud.dto';
 import {
   InvoiceCloud,
   InvoiceCloudDocument,

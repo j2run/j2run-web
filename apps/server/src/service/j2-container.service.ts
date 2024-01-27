@@ -31,6 +31,10 @@ import { PlanService } from './plan.service';
 import { PlanHashmap } from 'src/dtos/plan.dto';
 import { QueueSubscriptionService } from './queue-subscription.service';
 import { Duplex } from 'stream';
+import {
+  MSG_NODE_NOT_EXISTS,
+  MSG_NO_RESOURCE,
+} from 'src/constants/message.constant';
 
 @Injectable()
 export class J2ContainerService {
@@ -226,7 +230,7 @@ export class J2ContainerService {
     );
 
     if (nodes.length === 0) {
-      return Promise.reject(new Error('No resource'));
+      return Promise.reject(new Error(MSG_NO_RESOURCE));
     }
 
     // find best node
@@ -261,7 +265,7 @@ export class J2ContainerService {
       }
     }
     if (!nodeCurrent) {
-      return Promise.reject(new Error('No resource'));
+      return Promise.reject(new Error(MSG_NO_RESOURCE));
     }
 
     // create node
@@ -437,7 +441,7 @@ export class J2ContainerService {
     progress(10);
     const node = await this.dockerNodeModel.findById(containerRow.dockerNodeId);
     if (!node) {
-      return Promise.reject(new Error('not exists node'));
+      return Promise.reject(new Error(MSG_NODE_NOT_EXISTS));
     }
 
     progress(40);
