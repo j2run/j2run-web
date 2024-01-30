@@ -26,6 +26,7 @@ import { DockerActionService } from './docker-action.service';
 import { SIBService } from './sib.service';
 import { EmailService } from './email.service';
 import { DownloadService } from './download.service';
+import { CloudflareService } from './web-builder/cloudflare.service';
 
 const services = [
   J2ContainerService,
@@ -46,6 +47,9 @@ const services = [
   SIBService,
   EmailService,
   DownloadService,
+
+  //
+  CloudflareService,
 ];
 
 @Module({
