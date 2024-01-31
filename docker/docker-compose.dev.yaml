@@ -64,6 +64,19 @@ services:
     networks:
       - all
 
+  j2-frontend-wb-client:
+    image: j2-dev
+    depends_on:
+      - j2-backend
+    environment:
+      <<: *shared_environment
+    volumes:
+      - ../apps/frontend-wb-client:/data/apps
+    expose:
+      - 5173 
+    networks:
+      - all
+
   j2-redis:
     image: redis:7.0.7-alpine3.17
     environment:
