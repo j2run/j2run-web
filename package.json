@@ -11,6 +11,7 @@
     "dev:destroy": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml rm -f",
     "dev:log": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml logs -f",
     "dev:rmq": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml restart fl-rabbitmq",
+    "dev:nginx": "docker-compose --env-file ./env/.env.dev -f docker/docker-compose.dev.yaml restart j2-nginx",
     "release": "standard-version && git push --follow-tags"
   },
   "hooks": {
