@@ -26,7 +26,9 @@ import { DockerActionService } from './docker-action.service';
 import { SIBService } from './sib.service';
 import { EmailService } from './email.service';
 import { DownloadService } from './download.service';
-import { CloudflareService } from './web-builder/cloudflare.service';
+import { WbWebsiteService } from './wb/wb-website.service';
+import { WbDomainService } from './wb/wb-domain.service';
+import { WbSubdomainExclude } from 'src/schema/wb-subdomain-exclude.schema';
 
 const services = [
   J2ContainerService,
@@ -48,8 +50,10 @@ const services = [
   EmailService,
   DownloadService,
 
-  //
-  CloudflareService,
+  // Web Builder Service
+  WbWebsiteService,
+  WbDomainService,
+  WbSubdomainExclude,
 ];
 
 @Module({

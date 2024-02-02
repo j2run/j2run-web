@@ -2,7 +2,11 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
-import { CloudActionRequest, CloudCreateRequest, GetCloudLogRequest } from 'src/dtos/cloud.dto';
+import {
+  CloudActionRequest,
+  CloudCreateRequest,
+  GetCloudLogRequest,
+} from 'src/dtos/cloud.dto';
 import { JobDockerType } from 'src/dtos/job.dto';
 import { UserDocument } from 'src/schema/user.schema';
 import { CloudService } from 'src/service/cloud.service';

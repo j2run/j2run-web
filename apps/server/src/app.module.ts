@@ -5,7 +5,11 @@ import { JwtAccessStrategy } from './strategy/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 import { ControllerModule } from './controller/controller.module';
 import { RouterModule } from '@nestjs/core';
-import { WbClientModule } from './controller/wb-client/wb-client.module';
+import {
+  WbClientModule,
+  WbClientPrefix,
+} from './controller/wb-client/wb-client.module';
+import { WbModule, WbPrefix } from './controller/wb/wb.module';
 
 @Module({
   imports: [
@@ -15,8 +19,12 @@ import { WbClientModule } from './controller/wb-client/wb-client.module';
     WbClientModule,
     RouterModule.register([
       {
-        path: '/wb-client',
+        path: WbClientPrefix,
         module: WbClientModule,
+      },
+      {
+        path: WbPrefix,
+        module: WbModule,
       },
     ]),
   ],
