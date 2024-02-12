@@ -54,25 +54,26 @@ async function bootstrap() {
   });
 
   const isProduction = configService.get('NODE_ENV') === 'production';
-
-  app.use(
-    '/mana',
-    (
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      if (new Date().getTime() - timeSuperLoginError < 5000) {
-        res.status(403).send();
-      } else {
-        next();
-      }
-    },
-    expressBasicAuth({
-      authorizer: superAuthorizer,
-      challenge: true,
-    }),
-  );
+  if (isProduction) {
+    app.use(
+      '/mana',
+      (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction,
+      ) => {
+        if (new Date().getTime() - timeSuperLoginError < 5000) {
+          res.status(403).send();
+        } else {
+          next();
+        }
+      },
+      expressBasicAuth({
+        authorizer: superAuthorizer,
+        challenge: true,
+      }),
+    );
+  }
 
   const config = new DocumentBuilder()
     .setTitle('J2Run')
@@ -80,6 +81,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('auth')
+    .addServer('/api') // <-- nginx behind
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/mana/documents', app, document, {
@@ -89,7 +91,7 @@ async function bootstrap() {
   });
 
   const bullAdapter = new ExpressAdapter();
-  bullAdapter.setBasePath(isProduction ? '/api/mana/bull' : '/mana/bull');
+  bullAdapter.setBasePath('/api/mana/bull'); // <-- nginx behind
   createBullBoard({
     queues: [
       new BullAdapter(app.get<Queue>('BullQueue_' + JOB_NAME_DOCKER)),

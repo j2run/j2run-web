@@ -16,7 +16,10 @@ import { WbModule, WbPrefix } from './controller/wb/wb.module';
     ConfigModule.forRoot({ isGlobal: true }),
     ServicesModule,
     ControllerModule,
+
+    // Web Builder Module
     WbClientModule,
+    WbModule,
     RouterModule.register([
       {
         path: WbClientPrefix,

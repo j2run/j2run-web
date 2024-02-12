@@ -26,9 +26,9 @@ import { DockerActionService } from './docker-action.service';
 import { SIBService } from './sib.service';
 import { EmailService } from './email.service';
 import { DownloadService } from './download.service';
-import { WbWebsiteService } from './wb/wb-website.service';
-import { WbDomainService } from './wb/wb-domain.service';
-import { WbSubdomainExclude } from 'src/schema/wb-subdomain-exclude.schema';
+import { WbWebsiteService } from './web-builder/wb-website.service';
+import { WbDomainService } from './web-builder/wb-domain.service';
+import { WbSubdomainExcludeService } from './web-builder/wb-subdomain-exclude.service';
 
 const services = [
   J2ContainerService,
@@ -53,7 +53,7 @@ const services = [
   // Web Builder Service
   WbWebsiteService,
   WbDomainService,
-  WbSubdomainExclude,
+  WbSubdomainExcludeService,
 ];
 
 @Module({

@@ -12,12 +12,8 @@ import { Game, GameSchema } from './game.schema';
 import { Plan, PlanSchema } from './plan.schema';
 import { InvoiceCloud, InvoiceCloudSchema } from './invoice-cloud.schema';
 import { DockerAction, DockerActionSchema } from './docker-action.schema';
-import { WbWebsite, WbWebsiteSchema } from './wb-website.schema';
-import { WbDomain, WbDomainSchema } from './wb-domain.schema';
-import {
-  WbSubdomainExclude,
-  WbSubdomainExcludeSchema,
-} from './wb-subdomain-exclude.schema';
+import { PaymentSchemaModule } from './payment/payment-schema.module';
+import { WebBuilderSchemaModule } from './web-builder/payment-schema.module';
 
 export const features: ModelDefinition[] = [
   {
@@ -52,18 +48,6 @@ export const features: ModelDefinition[] = [
     name: DockerAction.name,
     schema: DockerActionSchema,
   },
-  {
-    name: WbWebsite.name,
-    schema: WbWebsiteSchema,
-  },
-  {
-    name: WbDomain.name,
-    schema: WbDomainSchema,
-  },
-  {
-    name: WbSubdomainExclude.name,
-    schema: WbSubdomainExcludeSchema,
-  },
 ];
 
 @Module({
@@ -72,7 +56,13 @@ export const features: ModelDefinition[] = [
       useClass: MongoConfig,
     }),
     MongooseModule.forFeature(features),
+    PaymentSchemaModule,
+    WebBuilderSchemaModule,
   ],
-  exports: [MongooseModule.forFeature(features)],
+  exports: [
+    MongooseModule.forFeature(features),
+    PaymentSchemaModule,
+    WebBuilderSchemaModule,
+  ],
 })
 export class SchemaModule {}

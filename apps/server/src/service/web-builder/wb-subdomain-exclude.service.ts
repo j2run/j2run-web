@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import {
   WbSubdomainExclude,
   WbSubdomainExcludeDocument,
-} from 'src/schema/wb-subdomain-exclude.schema';
+} from 'src/schema/web-builder/wb-subdomain-exclude.schema';
 
 @Injectable()
 export class WbSubdomainExcludeService {
