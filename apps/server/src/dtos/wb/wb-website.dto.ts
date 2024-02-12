@@ -9,6 +9,7 @@ export class NewSubdomainValidRequest {
   @MaxLength(16)
   subdomain: string;
 
+  @ApiProperty()
   @IsObjectId()
   wbDomainId: string;
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { StatusResponse } from 'src/dtos/common.dto';
 import { NewSubdomainValidRequest } from 'src/dtos/wb/wb-website.dto';
 import {
   WbWebsite,
@@ -14,11 +15,12 @@ export class WbWebsiteService {
     private wbWebsiteModel: Model<WbWebsiteDocument>,
   ) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  newSubdomainValid(search: NewSubdomainValidRequest) {
-    return this.wbWebsiteModel.find({
-      wbDomainId: new Types.ObjectId(search.wbDomainId),
-      subdomain: search.subdomain,
-    });
+  newSubdomainValid(search: NewSubdomainValidRequest): Promise<StatusResponse> {
+    return this.wbWebsiteModel
+      .find({
+        wbDomainId: new Types.ObjectId(search.wbDomainId),
+        subdomain: search.subdomain,
+      })
+      .then((result) => ({ status: !!result && result.length === 0 }));
   }
 }
