@@ -22,7 +22,7 @@ use('j2');
     },
   ]);
 
-  const webBuilderFreeProduct = products.insertedIds[1];
+  const webBuilderFreeProduct = products.insertedIds[0];
   await db.getCollection('productretaloptions').insertMany([
     {
       productId: webBuilderFreeProduct,

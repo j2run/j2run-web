@@ -10,6 +10,10 @@ import {
   WbClientPrefix,
 } from './controller/wb-client/wb-client.module';
 import { WbModule, WbPrefix } from './controller/wb/wb.module';
+import {
+  PaymentModule,
+  PaymentPrefix,
+} from './controller/payment/payment.module';
 
 @Module({
   imports: [
@@ -20,6 +24,7 @@ import { WbModule, WbPrefix } from './controller/wb/wb.module';
     // Web Builder Module
     WbClientModule,
     WbModule,
+    PaymentModule,
     RouterModule.register([
       {
         path: WbClientPrefix,
@@ -28,6 +33,10 @@ import { WbModule, WbPrefix } from './controller/wb/wb.module';
       {
         path: WbPrefix,
         module: WbModule,
+      },
+      {
+        path: PaymentPrefix,
+        module: PaymentModule,
       },
     ]),
   ],

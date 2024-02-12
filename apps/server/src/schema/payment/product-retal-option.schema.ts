@@ -10,7 +10,7 @@ export type ProductRetalOptionDocument = HydratedDocument<ProductRetalOption>;
 })
 export class ProductRetalOption extends SchemaDto {
   @ApiProperty()
-  @Prop()
+  @Prop({ type: Types.ObjectId, index: true })
   productId: Types.ObjectId;
 
   @ApiProperty()
