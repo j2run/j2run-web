@@ -6,6 +6,10 @@ import { Product, ProductSchema } from './product.schema';
 import { Order, OrderSchema } from './order.schema';
 import { Invoice, InvoiceSchema } from './invoice.schema';
 import { Subscription, SubscriptionSchema } from './subscription.schema';
+import {
+  ProductRetalOption,
+  ProductRetalOptionSchema,
+} from './product-retal-option.schema';
 
 export const features: ModelDefinition[] = [
   {
@@ -15,6 +19,10 @@ export const features: ModelDefinition[] = [
   {
     name: Product.name,
     schema: ProductSchema,
+  },
+  {
+    name: ProductRetalOption.name,
+    schema: ProductRetalOptionSchema,
   },
   {
     name: Order.name,

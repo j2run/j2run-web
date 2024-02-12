@@ -20,15 +20,7 @@ export class Product extends SchemaDto {
 
   @ApiProperty()
   @Prop()
-  price: number;
-
-  @ApiProperty()
-  @Prop()
   categoryId: ECategoryType;
-
-  @ApiProperty()
-  @Prop()
-  usageTime: number;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
