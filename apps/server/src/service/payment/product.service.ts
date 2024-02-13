@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel, getModelToken } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model } from 'mongoose';
 import { ProductSearchRequest } from 'src/dtos/payment/product.dto';
 import {
   ProductRetalOption,
@@ -15,6 +15,7 @@ export class ProductService {
     private productModel: Model<ProductDocument>,
     @InjectModel(ProductRetalOption.name)
     private productRetalModel: Model<ProductRetalOptionDocument>,
+    @InjectConnection() private readonly connection: mongoose.Connection,
   ) {
     // TODO
   }

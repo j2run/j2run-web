@@ -30,6 +30,7 @@ import { WbWebsiteService } from './web-builder/wb-website.service';
 import { WbDomainService } from './web-builder/wb-domain.service';
 import { WbSubdomainExcludeService } from './web-builder/wb-subdomain-exclude.service';
 import { ProductService } from './payment/product.service';
+import { OrderService } from './payment/order.service';
 
 const services = [
   J2ContainerService,
@@ -53,6 +54,7 @@ const services = [
 
   // Payment
   ProductService,
+  OrderService,
 
   // Web Builder Service
   WbWebsiteService,

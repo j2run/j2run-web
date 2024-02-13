@@ -1,4 +1,8 @@
-import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { StatusResponse } from 'src/dtos/common.dto';
@@ -8,7 +12,10 @@ import {
   WbWebsiteDocument,
 } from 'src/schema/web-builder/wb-website.schema';
 import { WbSubdomainExcludeService } from './wb-subdomain-exclude.service';
-import { MSG_WB_SUBDOMAIN_BANNED, MSG_WB_SUBDOMAIN_EXISTS } from 'src/constants/message.constant';
+import {
+  MSG_WB_SUBDOMAIN_BANNED,
+  MSG_WB_SUBDOMAIN_EXISTS,
+} from 'src/constants/message.constant';
 
 @Injectable()
 export class WbWebsiteService {

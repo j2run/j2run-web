@@ -10,6 +10,9 @@ import {
   ProductRetalOption,
   ProductRetalOptionSchema,
 } from './product-retal-option.schema';
+import { Test } from './test.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostgresConfig } from 'src/configs/postgres.config';
 
 export const features: ModelDefinition[] = [
   {
@@ -38,13 +41,22 @@ export const features: ModelDefinition[] = [
   },
 ];
 
+export const ormFeatures = [Test];
+
 @Module({
   imports: [
     MongooseModule.forRootAsync({
       useClass: MongoConfig,
     }),
     MongooseModule.forFeature(features),
+    TypeOrmModule.forRootAsync({
+      extraProviders: [{ provide: 'POSTGRES_ENTITIES', useValue: ormFeatures }],
+      useClass: PostgresConfig,
+    }),
   ],
-  exports: [MongooseModule.forFeature(features)],
+  exports: [
+    MongooseModule.forFeature(features),
+    TypeOrmModule.forFeature(ormFeatures),
+  ],
 })
 export class PaymentSchemaModule {}
