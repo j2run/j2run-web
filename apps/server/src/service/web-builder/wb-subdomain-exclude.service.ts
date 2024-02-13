@@ -10,6 +10,14 @@ import {
 export class WbSubdomainExcludeService {
   constructor(
     @InjectModel(WbSubdomainExclude.name)
-    private WbSubdomainExcludeModel: Model<WbSubdomainExcludeDocument>,
+    private wbSubdomainExcludeModel: Model<WbSubdomainExcludeDocument>,
   ) {}
+
+  isExclude(subdomain: string) {
+    return this.wbSubdomainExcludeModel
+      .find({
+        subdomain,
+      })
+      .then((result) => !!result && result.length > 0);
+  }
 }

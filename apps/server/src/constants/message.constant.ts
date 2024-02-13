@@ -23,3 +23,5 @@ export const MSG_PLAN_ILEGAL = 'Gói dịch vụ không hợp lệ';
 export const MSG_GAME_ILEGAL = 'Trò chơi không hợp lệ';
 export const MSG_DOCKER_CONTAINER_ILEGAL = 'Máy ảo không hợp lệ';
 
+export const MSG_WB_SUBDOMAIN_EXISTS = 'Tên miền này đã được sử dụng';
+export const MSG_WB_SUBDOMAIN_BANNED = 'Tên miền này bị cấm sử dụng';
