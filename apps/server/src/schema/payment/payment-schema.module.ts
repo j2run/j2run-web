@@ -10,9 +10,14 @@ import {
   ProductRetalOption,
   ProductRetalOptionSchema,
 } from './product-retal-option.schema';
-import { Test } from './test.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostgresConfig } from 'src/configs/postgres.config';
+import { CategoryEntity } from './category.entity';
+import { ProductEntity } from './product.entity';
+import { OrderEntity } from './order.entity';
+import { OrderDetailEntity } from './order-detail.entity';
+import { ProductRetalOptionEntity } from './product-retal-option.entity';
+import { OrderDetailWebsiteEntity } from './order-detail-website.entity';
 
 export const features: ModelDefinition[] = [
   {
@@ -41,7 +46,14 @@ export const features: ModelDefinition[] = [
   },
 ];
 
-export const ormFeatures = [Test];
+export const ormFeatures = [
+  CategoryEntity,
+  ProductEntity,
+  ProductRetalOptionEntity,
+  OrderEntity,
+  OrderDetailEntity,
+  OrderDetailWebsiteEntity,
+];
 
 @Module({
   imports: [
