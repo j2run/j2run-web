@@ -59,10 +59,6 @@ export const features: ModelDefinition[] = [
     PaymentSchemaModule,
     WebBuilderSchemaModule,
   ],
-  exports: [
-    MongooseModule.forFeature(features),
-    PaymentSchemaModule,
-    WebBuilderSchemaModule,
-  ],
+  exports: [MongooseModule.forFeature(features), WebBuilderSchemaModule],
 })
 export class SchemaModule {}

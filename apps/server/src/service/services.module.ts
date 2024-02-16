@@ -31,6 +31,8 @@ import { WbDomainService } from './web-builder/wb-domain.service';
 import { WbSubdomainExcludeService } from './web-builder/wb-subdomain-exclude.service';
 import { ProductService } from './payment/product.service';
 import { OrderService } from './payment/order.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { paymentOrmFeatures } from 'src/schema/payment/payment-schema.module';
 
 const services = [
   J2ContainerService,
@@ -65,6 +67,7 @@ const services = [
 @Module({
   imports: [
     SchemaModule,
+    TypeOrmModule.forFeature(paymentOrmFeatures),
     JwtModule.registerAsync({ useClass: JwtConfig }),
     BullModule.forRootAsync({ useClass: BullConfig }),
     BullModule.registerQueue(

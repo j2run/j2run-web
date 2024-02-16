@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Order, OrderDocument } from 'src/schema/payment/order.schema';
 
 @Injectable()
 export class OrderService {
-  constructor(
-    @InjectModel(Order.name)
-    private orderModel: Model<OrderDocument>,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
 }
