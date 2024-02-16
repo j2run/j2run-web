@@ -46,12 +46,12 @@ use('j2');
     {
       productId: webBuilderGoldProduct,
       price: 11000 * 6,
-      usageTime: 3 * 30 * 24 * 60 * 60,
+      usageTime: 6 * 30 * 24 * 60 * 60,
     },
     {
       productId: webBuilderGoldProduct,
       price: 9500 * 12,
-      usageTime: 3 * 30 * 24 * 60 * 60,
+      usageTime: 12 * 30 * 24 * 60 * 60,
     },
   ]);
 })();
