@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { CategoryEntity } from './category.entity';
 import { OrderDetailEntity } from './order-detail.entity';
+import { InvoiceEntity } from './invoice.entity';
 
 @Entity()
 export class OrderEntity {
@@ -28,6 +29,9 @@ export class OrderEntity {
 
   @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.order)
   orders: OrderDetailEntity[];
+
+  @OneToMany(() => InvoiceEntity, (invoice) => invoice.order)
+  invoices: InvoiceEntity[];
 
   @ApiProperty()
   @CreateDateColumn({

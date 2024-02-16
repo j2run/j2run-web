@@ -18,6 +18,7 @@ import { OrderEntity } from './order.entity';
 import { OrderDetailEntity } from './order-detail.entity';
 import { ProductRetalOptionEntity } from './product-retal-option.entity';
 import { OrderDetailWebsiteEntity } from './order-detail-website.entity';
+import { InvoiceEntity } from './invoice.entity';
 
 export const features: ModelDefinition[] = [
   {
@@ -53,6 +54,7 @@ export const ormFeatures = [
   OrderEntity,
   OrderDetailEntity,
   OrderDetailWebsiteEntity,
+  InvoiceEntity,
 ];
 
 @Module({
