@@ -1,6 +1,5 @@
 import {
   registerDecorator,
-  ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -8,11 +7,11 @@ import {
 
 @ValidatorConstraint({ name: 'isObjectId', async: false })
 export class IsObjectIdValidate implements ValidatorConstraintInterface {
-  validate(text: string, args: ValidationArguments) {
+  validate(text: string) {
     return !text || /^[0-9a-fA-F]{24}$/.test(text);
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return 'ObjectId failed';
   }
 }

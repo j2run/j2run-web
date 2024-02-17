@@ -10,6 +10,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { InvoiceEntity } from 'src/schema/payment/invoice.entity';
 import { IsObjectId } from 'src/validators/is-object-id.validate';
 
 export class WebsiteOrderItem {
@@ -26,12 +27,14 @@ export class WebsiteOrderItem {
 
 export class OrderItem {
   @ApiProperty()
-  @IsObjectId()
-  productId: string;
+  @Min(1)
+  @IsInt()
+  productId: number;
 
   @ApiProperty()
-  @IsObjectId()
-  productRetalId: string;
+  @Min(1)
+  @IsInt()
+  productRetalId: number;
 
   @ApiProperty()
   @IsInt()
@@ -51,4 +54,12 @@ export class OrderRequest {
   @ValidateNested()
   @Type(() => OrderItem)
   items: OrderItem[];
+}
+
+export class OrderRsponse {
+  @ApiProperty()
+  status: boolean;
+
+  @ApiProperty({ type: InvoiceEntity })
+  invoice!: InvoiceEntity;
 }

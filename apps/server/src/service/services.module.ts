@@ -33,6 +33,8 @@ import { ProductService } from './payment/product.service';
 import { OrderService } from './payment/order.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { paymentOrmFeatures } from 'src/schema/payment/payment-schema.module';
+import { LoggerService } from './logger.service';
+import { InvoiceService } from './payment/invoice.service';
 
 const services = [
   J2ContainerService,
@@ -53,10 +55,12 @@ const services = [
   SIBService,
   EmailService,
   DownloadService,
+  LoggerService,
 
   // Payment
   ProductService,
   OrderService,
+  InvoiceService,
 
   // Web Builder Service
   WbWebsiteService,

@@ -10,7 +10,6 @@ export class OrderController {
 
   @Post()
   order(@Body() body: OrderRequest) {
-    console.log(body);
-    return 1;
+    return this.orderService.order(body);
   }
 }
