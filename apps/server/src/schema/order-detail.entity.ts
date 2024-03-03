@@ -3,8 +3,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToOne,
@@ -20,7 +18,7 @@ export class OrderDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => OrderEntity, (order) => order.orders)
+  @ManyToOne(() => OrderEntity, (order) => order.orderDetails)
   @JoinColumn()
   order: OrderEntity;
 

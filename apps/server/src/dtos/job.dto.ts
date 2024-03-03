@@ -34,3 +34,7 @@ export class JobDocker<T> {
   data: T;
   type: JobDockerType;
 }
+
+export class JobInvoicePay {
+  invoiceId: number;
+}

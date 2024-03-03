@@ -11,10 +11,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { AppModule } from './app.module';
 import { cors } from './configs/cors.config';
 import { ConfigService } from '@nestjs/config';
-import {
-  JOB_NAME_DOCKER,
-  JOB_NAME_SUBSCRIPTION,
-} from './constants/job.constant';
+import { JOB_NAME_SUBSCRIPTION } from './constants/job.constant';
 import { ValidationPipe } from '@nestjs/common';
 
 let timeSuperLoginError = new Date().getTime();
@@ -94,7 +91,6 @@ async function bootstrap() {
   bullAdapter.setBasePath('/api/mana/bull'); // <-- nginx behind
   createBullBoard({
     queues: [
-      new BullAdapter(app.get<Queue>('BullQueue_' + JOB_NAME_DOCKER)),
       new BullAdapter(app.get<Queue>('BullQueue_' + JOB_NAME_SUBSCRIPTION)),
     ],
     serverAdapter: bullAdapter,

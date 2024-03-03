@@ -10,7 +10,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { InvoiceEntity } from 'src/schema/payment/invoice.entity';
+import { InvoiceEntity } from 'src/schema/invoice.entity';
 import { IsObjectId } from 'src/validators/is-object-id.validate';
 
 export class WebsiteOrderItem {

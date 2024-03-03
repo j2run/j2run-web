@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderRequest, OrderRsponse } from 'src/dtos/payment/order.dto';
-import { OrderEntity } from 'src/schema/payment/order.entity';
+import { OrderEntity } from 'src/schema/order.entity';
 import { DataSource, Repository } from 'typeorm';
 import { LoggerService } from '../logger.service';
-import { OrderDetailEntity } from 'src/schema/payment/order-detail.entity';
-import { InvoiceEntity } from 'src/schema/payment/invoice.entity';
-import { OrderDetailWebsiteEntity } from 'src/schema/payment/order-detail-website.entity';
-import { ProductEntity } from 'src/schema/payment/product.entity';
-import { ProductRetalOptionEntity } from 'src/schema/payment/product-retal-option.entity';
+import { OrderDetailEntity } from 'src/schema/order-detail.entity';
+import { InvoiceEntity } from 'src/schema/invoice.entity';
+import { OrderDetailWebsiteEntity } from 'src/schema/order-detail-website.entity';
+import { ProductEntity } from 'src/schema/product.entity';
+import { ProductRetalOptionEntity } from 'src/schema/product-retal-option.entity';
 import { InvoiceService } from './invoice.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class OrderService {
           },
         });
         if (!product) {
-          throw new Error('Product not found');
+          throw new NotFoundException('Product not found');
         }
 
         const productRetalOption = await this.productRetalOptionEntity.findOne({
@@ -64,7 +64,7 @@ export class OrderService {
           },
         });
         if (!productRetalOption) {
-          throw new Error('Product retal option not found');
+          throw new NotFoundException('Product retal option not found');
         }
 
         const orderDetail = this.orderDetailRepository.create();
@@ -104,6 +104,10 @@ export class OrderService {
       await queryRunner.rollbackTransaction();
       this.logger.error(err);
       status = false;
+      // Response error
+      if (err instanceof HttpException) {
+        throw err;
+      }
     } finally {
       await queryRunner.release();
     }

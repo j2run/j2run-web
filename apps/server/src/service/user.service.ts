@@ -108,4 +108,17 @@ export class UserService {
       status: true,
     };
   }
+
+  minusBalance(balance: number, userId: Types.ObjectId) {
+    return this.userModel.updateOne(
+      {
+        _id: userId,
+      },
+      {
+        $inc: {
+          balance: -balance,
+        },
+      },
+    );
+  }
 }

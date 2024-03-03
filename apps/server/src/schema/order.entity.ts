@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { CategoryEntity } from './category.entity';
 import { OrderDetailEntity } from './order-detail.entity';
@@ -21,6 +22,11 @@ export class OrderEntity {
 
   @ApiProperty()
   @Column()
+  @Index()
+  userId: string;
+
+  @ApiProperty()
+  @Column()
   totalPrice: number;
 
   @ManyToOne(() => CategoryEntity, (category) => category.products)
@@ -28,7 +34,7 @@ export class OrderEntity {
   category: CategoryEntity;
 
   @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.order)
-  orders: OrderDetailEntity[];
+  orderDetails: OrderDetailEntity[];
 
   @OneToMany(() => InvoiceEntity, (invoice) => invoice.order)
   invoices: InvoiceEntity[];
