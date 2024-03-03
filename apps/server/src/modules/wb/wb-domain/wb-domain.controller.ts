@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { WbDomainService } from 'src/service/web-builder/wb-domain.service';
+import { WbDomainService } from './wb-domain.service';
 
 @ApiTags('wb-domain')
 @Controller('wb-domain')

@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { NewSubdomainValidRequest } from 'src/dtos/wb/wb-website.dto';
-import { WbWebsiteService } from 'src/service/web-builder/wb-website.service';
+import { NewSubdomainValidRequest } from './wb-website.dto';
+import { WbWebsiteService } from './wb-website.service';
 
 @ApiTags('wb-website')
 @Controller('wb-website')

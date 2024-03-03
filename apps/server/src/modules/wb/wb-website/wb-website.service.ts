@@ -6,12 +6,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { StatusResponse } from 'src/dtos/common.dto';
-import { NewSubdomainValidRequest } from 'src/dtos/wb/wb-website.dto';
+import { NewSubdomainValidRequest } from './wb-website.dto';
 import {
   WbWebsite,
   WbWebsiteDocument,
 } from 'src/schema/web-builder/wb-website.schema';
-import { WbSubdomainExcludeService } from './wb-subdomain-exclude.service';
+import { WbSubdomainExcludeService } from '../wb-domain-exclude/wb-subdomain-exclude.service';
 import {
   MSG_WB_SUBDOMAIN_BANNED,
   MSG_WB_SUBDOMAIN_EXISTS,
