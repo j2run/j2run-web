@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductSearchRequest } from 'src/dtos/payment/product.dto';
+import { ProductSearchRequest } from './product.dto';
 import { ProductEntity } from 'src/schema/product.entity';
 import { Repository } from 'typeorm';
 

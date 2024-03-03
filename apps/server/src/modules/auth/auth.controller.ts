@@ -11,8 +11,8 @@ import {
   ForgotPasswordResponse,
   VerifyRequest,
   VerifyForgotPasswordRequest,
-} from 'src/dtos/auth.dto';
-import { AuthService } from 'src/service/auth.service';
+} from './auth.dto';
+import { AuthService } from './auth.service';
 
 @ApiTags('auth')
 @Controller('auth')

@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ProductSearchRequest } from 'src/dtos/payment/product.dto';
-import { ProductService } from 'src/service/payment/product.service';
+import { ProductSearchRequest } from './product.dto';
+import { ProductService } from './product.service';
 
 @ApiTags('product')
 @Controller('product')

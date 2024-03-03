@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { WbClientMiddleware } from 'src/middlewares/wb-client.middleware';
+import { WbClientMiddleware } from 'src/utils/middlewares/wb-client.middleware';
 import { ServicesModule } from 'src/service/services.module';
 
 export const WbClientPrefix = '/wb-client';

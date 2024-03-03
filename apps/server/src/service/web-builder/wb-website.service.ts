@@ -15,7 +15,7 @@ import { WbSubdomainExcludeService } from './wb-subdomain-exclude.service';
 import {
   MSG_WB_SUBDOMAIN_BANNED,
   MSG_WB_SUBDOMAIN_EXISTS,
-} from 'src/constants/message.constant';
+} from 'src/utils/constants/message.constant';
 
 @Injectable()
 export class WbWebsiteService {

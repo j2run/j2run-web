@@ -21,18 +21,18 @@ import {
   ForgotPasswordResponse,
   VerifyRequest,
   VerifyForgotPasswordRequest,
-} from 'src/dtos/auth.dto';
-import { UserService } from './user.service';
+} from './auth.dto';
+import { UserService } from 'src/modules/user/user.service';
 import { UserDocument } from 'src/schema/user.schema';
-import { EmailService } from './email.service';
-import { emailAllows } from 'src/constants/email.constant';
+import { EmailService } from 'src/service/email.service';
+import { emailAllows } from 'src/utils/constants/email.constant';
 import {
   MSG_ACCOUNT_UNVERIFIED,
   MSG_EMAIL_DOMAIN_SUPPORT,
   MSG_EMAIL_EXISTS,
   MSG_EMAIL_NOT_EXISTS,
   MSG_VERIFY_CODE_ILEGAL,
-} from 'src/constants/message.constant';
+} from 'src/utils/constants/message.constant';
 
 @Injectable()
 export class AuthService {

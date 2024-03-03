@@ -7,9 +7,9 @@ import {
   ChangePasswordResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
-} from 'src/dtos/user.dto';
+} from './user.dto';
 import { UserDocument } from 'src/schema/user.schema';
-import { UserService } from 'src/service/user.service';
+import { UserService } from './user.service';
 
 @ApiBearerAuth()
 @ApiTags('user')

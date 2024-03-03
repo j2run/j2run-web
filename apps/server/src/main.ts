@@ -11,7 +11,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { AppModule } from './app.module';
 import { cors } from './configs/cors.config';
 import { ConfigService } from '@nestjs/config';
-import { JOB_NAME_SUBSCRIPTION } from './constants/job.constant';
+import { JOB_NAME_SUBSCRIPTION } from './utils/constants/job.constant';
 import { ValidationPipe } from '@nestjs/common';
 
 let timeSuperLoginError = new Date().getTime();

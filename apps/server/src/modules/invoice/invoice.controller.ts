@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { InvoicePayRequest } from 'src/dtos/payment/invoice.dto';
-import { InvoiceService } from 'src/service/payment/invoice.service';
+import { InvoicePayRequest } from './invoice.dto';
+import { InvoiceService } from './invoice.service';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt-access'))

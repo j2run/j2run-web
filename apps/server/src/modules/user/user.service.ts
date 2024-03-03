@@ -7,9 +7,9 @@ import {
   ChangePasswordResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
-} from 'src/dtos/user.dto';
+} from './user.dto';
 import { User, UserDocument } from 'src/schema/user.schema';
-import { MSG_PASSWORD_OLD_ILEGAL } from 'src/constants/message.constant';
+import { MSG_PASSWORD_OLD_ILEGAL } from 'src/utils/constants/message.constant';
 
 @Injectable()
 export class UserService {

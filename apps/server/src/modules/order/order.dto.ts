@@ -11,7 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { InvoiceEntity } from 'src/schema/invoice.entity';
-import { IsObjectId } from 'src/validators/is-object-id.validate';
+import { IsObjectId } from 'src/utils/validators/is-object-id.validate';
 
 export class WebsiteOrderItem {
   @ApiProperty()

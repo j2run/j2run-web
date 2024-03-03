@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InvoicePayRequest } from 'src/dtos/payment/invoice.dto';
+import { InvoicePayRequest } from './invoice.dto';
 import { InvoiceEntity, InvoiceStatus } from 'src/schema/invoice.entity';
 import { OrderEntity } from 'src/schema/order.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { LoggerService } from '../logger.service';
-import { UserService } from '../user.service';
+import { LoggerService } from 'src/service/logger.service';
+import { UserService } from '../user/user.service';
 import { JobInvoicePay } from 'src/dtos/job.dto';
-import { MSG_ACCOUNT_NOT_SUFFICENT_FUNDS } from 'src/constants/message.constant';
+import { MSG_ACCOUNT_NOT_SUFFICENT_FUNDS } from 'src/utils/constants/message.constant';
 import { Types } from 'mongoose';
 
 @Injectable()
