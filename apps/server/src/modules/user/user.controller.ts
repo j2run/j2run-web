@@ -8,8 +8,8 @@ import {
   ResetPasswordRequest,
   ResetPasswordResponse,
 } from './user.dto';
-import { UserDocument } from 'src/schema/user.schema';
 import { UserService } from './user.service';
+import { UserEntity } from 'src/schema/user.entity';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -20,7 +20,7 @@ export class UserController {
 
   @Get('info')
   getInfo(@Req() request: express.Request) {
-    const user = request.user as UserDocument;
+    const user = request.user as UserEntity;
     this.userService.hideField(user);
     return user;
   }
@@ -30,7 +30,7 @@ export class UserController {
     @Req() request: express.Request,
     @Body() dto: ResetPasswordRequest,
   ): Promise<ResetPasswordResponse> {
-    const user = request.user as UserDocument;
+    const user = request.user as UserEntity;
     return this.userService.resetPassword(dto, user);
   }
 
@@ -39,7 +39,7 @@ export class UserController {
     @Req() request: express.Request,
     @Body() dto: ChangePasswordRequest,
   ): Promise<ChangePasswordResponse> {
-    const user = request.user as UserDocument;
+    const user = request.user as UserEntity;
     return this.userService.changePassword(dto, user);
   }
 }

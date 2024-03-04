@@ -23,7 +23,6 @@ import {
   VerifyForgotPasswordRequest,
 } from './auth.dto';
 import { UserService } from 'src/modules/user/user.service';
-import { UserDocument } from 'src/schema/user.schema';
 import { EmailService } from 'src/service/email.service';
 import { emailAllows } from 'src/utils/constants/email.constant';
 import {
@@ -61,8 +60,8 @@ export class AuthService {
     this.userService.hideField(user);
     const response: LoginResponse = {
       user,
-      accessToken: await this.signAccess(user._id),
-      refreshToken: await this.signRefresh(user._id),
+      accessToken: await this.signAccess(user.id),
+      refreshToken: await this.signRefresh(user.id),
     };
     return response;
   }
@@ -79,14 +78,14 @@ export class AuthService {
       );
     }
 
-    const newUser = {} as UserDocument;
+    const newUser = this.userService.create();
     newUser.email = dto.email;
     newUser.password = await bcrypt.hash(dto.password, 12);
     newUser.verifyToken = v4();
     newUser.isVerified = false;
 
-    const isCreated = await this.userService.insert(newUser);
-    if (!isCreated?._id) {
+    const isCreated = await this.userService.save(newUser);
+    if (!isCreated?.id) {
       throw new InternalServerErrorException();
     }
 
@@ -113,19 +112,22 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     return {
-      accessToken: await this.signAccess(user._id.toString()),
+      accessToken: await this.signAccess(user.id),
     };
   }
 
   async verifyAccount(dto: VerifyRequest) {
-    const user = await this.userService.findByVerifyCode(dto.code);
+    const user = await this.userService.findByEmail(dto.email);
     if (!user) {
+      throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
+    }
+    if (user.verifyToken !== dto.code) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
     user.verifyToken = null;
     user.isVerified = true;
     await this.userService.save(user);
-    await this.userService.removeAllAccountWithoutUserId(user.email, user._id);
+    await this.userService.removeAllAccountWithoutUserId(user.email, user.id);
   }
 
   async forgotPassword(
@@ -149,11 +151,11 @@ export class AuthService {
   async verifyForgotPassword(
     dto: VerifyForgotPasswordRequest,
   ): Promise<LoginResponse> {
-    const user = await this.userService.findByForgotPasswordCode(
-      dto.email,
-      dto.code,
-    );
+    const user = await this.userService.findByEmail(dto.email);
     if (!user) {
+      throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
+    }
+    if (user.forgotPasswordToken !== dto.code) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
     user.forgotPasswordToken = null;
@@ -164,13 +166,13 @@ export class AuthService {
     this.userService.hideField(user);
     const response: LoginResponse = {
       user,
-      accessToken: await this.signAccess(user._id),
-      refreshToken: await this.signRefresh(user._id),
+      accessToken: await this.signAccess(user.id),
+      refreshToken: await this.signRefresh(user.id),
     };
     return response;
   }
 
-  signAccess(id: string) {
+  signAccess(id: number) {
     return this.jwtService.signAsync(
       { id },
       {
@@ -186,7 +188,7 @@ export class AuthService {
     });
   }
 
-  signRefresh(id: string) {
+  signRefresh(id: number) {
     return this.jwtService.signAsync(
       { id },
       {

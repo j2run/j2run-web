@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
 import { MongoConfig } from '../configs/mongo.config';
-import { User, UserSchema } from './user.schema';
 import { WebBuilderSchemaModule } from './web-builder/payment-schema.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,8 +12,10 @@ import { OrderDetailEntity } from './order-detail.entity';
 import { ProductRetalOptionEntity } from './product-retal-option.entity';
 import { OrderDetailWebsiteEntity } from './order-detail-website.entity';
 import { InvoiceEntity } from './invoice.entity';
+import { UserEntity } from './user.entity';
 
 export const paymentOrmFeatures = [
+  UserEntity,
   CategoryEntity,
   ProductEntity,
   ProductRetalOptionEntity,
@@ -24,12 +25,7 @@ export const paymentOrmFeatures = [
   InvoiceEntity,
 ];
 
-export const features: ModelDefinition[] = [
-  {
-    name: User.name,
-    schema: UserSchema,
-  },
-];
+export const features: ModelDefinition[] = [];
 
 @Module({
   imports: [

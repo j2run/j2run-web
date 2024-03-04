@@ -3,10 +3,13 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
+import { UserEntity } from './user.entity';
 
 export enum InvoiceStatus {
   draft = 1,
@@ -21,11 +24,6 @@ export class InvoiceEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty()
-  @Column()
-  @Index()
-  userId: string;
-
   @ManyToOne(() => OrderEntity, (order) => order.invoices)
   order: OrderEntity;
 
@@ -36,4 +34,8 @@ export class InvoiceEntity {
   @ApiProperty()
   @Column({ enum: InvoiceStatus, default: InvoiceStatus.open })
   status: InvoiceStatus;
+
+  @ManyToOne(() => UserEntity, (user) => user.orders)
+  @JoinColumn()
+  user: UserEntity;
 }

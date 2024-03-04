@@ -10,6 +10,7 @@ import { OrderDetailWebsiteEntity } from 'src/schema/order-detail-website.entity
 import { ProductEntity } from 'src/schema/product.entity';
 import { ProductRetalOptionEntity } from 'src/schema/product-retal-option.entity';
 import { InvoiceService } from '../invoice/invoice.service';
+import { UserEntity } from 'src/schema/user.entity';
 
 @Injectable()
 export class OrderService {
@@ -31,7 +32,10 @@ export class OrderService {
     this.logger.setContext(OrderService.name);
   }
 
-  async order(orderData: OrderRequest): Promise<OrderRsponse> {
+  async order(
+    orderData: OrderRequest,
+    user: UserEntity,
+  ): Promise<OrderRsponse> {
     let invoice: InvoiceEntity;
     let status = true;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -41,6 +45,7 @@ export class OrderService {
 
       // Create order
       const order = this.orderRepository.create();
+      order.user = user;
       order.totalPrice = 0;
       await queryRunner.manager.save(order);
 

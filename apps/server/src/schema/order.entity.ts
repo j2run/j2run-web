@@ -13,17 +13,13 @@ import {
 import { CategoryEntity } from './category.entity';
 import { OrderDetailEntity } from './order-detail.entity';
 import { InvoiceEntity } from './invoice.entity';
+import { UserEntity } from './user.entity';
 
 @Entity()
 export class OrderEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ApiProperty()
-  @Column()
-  @Index()
-  userId: string;
 
   @ApiProperty()
   @Column()
@@ -38,6 +34,10 @@ export class OrderEntity {
 
   @OneToMany(() => InvoiceEntity, (invoice) => invoice.order)
   invoices: InvoiceEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.orders)
+  @JoinColumn()
+  user: UserEntity;
 
   @ApiProperty()
   @CreateDateColumn({

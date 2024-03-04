@@ -8,7 +8,6 @@ import { LoggerService } from 'src/service/logger.service';
 import { UserService } from '../user/user.service';
 import { JobInvoicePay } from 'src/dtos/job.dto';
 import { MSG_ACCOUNT_NOT_SUFFICENT_FUNDS } from 'src/utils/constants/message.constant';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class InvoiceService {
@@ -28,7 +27,7 @@ export class InvoiceService {
     const invoice = this.invoiceRepository.create();
     invoice.order = order;
     invoice.price = order.totalPrice;
-    invoice.userId = order.userId;
+    invoice.user = order.user;
     return await manager.save(invoice);
   }
 
@@ -45,31 +44,41 @@ export class InvoiceService {
             orderDetailWebsite: true,
           },
         },
+        user: true,
       },
     });
-    const user = await this.userService.findById(invoice.userId);
+    const user = invoice.user;
+    const queryRunner = this.dataSource.createQueryRunner();
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      const manager = queryRunner.manager;
 
-    // check balance
-    if (user.balance < invoice.price) {
-      throw new Error(MSG_ACCOUNT_NOT_SUFFICENT_FUNDS);
+      // check balance
+      if (user.balance < invoice.price) {
+        throw new Error(MSG_ACCOUNT_NOT_SUFFICENT_FUNDS);
+      }
+
+      // update balance
+      await this.userService.minusBalance(invoice.price, user.id, manager);
+      await manager
+        .createQueryBuilder()
+        .update(InvoiceEntity)
+        .set({
+          status: InvoiceStatus.paid,
+        })
+        .where({
+          id: data.invoiceId,
+        })
+        .execute();
+
+      // handle product
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(err);
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
-
-    // update balance
-    await this.userService.minusBalance(
-      invoice.price,
-      user._id as unknown as Types.ObjectId,
-    );
-    await this.invoiceRepository
-      .createQueryBuilder()
-      .update(InvoiceEntity)
-      .set({
-        status: InvoiceStatus.paid,
-      })
-      .where({
-        id: data.invoiceId,
-      })
-      .execute();
-
-    // handle product
   }
 }

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
-import { User } from 'src/schema/user.schema';
+import { UserEntity } from 'src/schema/user.entity';
 
 export class JwtPayload {
-  id: string;
+  id: number;
 }
 
 export class LoginRequest {
@@ -19,8 +19,8 @@ export class LoginRequest {
 }
 
 export class LoginResponse {
-  @ApiProperty({ type: User })
-  user: User;
+  @ApiProperty({ type: UserEntity })
+  user: UserEntity;
 
   @ApiProperty()
   refreshToken: string;
@@ -58,6 +58,10 @@ export class GetAccessTokenResponse {
 }
 
 export class VerifyRequest {
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+
   @ApiProperty()
   @IsString()
   code: string;

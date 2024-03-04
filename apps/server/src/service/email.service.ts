@@ -16,9 +16,10 @@ export class EmailService {
 
   sendVerifyEmail(to: string, verifyToken: string) {
     const subject = '[J2RUN] Xác thực tài khoản';
-    const link = this.configService.get('J2_VERIFY_LINK') + verifyToken;
+    const link =
+      this.configService.get('J2_VERIFY_LINK') + verifyToken + '&email=' + to;
     const template = fs.readFileSync(
-      path.join(__dirname, '../templates/email-verify.hbs'),
+      path.join(__dirname, '../utils/templates/email-verify.hbs'),
       'utf8',
     );
     const compiledTemplate = handlebars.compile(template);
@@ -39,7 +40,7 @@ export class EmailService {
       '&email=' +
       to;
     const template = fs.readFileSync(
-      path.join(__dirname, '../templates/email-forgot-password.hbs'),
+      path.join(__dirname, '../utils/templates/email-forgot-password.hbs'),
       'utf8',
     );
     const compiledTemplate = handlebars.compile(template);
