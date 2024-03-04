@@ -67,8 +67,8 @@ export class AuthService {
   }
 
   async register(dto: RegisterRequest): Promise<RegisterResponse> {
-    const user = await this.userService.findByEmailVerified(dto.email);
-    if (!!user) {
+    let user = await this.userService.findByEmail(dto.email);
+    if (!!user?.isVerified) {
       throw new ConflictException(MSG_EMAIL_EXISTS);
     }
 
@@ -78,18 +78,20 @@ export class AuthService {
       );
     }
 
-    const newUser = this.userService.create();
-    newUser.email = dto.email;
-    newUser.password = await bcrypt.hash(dto.password, 12);
-    newUser.verifyToken = v4();
-    newUser.isVerified = false;
+    if (!user) {
+      user = this.userService.create();
+    }
+    user.email = dto.email;
+    user.password = await bcrypt.hash(dto.password, 12);
+    user.verifyToken = v4();
+    user.isVerified = false;
 
-    const isCreated = await this.userService.save(newUser);
+    const isCreated = await this.userService.save(user);
     if (!isCreated?.id) {
       throw new InternalServerErrorException();
     }
 
-    await this.emailService.sendVerifyEmail(newUser.email, newUser.verifyToken);
+    await this.emailService.sendVerifyEmail(user.email, user.verifyToken);
 
     const response: RegisterResponse = {
       status: true,
