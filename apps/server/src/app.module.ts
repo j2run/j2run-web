@@ -3,12 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ServicesModule } from './service/services.module';
 import { JwtAccessStrategy } from './utils/strategy/jwt-access.strategy';
 import { JwtRefreshStrategy } from './utils/strategy/jwt-refresh.strategy';
-import { RouterModule } from '@nestjs/core';
-import {
-  WbClientModule,
-  WbClientPrefix,
-} from './modules/wb-client/wb-client.module';
-import { WbModule, WbPrefix } from './modules/wb/wb.module';
+import { WbClientModule } from './modules/wb-client/wb-client.module';
+import { WbModule } from './modules/wb/wb.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ProductModule } from './modules/product/product.module';
@@ -28,16 +24,6 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     // Web Builder Module
     WbClientModule,
     WbModule,
-    RouterModule.register([
-      {
-        path: WbClientPrefix,
-        module: WbClientModule,
-      },
-      {
-        path: WbPrefix,
-        module: WbModule,
-      },
-    ]),
   ],
   controllers: [],
   providers: [JwtAccessStrategy, JwtRefreshStrategy],
