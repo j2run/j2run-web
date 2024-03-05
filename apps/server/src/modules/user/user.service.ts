@@ -114,4 +114,47 @@ export class UserService {
       .setParameter('id', userId)
       .execute();
   }
+
+  changeAccountToVerify(userId: number, manager?: EntityManager) {
+    return (manager || this.userEntityRepository)
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        verifyToken: () => 'NULL',
+        isVerified: true,
+      })
+      .where('id = :id')
+      .setParameter('id', userId)
+      .execute();
+  }
+
+  changeAccountToResetPassword(userId: number, manager?: EntityManager) {
+    return (manager || this.userEntityRepository)
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        forgotPasswordToken: () => 'NULL',
+        isResetPassword: true,
+      })
+      .where('id = :id')
+      .setParameter('id', userId)
+      .execute();
+  }
+
+  updateForgotPasswordToken(
+    token: string,
+    userId: number,
+    manager?: EntityManager,
+  ) {
+    return (manager || this.userEntityRepository)
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        token: () => ':token',
+      })
+      .where('id = :id')
+      .setParameter('id', userId)
+      .setParameter('token', token)
+      .execute();
+  }
 }

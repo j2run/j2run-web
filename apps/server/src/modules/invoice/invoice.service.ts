@@ -73,6 +73,8 @@ export class InvoiceService {
         .execute();
 
       // handle product
+
+      await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
       this.logger.error(err);

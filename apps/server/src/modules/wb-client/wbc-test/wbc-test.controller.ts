@@ -4,8 +4,8 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('wbc-test')
 @Controller('wbc-test')
 export class WbcTestController {
-  @Get('a')
+  @Get('test')
   newSubdomainValid() {
-    return 'a';
+    return 'test';
   }
 }

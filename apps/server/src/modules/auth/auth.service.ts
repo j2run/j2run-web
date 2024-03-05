@@ -126,9 +126,7 @@ export class AuthService {
     if (user.verifyToken !== dto.code) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
-    user.verifyToken = null;
-    user.isVerified = true;
-    await this.userService.save(user);
+    await this.userService.changeAccountToVerify(user.id);
     await this.userService.removeAllAccountWithoutUserId(user.email, user.id);
   }
 
@@ -139,8 +137,7 @@ export class AuthService {
     if (!user) {
       throw new ConflictException(MSG_EMAIL_NOT_EXISTS);
     }
-    user.forgotPasswordToken = v4();
-    await this.userService.save(user);
+    await this.userService.updateForgotPasswordToken(v4(), user.id);
     await this.emailService.sendForgotPasswordEmail(
       user.email,
       user.forgotPasswordToken,
@@ -160,9 +157,7 @@ export class AuthService {
     if (user.forgotPasswordToken !== dto.code) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
-    user.forgotPasswordToken = null;
-    user.isResetPassword = true;
-    await this.userService.save(user);
+    await this.userService.changeAccountToResetPassword(user.id);
 
     // send data as login
     this.userService.hideField(user);
