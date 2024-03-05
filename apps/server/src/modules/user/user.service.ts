@@ -75,9 +75,18 @@ export class UserService {
     if (!user.isResetPassword) {
       throw new ForbiddenException();
     }
-    user.isResetPassword = null;
-    user.password = await bcrypt.hash(dto.password, 12);
-    await this.userEntityRepository.save(user);
+    const password = await bcrypt.hash(dto.password, 12);
+    await this.userEntityRepository
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        password: () => ':password',
+        isResetPassword: false,
+      })
+      .where('id = :id')
+      .setParameter('id', user.id)
+      .setParameter('password', password)
+      .execute();
     return { status: true };
   }
 
@@ -93,8 +102,17 @@ export class UserService {
       throw new ForbiddenException(MSG_PASSWORD_OLD_ILEGAL);
     }
 
-    user.password = await bcrypt.hash(dto.newPassword, 12);
-    await this.userEntityRepository.save(user);
+    const password = await bcrypt.hash(dto.newPassword, 12);
+    await this.userEntityRepository
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        password: () => ':password',
+      })
+      .where('id = :id')
+      .setParameter('id', user.id)
+      .setParameter('password', password)
+      .execute();
 
     // TODO
     // Send mail
