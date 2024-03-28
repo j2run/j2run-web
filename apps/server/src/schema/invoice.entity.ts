@@ -2,10 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
@@ -14,8 +12,9 @@ import { UserEntity } from './user.entity';
 export enum InvoiceStatus {
   draft = 1,
   open = 2,
-  paid = 3,
-  void = 4,
+  wait = 3,
+  paid = 4,
+  void = 5,
 }
 
 @Entity()

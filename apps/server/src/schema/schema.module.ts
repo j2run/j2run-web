@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
 import { MongoConfig } from '../configs/mongo.config';
-import { WebBuilderSchemaModule } from './web-builder/payment-schema.module';
+import { WebBuilderSchemaModule } from './web-builder/web-builder-schema.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostgresConfig } from 'src/configs/postgres.config';

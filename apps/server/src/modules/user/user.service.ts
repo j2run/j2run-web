@@ -8,7 +8,13 @@ import {
 } from './user.dto';
 import { MSG_PASSWORD_OLD_ILEGAL } from 'src/utils/constants/message.constant';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Not, Repository } from 'typeorm';
+import {
+  EntityManager,
+  FindOptionsSelect,
+  FindOptionsSelectByString,
+  Not,
+  Repository,
+} from 'typeorm';
 import { UserEntity } from 'src/schema/user.entity';
 
 @Injectable()
@@ -18,28 +24,54 @@ export class UserService {
     private readonly userEntityRepository: Repository<UserEntity>,
   ) {}
 
-  findById(id: number) {
+  findById(
+    id: number,
+    select?:
+      | FindOptionsSelect<UserEntity>
+      | FindOptionsSelectByString<UserEntity>,
+  ) {
     return this.userEntityRepository.findOne({
       where: {
         id,
       },
+      select,
     });
   }
 
-  findByEmail(email: string) {
+  findByEmailWithPassword(email: string) {
+    return this.userEntityRepository
+      .createQueryBuilder()
+      .where({ email })
+      .addSelect('UserEntity.password')
+      .getOne();
+  }
+
+  findByEmail(
+    email: string,
+    select?:
+      | FindOptionsSelect<UserEntity>
+      | FindOptionsSelectByString<UserEntity>,
+  ) {
     return this.userEntityRepository.findOne({
       where: {
         email,
       },
+      select: select,
     });
   }
 
-  findByEmailVerified(email: string) {
+  findByEmailVerified(
+    email: string,
+    select?:
+      | FindOptionsSelect<UserEntity>
+      | FindOptionsSelectByString<UserEntity>,
+  ) {
     return this.userEntityRepository.findOne({
       where: {
         email,
         isVerified: true,
       },
+      select,
     });
   }
 
@@ -168,11 +200,11 @@ export class UserService {
       .createQueryBuilder()
       .update(UserEntity)
       .set({
-        token: () => ':token',
+        forgotPasswordToken: () => ':forgotPasswordToken',
       })
       .where('id = :id')
       .setParameter('id', userId)
-      .setParameter('token', token)
+      .setParameter('forgotPasswordToken', token)
       .execute();
   }
 }

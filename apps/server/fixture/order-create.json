@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "productId": 1,
+      "productRetalId": 1,
+      "amount": 1,
+      "website": {
+        "subdomain": "65ca3d2999d2ea46276a4273",
+        "wbDomainId": "string"
+      }
+    }
+  ]
+}

@@ -24,7 +24,7 @@ export class UserEntity {
   email: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @ApiProperty()
@@ -32,11 +32,11 @@ export class UserEntity {
   balance: number;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   verifyToken: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   forgotPasswordToken: string;
 
   @ApiProperty()

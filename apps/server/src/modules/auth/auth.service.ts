@@ -43,7 +43,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginRequest): Promise<LoginResponse> {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.findByEmailWithPassword(dto.email);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -67,7 +67,11 @@ export class AuthService {
   }
 
   async register(dto: RegisterRequest): Promise<RegisterResponse> {
-    let user = await this.userService.findByEmail(dto.email);
+    let user = await this.userService.findByEmail(dto.email, {
+      id: true,
+      email: true,
+      isVerified: true,
+    });
     if (!!user?.isVerified) {
       throw new ConflictException(MSG_EMAIL_EXISTS);
     }
@@ -119,7 +123,11 @@ export class AuthService {
   }
 
   async verifyAccount(dto: VerifyRequest) {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.findByEmail(dto.email, {
+      id: true,
+      verifyToken: true,
+      email: true,
+    });
     if (!user) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }
@@ -133,7 +141,10 @@ export class AuthService {
   async forgotPassword(
     dto: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> {
-    const user = await this.userService.findByEmailVerified(dto.email);
+    const user = await this.userService.findByEmailVerified(dto.email, {
+      id: true,
+      email: true,
+    });
     if (!user) {
       throw new ConflictException(MSG_EMAIL_NOT_EXISTS);
     }
@@ -150,7 +161,11 @@ export class AuthService {
   async verifyForgotPassword(
     dto: VerifyForgotPasswordRequest,
   ): Promise<LoginResponse> {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.findByEmail(dto.email, {
+      id: true,
+      email: true,
+      forgotPasswordToken: true,
+    });
     if (!user) {
       throw new NotFoundException(MSG_VERIFY_CODE_ILEGAL);
     }

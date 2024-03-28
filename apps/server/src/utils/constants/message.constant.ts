@@ -18,6 +18,8 @@ export const MSG_NO_RESOURCE = 'Hệ thống không đủ tài nguyên';
 export const MSG_NODE_NOT_EXISTS = 'Node không tồn tại hoặc mất kết nối';
 
 export const MSG_INVOICE_ILEGAL = 'Hóa đơn không hợp lệ';
+export const MSG_INVOICE_STATUS_NOT_OPEN = 'Hóa đơn không ở trạng thái mở';
+export const MSG_INVOICE_STATUS_NOT_WAIT = 'Hóa đơn không ở trạng thái xữ lý';
 export const MSG_ACCOUNT_ILEGAL = 'Tài khoản không hợp lệ';
 export const MSG_PLAN_ILEGAL = 'Gói dịch vụ không hợp lệ';
 export const MSG_GAME_ILEGAL = 'Trò chơi không hợp lệ';
