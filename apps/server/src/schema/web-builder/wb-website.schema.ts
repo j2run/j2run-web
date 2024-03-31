@@ -19,7 +19,11 @@ export class WbWebsite extends SchemaDto {
 
   @ApiProperty()
   @Prop()
-  wbPlanId: Types.ObjectId;
+  productId: number;
+
+  @ApiProperty()
+  @Prop()
+  orderDetailId: number;
 }
 
 export const WbWebsiteSchema = SchemaFactory.createForClass(WbWebsite);

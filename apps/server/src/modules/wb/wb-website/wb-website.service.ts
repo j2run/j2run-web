@@ -21,7 +21,7 @@ import {
 export class WbWebsiteService {
   constructor(
     @InjectModel(WbWebsite.name)
-    private wbWebsiteModel: Model<WbWebsiteDocument>,
+    private readonly wbWebsiteModel: Model<WbWebsiteDocument>,
     private readonly wbSubDomainExcludeService: WbSubdomainExcludeService,
   ) {}
 
@@ -35,12 +35,10 @@ export class WbWebsiteService {
       throw new ForbiddenException(MSG_WB_SUBDOMAIN_BANNED);
     }
 
-    const isWebsiteExisted = await this.wbWebsiteModel
-      .find({
-        wbDomainId: new Types.ObjectId(search.wbDomainId),
-        subdomain: search.subdomain,
-      })
-      .then((result) => !!result && result.length > 0);
+    const isWebsiteExisted = await this.isWebsiteExisted(
+      search.subdomain,
+      search.wbDomainId,
+    );
 
     if (isWebsiteExisted) {
       throw new ConflictException(MSG_WB_SUBDOMAIN_EXISTS);
@@ -49,5 +47,18 @@ export class WbWebsiteService {
     return {
       status: true,
     };
+  }
+
+  isWebsiteExisted(subdomain: string, wbDomainId: string) {
+    return this.wbWebsiteModel
+      .find({
+        wbDomainId: new Types.ObjectId(wbDomainId),
+        subdomain: subdomain,
+      })
+      .then((result) => !!result && result.length > 0);
+  }
+
+  create(dto: Partial<WbWebsite>) {
+    return this.wbWebsiteModel.insertMany([dto]);
   }
 }

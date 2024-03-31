@@ -1,4 +1,4 @@
-import { Processor, Process } from '@nestjs/bull';
+import { Processor, Process, OnQueueFailed } from '@nestjs/bull';
 import { Job } from 'bull';
 import { QUEUE_INVOICE } from 'src/utils/constants/queue.constant';
 import { InvoiceService } from './invoice.service';
@@ -11,5 +11,10 @@ export class InvoiceConsumer {
   @Process({ concurrency: 1 })
   transcode(job: Job<JobInvoicePay>) {
     return this.invoiceService.payProcess(job.data);
+  }
+
+  @OnQueueFailed()
+  failedHandler(jobs: Job<JobInvoicePay>, err: Error) {
+    console.log(jobs, err);
   }
 }
