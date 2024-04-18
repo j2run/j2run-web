@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoicePayRequest } from './invoice.dto';
 import { InvoiceEntity, InvoiceStatus } from 'src/schema/invoice.entity';
@@ -9,6 +13,7 @@ import { UserService } from '../user/user.service';
 import { JobInvoicePay } from 'src/dtos/job.dto';
 import {
   MSG_ACCOUNT_NOT_SUFFICENT_FUNDS,
+  MSG_INVOICE_FORBIDDEN,
   MSG_INVOICE_ILEGAL,
   MSG_INVOICE_STATUS_NOT_OPEN,
   MSG_INVOICE_STATUS_NOT_WAIT,
@@ -21,6 +26,8 @@ import { OrderDetailEntity } from 'src/schema/order-detail.entity';
 import { ECategoryType } from 'src/schema/category.entity';
 import { WbWebsiteService } from '../wb/wb-website/wb-website.service';
 import { Types } from 'mongoose';
+import { UserEntity } from 'src/schema/user.entity';
+import { invoiceDefineAbilityFor } from './invoice.ability';
 
 @Injectable()
 export class InvoiceService {
@@ -48,9 +55,12 @@ export class InvoiceService {
     return await manager.save(invoice);
   }
 
-  async pay(data: InvoicePayRequest) {
+  async pay(data: InvoicePayRequest, userAuth: UserEntity) {
+    const ability = invoiceDefineAbilityFor(userAuth);
     const invoice = await this.invoiceRepository.findOne({
-      where: { id: data.invoiceId },
+      where: {
+        id: data.invoiceId,
+      },
       relations: {
         user: true,
       },
@@ -61,6 +71,9 @@ export class InvoiceService {
         },
       },
     });
+    if (ability.can('pay', InvoiceEntity)) {
+      throw new ForbiddenException(MSG_INVOICE_FORBIDDEN);
+    }
     const user = invoice.user;
     if (!user) {
       throw new BadRequestException(MSG_INVOICE_ILEGAL);

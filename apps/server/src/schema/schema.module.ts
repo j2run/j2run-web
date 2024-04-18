@@ -13,6 +13,7 @@ import { ProductRetalOptionEntity } from './product-retal-option.entity';
 import { OrderDetailWebsiteEntity } from './order-detail-website.entity';
 import { InvoiceEntity } from './invoice.entity';
 import { UserEntity } from './user.entity';
+import { InvoiceLogEntity } from './invoice-log.entity';
 
 export const paymentOrmFeatures = [
   UserEntity,
@@ -23,6 +24,7 @@ export const paymentOrmFeatures = [
   OrderDetailEntity,
   OrderDetailWebsiteEntity,
   InvoiceEntity,
+  InvoiceLogEntity,
 ];
 
 export const features: ModelDefinition[] = [];

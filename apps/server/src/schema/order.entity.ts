@@ -8,7 +8,6 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-  Index,
 } from 'typeorm';
 import { CategoryEntity } from './category.entity';
 import { OrderDetailEntity } from './order-detail.entity';

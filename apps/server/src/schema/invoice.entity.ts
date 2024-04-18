@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
+import { InvoiceLogEntity } from './invoice-log.entity';
 
 export enum InvoiceStatus {
   draft = 1,
@@ -37,4 +39,8 @@ export class InvoiceEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn()
   user: UserEntity;
+
+  @OneToMany(() => InvoiceLogEntity, (invoiceLog) => invoiceLog.invoice)
+  @JoinColumn()
+  invoiceLogs: InvoiceLogEntity[];
 }

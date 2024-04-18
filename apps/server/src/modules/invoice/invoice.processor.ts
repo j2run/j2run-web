@@ -14,7 +14,7 @@ export class InvoiceConsumer {
   }
 
   @OnQueueFailed()
-  failedHandler(jobs: Job<JobInvoicePay>, err: Error) {
-    console.log(jobs, err);
+  failedHandler(job: Job<JobInvoicePay>, err: Error) {
+    console.log(job, err);
   }
 }

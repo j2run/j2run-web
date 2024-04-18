@@ -10,6 +10,7 @@ import { UserModule } from './modules/user/user.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
+import { InvoiceLogModule } from './modules/invoice-log/invoice-log.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     ProductModule,
     OrderModule,
     InvoiceModule,
+    InvoiceLogModule,
 
     // Web Builder Module
     WbClientModule,
