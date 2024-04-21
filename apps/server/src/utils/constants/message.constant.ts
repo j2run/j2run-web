@@ -6,7 +6,9 @@ export const MSG_VERIFY_CODE_ILEGAL = 'Mã xác thực không hợp lệ';
 export const MSG_ACTION_ILEGAL = 'Hành động không hợp lệ';
 export const MSG_PASSWORD_OLD_ILEGAL = 'Mật khẩu cũ không hợp lệ';
 
+export const MSG_ACCOUNT_ILEGAL = 'Tài khoản không hợp lệ';
 export const MSG_ACCOUNT_NOT_SUFFICENT_FUNDS = 'Số dư tài không hợp lệ';
+
 export const MSG_CONTAINER_NOT_EXISTS = 'Máy ảo không tồn tại';
 export const MSG_CONTAINER_REMOVED = 'Máy ảo đã bị xóa';
 export const MSG_CONTAINER_REMOVING = 'Máy ảo đang được xóa';
@@ -21,7 +23,7 @@ export const MSG_INVOICE_ILEGAL = 'Hóa đơn không hợp lệ';
 export const MSG_INVOICE_FORBIDDEN = 'Không có quyền với hóa đơn';
 export const MSG_INVOICE_STATUS_NOT_OPEN = 'Hóa đơn không ở trạng thái mở';
 export const MSG_INVOICE_STATUS_NOT_WAIT = 'Hóa đơn không ở trạng thái xữ lý';
-export const MSG_ACCOUNT_ILEGAL = 'Tài khoản không hợp lệ';
+
 export const MSG_PLAN_ILEGAL = 'Gói dịch vụ không hợp lệ';
 export const MSG_GAME_ILEGAL = 'Trò chơi không hợp lệ';
 export const MSG_DOCKER_CONTAINER_ILEGAL = 'Máy ảo không hợp lệ';

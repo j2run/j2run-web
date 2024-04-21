@@ -85,9 +85,10 @@ export class AuthService {
     if (!user) {
       user = this.userService.create();
     }
+    const token = v4();
     user.email = dto.email;
     user.password = await bcrypt.hash(dto.password, 12);
-    user.verifyToken = v4();
+    user.verifyToken = token;
     user.isVerified = false;
 
     const isCreated = await this.userService.save(user);
@@ -95,7 +96,7 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
 
-    await this.emailService.sendVerifyEmail(user.email, user.verifyToken);
+    await this.emailService.sendVerifyEmail(user.email, token);
 
     const response: RegisterResponse = {
       status: true,
@@ -148,11 +149,9 @@ export class AuthService {
     if (!user) {
       throw new ConflictException(MSG_EMAIL_NOT_EXISTS);
     }
-    await this.userService.updateForgotPasswordToken(v4(), user.id);
-    await this.emailService.sendForgotPasswordEmail(
-      user.email,
-      user.forgotPasswordToken,
-    );
+    const token = v4();
+    await this.userService.updateForgotPasswordToken(token, user.id);
+    await this.emailService.sendForgotPasswordEmail(user.email, token);
     return {
       status: true,
     };

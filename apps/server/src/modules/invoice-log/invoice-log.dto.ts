@@ -5,5 +5,5 @@ export class InvoiceLogGetByInvoiceId {
   @ApiProperty()
   @IsInt()
   @Min(1)
-  invoiceId: string;
+  invoiceId: number;
 }

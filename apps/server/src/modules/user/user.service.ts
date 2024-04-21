@@ -158,7 +158,7 @@ export class UserService {
     return (manager || this.userEntityRepository)
       .createQueryBuilder()
       .update(UserEntity)
-      .set({ balance: () => 'balance + :balance' })
+      .set({ balance: () => 'balance - :balance' })
       .where('id = :id')
       .setParameter('balance', balance)
       .setParameter('id', userId)
