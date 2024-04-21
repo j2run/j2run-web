@@ -26,8 +26,18 @@ export class InvoiceLogService {
   }
 
   async getByInvoiceId(params: InvoiceLogGetByInvoiceId, userAuth: UserEntity) {
-    const invoice = await this.invoiceRepository.findOneBy({
-      id: params.invoiceId,
+    const invoice = await this.invoiceRepository.findOne({
+      where: {
+        id: params.invoiceId,
+      },
+      relations: {
+        user: true,
+      },
+      select: {
+        user: {
+          id: true,
+        },
+      },
     });
     const ability = invoiceLogDefineAbilityFor(userAuth);
     if (!ability.can('read', invoice)) {

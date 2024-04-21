@@ -15,6 +15,6 @@ export function invoiceDefineAbilityFor(user: UserEntity) {
   const { can, build } = new AbilityBuilder<InvoiceAbility>(
     Ability as AbilityClass<InvoiceAbility>,
   );
-  can('pay', InvoiceEntity, { user: { id: user.id } });
+  can('pay', InvoiceEntity, { 'user.id': user.id } as any);
   return build();
 }

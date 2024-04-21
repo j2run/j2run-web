@@ -71,7 +71,7 @@ export class InvoiceService {
         },
       },
     });
-    if (!ability.can('pay', InvoiceEntity)) {
+    if (!ability.can('pay', invoice)) {
       throw new ForbiddenException(MSG_INVOICE_FORBIDDEN);
     }
     const user = invoice.user;

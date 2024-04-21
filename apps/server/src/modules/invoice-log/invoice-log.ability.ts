@@ -20,6 +20,6 @@ export function invoiceLogDefineAbilityFor(user: UserEntity) {
   const { can, build } = new AbilityBuilder<InvoiceAbility>(
     Ability as AbilityClass<InvoiceAbility>,
   );
-  can('read', InvoiceEntity, { user: { id: user.id } });
+  can('read', InvoiceEntity, { 'user.id': user.id } as any);
   return build();
 }
