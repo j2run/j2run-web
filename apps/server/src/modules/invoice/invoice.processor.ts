@@ -29,7 +29,9 @@ export class InvoiceConsumer {
     );
     await this.invoiceService.changeStatusInvoice(
       invoiceId,
-      InvoiceStatus.open,
+      err.name === 'MSG_WB_SUBDOMAIN_EXISTS'
+        ? InvoiceStatus.void
+        : InvoiceStatus.open,
     );
   }
 }

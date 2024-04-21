@@ -28,6 +28,7 @@ import { WbWebsiteService } from '../wb/wb-website/wb-website.service';
 import { Types } from 'mongoose';
 import { UserEntity } from 'src/schema/user.entity';
 import { invoiceDefineAbilityFor } from './invoice.ability';
+import { JError } from 'src/utils/error';
 
 @Injectable()
 export class InvoiceService {
@@ -120,12 +121,12 @@ export class InvoiceService {
 
       // check status
       if (invoice.status !== InvoiceStatus.wait) {
-        throw new Error(MSG_INVOICE_STATUS_NOT_WAIT);
+        throw new JError({ MSG_INVOICE_STATUS_NOT_WAIT });
       }
 
       // check balance
       if (user.balance < invoice.price) {
-        throw new Error(MSG_ACCOUNT_NOT_SUFFICENT_FUNDS);
+        throw new JError({ MSG_ACCOUNT_NOT_SUFFICENT_FUNDS });
       }
 
       // update balance
@@ -140,7 +141,7 @@ export class InvoiceService {
       const order = invoice.order;
       const orderDetails = order.orderDetails;
       for (const detail of orderDetails) {
-        await this.handleOrderDetail(detail, manager);
+        await this.handleOrderDetail(invoice.id, detail, manager);
       }
 
       await queryRunner.commitTransaction();
@@ -154,7 +155,11 @@ export class InvoiceService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async handleOrderDetail(detail: OrderDetailEntity, manager: EntityManager) {
+  async handleOrderDetail(
+    invoiceId: number,
+    detail: OrderDetailEntity,
+    manager: EntityManager,
+  ) {
     const product = detail.product;
     if (product.category.id === ECategoryType.WebBuilder) {
       // valid domain
@@ -164,7 +169,7 @@ export class InvoiceService {
         orderDetailWebsite.wbDomainId,
       );
       if (isWebsiteExisted) {
-        throw new Error(MSG_WB_SUBDOMAIN_EXISTS);
+        throw new JError({ MSG_WB_SUBDOMAIN_EXISTS });
       }
 
       // create new domain
